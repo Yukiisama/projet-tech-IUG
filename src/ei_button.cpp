@@ -3,9 +3,9 @@
 namespace ei
 {
 
-Bouton::Button(Widget *parent) : Widget("Bouton", parent){
-    
-}
+    Bouton::Button(Widget *parent) : Widget("Bouton", parent){
+
+    }
 
     Bouton::~Button(){
 

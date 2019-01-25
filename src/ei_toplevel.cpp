@@ -4,11 +4,10 @@
 
 namespace ei {
 
-Toplevel::Toplevel(Widget* parent){
-    this->parent = parent;
-}
+    Toplevel::Toplevel(Widget *parent) : Widget("Toplevel", parent){
+    }
 
-void Widget::draw (surface_t surface,
+    void Widget::draw (surface_t surface,
                     surface_t pick_surface,
                     Rect*     clipper){
                         return;

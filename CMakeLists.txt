@@ -57,6 +57,13 @@ add_custom_target(headers SOURCES ${include_files})
 # target to generate libei
 set(EI_SRC
         src/ei_draw.cpp
+        src/ei_geometrymanager.cpp
+        src/ei_eventmanager.cpp
+        src/ei_application.cpp
+        src/ei_widget.cpp
+        src/ei_button.cpp
+        src/ei_frame.cpp
+        src/ei_toplevel.cpp
         )
 add_library(ei ${EI_SRC})
 
