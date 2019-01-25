@@ -7,18 +7,30 @@ using namespace std;
 #include <string>
 #include <iostream>
 
+namespace ei{
+/**
+ * @brief   Construct a new instance of a widget of some particular class, as a descendant of an existing widget.
+ *
+ *      The widget is not displayed on screen until it is managed by a geometry manager.
+ *
+ * @param   class_name  The name of the class of the widget that is to be created.
+ * @param   parent      A pointer to the parent widget. Cannot be NULL except for the root widget.
+ */
+
 Widget::Widget(const widgetclass_name_t& class_name, Widget* parent){
   this->name = class_name;
   this->parent = parent;
-}
+  this->children = NULL;
+  this->geom_manager = NULL;
+  this->requested_size = NULL;
+  this->screen_location = NULL;
+  this->content_rect = NULL;
+  }
 
 /**
  * @brief   Destroys the widget. Removes it from screen if it is managed by a geometry manager.
  *          Destroys all its descendants.
  */
-virtual Widget::~Widget(){
-
-}
 
 /**
  * \brief   Method that draws the widget.
@@ -29,15 +41,13 @@ virtual Widget::~Widget(){
  * @param   clipper     If not NULL, the drawing is restricted within this rectangle
  *                      (expressed in the surface reference frame).
  */
-virtual void Widget::draw (surface_t surface, surface_t pick_surface, Rect* clipper){
+void Widget::draw (surface_t surface, surface_t pick_surface, Rect* clipper){
   if(clipper==NULL){
 
   }else{
 
   }
-  ei_copy_surface(surface, this->screen_location, where, );
-
-  }
+  //ei_copy_surface(surface, this->screen_location, where, );
 }
 
 /**
@@ -63,4 +73,6 @@ uint32_t Widget::getPick_id() const{
 
 Widget* Widget::getParent() const{
   return this->parent;
+}
+
 }
