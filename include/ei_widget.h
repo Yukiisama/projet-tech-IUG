@@ -33,7 +33,7 @@ class GeometryManager;
 class Widget
 {
 public:
-
+    Widget();
     /**
      * @brief   Construct a new instance of a widget of some particular class, as a descendant of an existing widget.
      *
