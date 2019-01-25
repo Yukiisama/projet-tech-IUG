@@ -1,7 +1,7 @@
 #include "ei_types.h"
 #include "ei_event.h"
 #include "ei_widget.h"
-
+#include "ei_application.h"
 namespace ei {
 
 
