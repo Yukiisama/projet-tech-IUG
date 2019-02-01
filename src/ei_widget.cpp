@@ -25,10 +25,8 @@ Widget::Widget(const widgetclass_name_t& class_name, Widget* parent){
   this->requested_size = NULL;
   this->screen_location = NULL;
   this->content_rect = NULL;
-
   this->s_idGenerator = 0;
-
-  }
+}
 /*
   static uint32_t s_idGenerator; ///< Static counter to assure the uniqueness of the generated Ids
   uint32_t     pick_id;    ///< Id of this widget in the picking offscreen.
@@ -52,12 +50,19 @@ Widget::Widget(const widgetclass_name_t& class_name, Widget* parent){
  *                      (expressed in the surface reference frame).
  */
 void Widget::draw (surface_t surface, surface_t pick_surface, Rect* clipper){
+  if(surface == NULL){
+    fprintf(stderr,"Error occured for Widget::draw - surface is NULL\n");
+    exit(EXIT_FAILURE);
+  }
+  if(pick_surface == NULL){
+    fprintf(stderr,"Error occured for Widget::draw - pick_surface is NULL\n");
+    exit(EXIT_FAILURE);
+  }
   if(clipper==NULL){
 
   }else{
 
   }
-  //ei_copy_surface(surface, this->screen_location, , EI_FALSE);
 }
 
 /**
@@ -68,6 +73,10 @@ void Widget::draw (surface_t surface, surface_t pick_surface, Rect* clipper){
  *                      (i.e., = widget->screen_location).
  */
 virtual void Widget::geomnotify (Rect rect){
+  if(rect == NULL){
+    fprintf(stderr,"Error occured for Widget::geomnotify - rect is NULL\n");
+    exit(EXIT_FAILURE);
+  }
   this->screen_location.top_left.x = rect.top_left.x;
   this->screen_location.top_left.y = rect.top_left.y;
   this->screen_location.size.width = rect.size.width;
@@ -79,7 +88,8 @@ Widget* Widget::pick(uint32_t id){
   return this->parent;
 }
 uint32_t Widget::getPick_id() const{
-  return this->pick_id;}
+  return this->pick_id;
+}
 
 Widget* Widget::getParent() const{
   return this->parent;
