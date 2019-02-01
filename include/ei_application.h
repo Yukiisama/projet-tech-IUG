@@ -15,7 +15,7 @@
 #include "ei_types.h"
 #include "ei_event.h"
 #include "ei_widget.h"
-
+#include "hw_interface.h"
 namespace ei {
 
 class Application
