@@ -25,12 +25,22 @@ Widget::Widget(const widgetclass_name_t& class_name, Widget* parent){
   this->requested_size = NULL;
   this->screen_location = NULL;
   this->content_rect = NULL;
+
+  this->s_idGenerator = 0;
+
   }
+/*
+  static uint32_t s_idGenerator; ///< Static counter to assure the uniqueness of the generated Ids
+  uint32_t     pick_id;    ///< Id of this widget in the picking offscreen.
+  color_t   pick_color;    ///< pick_id encoded as a color.
+*/
 
 /**
  * @brief   Destroys the widget. Removes it from screen if it is managed by a geometry manager.
  *          Destroys all its descendants.
  */
+ Widget::~Widget(){
+ }
 
 /**
  * \brief   Method that draws the widget.
@@ -47,7 +57,7 @@ void Widget::draw (surface_t surface, surface_t pick_surface, Rect* clipper){
   }else{
 
   }
-  //ei_copy_surface(surface, this->screen_location, where, );
+  //ei_copy_surface(surface, this->screen_location, , EI_FALSE);
 }
 
 /**
