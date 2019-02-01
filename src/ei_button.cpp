@@ -3,19 +3,22 @@
 namespace ei
 {
 
-Bouton::Button(Widget *parent) : Widget("Bouton", parent){
-    
-}
+    Bouton::Button(Widget *parent) : Widget("Bouton", parent)
+    {
+        
+    }
 
-    Bouton::~Button(){
+    Bouton::~Button()
+    {
 
     }
 
     void Bouton::draw(surface_t surface,
                       surface_t pick_surface,
-                      Rect *clipper){
-
-                      }
+                      Rect *clipper)
+    {
+        
+    }
 
     /**
      * @brief   Configures the attributes of widgets of the class "button".
