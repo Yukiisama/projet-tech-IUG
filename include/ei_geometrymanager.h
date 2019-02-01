@@ -46,6 +46,58 @@ public:
      * @param widget    The widget instance that must be forgotten by the geometry manager.
      */
     virtual void release (Widget* widget) = 0;
+    
+
+	//GETTERS AND SETTERS
+	
+     bool is_placer();
+	 void set_placer(bool state);   
+ 
+
+     Widget * get_widget();
+	 void set_widget(Widget * new_widget);
+ 
+
+     anchor_t * get_anchor();
+	 void set_anchor(anchor_t * new_anchor);
+
+     int get_x();
+	 void set_x(int new_x);
+
+     int get_y();
+	 void set_y(int new_y);
+
+     float get_width();
+	 void set_width(float new_width);
+
+     float get_height();
+	 void set_height(float new_height);
+
+     float get_rel_x();
+	 void set_rel_x(float new_rel_x);
+
+     float get_rel_y();
+	 void set_rel_y(float new_rel_y);
+
+     float get_rel_width();
+	 void set_rel_width(float new_rel_width);
+
+     float get_rel_height();
+	 void set_rel_height(float new_rel_height);
+	
+	 
+private:
+	 bool placer = false;
+	 Widget*    widget;
+     anchor_t*  anchor;
+     int       x;
+     int       y;
+     float     width;
+     float     height;
+     float     rel_x;
+     float     rel_y;
+     float     rel_width;
+     float     rel_height;
 };
 
 
@@ -55,7 +107,8 @@ public:
 class Placer : public GeometryManager
 {
 public:
-
+    Placer();
+    virtual ~Placer();
     /**
      * \brief Configures the geometry of a widget using the "placer" geometry manager.
      *    If the widget was already managed by another geometry manager, then it is first
@@ -99,6 +152,8 @@ public:
     virtual void run (Widget* widget);
 
     virtual void release (Widget* widget);
+    
+    
 };
 
 }

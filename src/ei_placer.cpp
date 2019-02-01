@@ -5,6 +5,21 @@
 #include "ei_widget.h"
 using namespace std;
 namespace ei {
+	
+	Placer::Placer(){
+		set_placer(true);
+        set_widget(NULL);
+        set_anchor(NULL);
+        set_x(NULL);
+        set_y(NULL);
+        set_width(NULL);
+        set_height(NULL);
+        set_rel_x(NULL);
+        set_rel_y(NULL);
+        set_rel_width(NULL);
+        set_rel_height(NULL);
+	}
+
 /**
  * @brief The Placer class
  */
@@ -48,7 +63,38 @@ namespace ei {
                     float*     rel_width,
                     float*     rel_height)
                     {
-                        return;
+                        if (widget == NULL) return;
+                        set_widget(widget);
+
+                        if (anchor != NULL) set_anchor(anchor);
+                        else{
+                            anchor_t anc = ei_anc_northwest;
+                            set_anchor(&anc);
+                        } 
+
+                        if (x != NULL) set_x(*x);
+                        else set_x(0);
+
+                        if (y != NULL) set_y(y);
+                        else set_y(0);
+
+                        if (width != NULL) set_width(*width);
+                        else set_width(0);
+
+                        if (height != NULL) set_height(*height);
+                        else set_height(0);
+
+                        if (rel_x != NULL) set_rel_x(*rel_x);
+                        else set_rel_x(0.0);
+
+                        if (rel_y != NULL) set_rel_y(*rel_y);
+                        else set_rel_y(0.0);
+
+                        if (rel_width != NULL) set_rel_width(*rel_width);
+                        else set_rel_width(0.0);
+
+                        if (rel_height != NULL) set_rel_height(*rel_height);
+                        else set_rel_height(0.0);
                     }
 
     void Placer::run (Widget* widget){
