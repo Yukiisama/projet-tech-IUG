@@ -103,13 +103,11 @@ namespace ei {
           exit(EXIT_FAILURE);
       }
       color_t color = hw_get_pixel(this->root_window, where);
-      /*
       if(color.red == 0 && color.green == 0 && color.blue == 0 && color.alpha == 0){
         return NULL;
       }
-      */
       uint32_t ID = ColorToUInt(color);
-      return pick(ID);
+      return Widget::pick(ID);
     }
 
 }
