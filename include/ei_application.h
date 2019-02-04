@@ -99,9 +99,10 @@ public:
 
 private:
     static Application *instance;
+    surface_t root_window;
+    Widget* root_widget;
 };
 
 }
 
 #endif
-
