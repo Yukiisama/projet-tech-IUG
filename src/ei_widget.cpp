@@ -19,13 +19,20 @@ namespace ei{
 
 Widget::Widget(const widgetclass_name_t& class_name, Widget* parent){
   this->name = class_name;
-  this->parent = parent;
-  this->children = NULL;
+  if(parent){
+    this->parent=parent;
+    this->children.push_back(this); //add this widget as children to the parent in parameter.
+  }else{
+    this->parent = parent;
+  }
+  this->pick_id= s_idGenerator++; //increase by 1 to assure the uniqueness of the generated Ids
+  this->pick_color=ConvertIdToColor(this->pick_id);
   this->geom_manager = NULL;
-  this->requested_size = NULL;
-  this->screen_location = NULL;
-  this->content_rect = NULL;
-  this->s_idGenerator = 0;
+  this->requested_size=(100,100); //set a default size
+  this->screen_location = Rect(Point(0,0),requested_size); //set up default screen location
+  this->content_rect = &screen_location;
+  this->color=ei::default_background_color; //use default background color from ei_types
+  this->border_width=0; //default value = 0.
 }
 /*
   static uint32_t s_idGenerator; ///< Static counter to assure the uniqueness of the generated Ids
@@ -95,4 +102,10 @@ Widget* Widget::getParent() const{
   return this->parent;
 }
 
+color_t Widget::ConvertIdToColor(uint32_t id){
+  //TODO
+};
+uint32_t Widget::ConverColorToId(color_t color){
+  //TODO
+};
 }

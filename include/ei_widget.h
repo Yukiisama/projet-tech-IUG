@@ -74,7 +74,8 @@ public:
     uint32_t getPick_id() const;
 
     Widget *getParent() const;
-
+    color_t ConvertIdToColor(uint32_t id);
+    uint32_t ConverColorToId(color_t color);
 protected:
     widgetclass_name_t name; ///< The string name of this class of widget.
 
@@ -92,6 +93,9 @@ protected:
     Size  requested_size;  ///< Size requested by the widget (big enough for its label, for example), or by the programmer. This can be different than its screen size defined by the placer.
     Rect  screen_location; ///< Position and size of the widget expressed in the root window reference.
     Rect* content_rect;    ///< Where to place children, when this widget is used as a container. By defaults, points to the screen_location.
+    // common variables for sub class
+    color_t color;
+    int border_width;
 };
 
 
@@ -173,6 +177,16 @@ public:
                     surface_t*      img,
                     Rect**          img_rect,
                     anchor_t*       img_anchor);
+    //private variables that belongs to frame class
+    private:
+        relief_t relief;
+        char* text;
+        font_t text_font;
+        color_t text_color;
+        anchor_t text_anchor;
+        surface_t * img;
+        Rect* img_rect;
+        anchor_t img_anchor;
 };
 
 

@@ -5,9 +5,16 @@
 
 namespace ei {
 
-    void Frame::draw (surface_t surface,
-                   surface_t pick_surface,
-                   Rect*     clipper){
+    Frame::Frame(Widget *parent):Widget("frame",parent){
+
+
+    }
+
+    Frame::~Frame();
+    void Frame::draw(surface_t surface,
+                    surface_t pick_surface,
+                    Rect *clipper)
+    {
     }
 
     /**
