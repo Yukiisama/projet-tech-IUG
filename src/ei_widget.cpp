@@ -21,9 +21,9 @@ Widget::Widget(const widgetclass_name_t& class_name, Widget* parent){
   this->name = class_name;
   if(parent){
     this->parent=parent;
-    this->children.push_back(this); //add this widget as children to the parent in parameter.
+    this->parent->children.push_back(this); //add this widget as children to the parent in parameter.
   }else{
-    this->parent = parent;
+    this->parent = nullptr;
   }
   this->pick_id= s_idGenerator++; //increase by 1 to assure the uniqueness of the generated Ids
   this->pick_color=ConvertIdToColor(this->pick_id);
@@ -84,13 +84,32 @@ virtual void Widget::geomnotify (Rect rect){
     fprintf(stderr,"Error occured for Widget::geomnotify - rect is NULL\n");
     exit(EXIT_FAILURE);
   }
-  this->screen_location.top_left.x = rect.top_left.x;
-  this->screen_location.top_left.y = rect.top_left.y;
-  this->screen_location.size.width = rect.size.width;
-  this->screen_location.size.height = rect.size.height;
+  this->screen_location.size=rect.size;
+  this->screen_location.top_left=rect.top_left;
 }
 
 Widget* Widget::pick(uint32_t id){
+  //nullptr is returned if id is not belong to the existing widget id.
+  if(id <0 || id>this->s_idGenerator){
+    return nullptr; 
+  }
+  //case where id is equals to current widget's id.
+  if(id==this->pick_id){
+    return this;  //return current widget;
+  }else{
+    //if there are no children, go back to parent and pick id.
+    if(this->children.empty){
+      return this->parent->pick(id);
+    }else{
+      for(std::list<Widget *>::iterator it = children.begin();it != children.end(); ++it){
+        if(*it->getPick_id()==id){
+
+        }
+      }
+    }
+
+  }
+  
   this->pick_id = id;
   return this->parent;
 }
