@@ -120,7 +120,7 @@ typedef std::function<bool_t(Widget*,Event*,void*)> ei_callback_t;
 class Frame : public Widget
 {
 public:
-
+    Frame();
     Frame(Widget* parent);
 
     virtual ~Frame();
