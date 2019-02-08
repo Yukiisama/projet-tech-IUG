@@ -45,6 +45,7 @@ Widget::Widget(const widgetclass_name_t& class_name, Widget* parent){
  *          Destroys all its descendants.
  */
  Widget::~Widget(){
+
  }
 
 /**
@@ -79,11 +80,7 @@ void Widget::draw (surface_t surface, surface_t pick_surface, Rect* clipper){
  * @param   rect        The new rectangular screen location of the widget
  *                      (i.e., = widget->screen_location).
  */
-virtual void Widget::geomnotify (Rect rect){
-  if(rect == NULL){
-    fprintf(stderr,"Error occured for Widget::geomnotify - rect is NULL\n");
-    exit(EXIT_FAILURE);
-  }
+void Widget::geomnotify (Rect rect){
   this->screen_location.size=rect.size;
   this->screen_location.top_left=rect.top_left;
 }
@@ -97,21 +94,14 @@ Widget* Widget::pick(uint32_t id){
   if(id==this->pick_id){
     return this;  //return current widget;
   }else{
-    //if there are no children, go back to parent and pick id.
-    if(this->children.empty){
-      return this->parent->pick(id);
-    }else{
-      for(std::list<Widget *>::iterator it = children.begin();it != children.end(); ++it){
-        if(*it->getPick_id()==id){
-
-        }
-      }
+    for (std::list<Widget *>::iterator it = children.begin(); it != children.end(); ++it)
+    {
+      if ((*it)->getPick_id() == id) return *(it);
+      Widget *res = (*it)->pick(id); //recursive
+      if(res->pick_id==id) return res;
     }
-
+    return nullptr;
   }
-  
-  this->pick_id = id;
-  return this->parent;
 }
 uint32_t Widget::getPick_id() const{
   return this->pick_id;

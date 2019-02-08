@@ -1,5 +1,5 @@
 #include "ei_event.h"
-
+#include "ei_eventmanager.h"
 namespace ei {
 
     /**
@@ -14,11 +14,12 @@ namespace ei {
      * @param	callback	The callback (i.e. the function to call).
      * @param	user_param	A user parameter that will be passed to the callback when it is called.
      */
-    void EventManager::bind (ei_eventtype_t eventtype,
+    void EventManager::bind(ei_eventtype_t eventtype,
                Widget*        widget,
                tag_t          tag,
                ei_callback_t  callback,
                void*          user_param){
+
     }
 
     /**
@@ -28,7 +29,7 @@ namespace ei {
      *			All parameters must have the same value as when
      *          \ref ei::EventManager::bind was called to create the binding.
      */
-    void EventManager::unbind (ei_eventtype_t eventtype,
+    void EventManager::unbind(ei_eventtype_t eventtype,
                  Widget*        widget,
                  tag_t          tag,
                  ei_callback_t  callback,
