@@ -5,14 +5,23 @@
 
 
 namespace ei {
+
+///modif///
+  GeometryManager::GeometryManager(){
+    return;
+  }
+ ///modif///
+ GeometryManager::~GeometryManager(){
+ }
+
     bool  GeometryManager::is_placer(){
 		return placer;
 	 }
-     
+
 	 void GeometryManager::set_placer(bool state){
 		placer = state;
 	 }
-     
+
      Widget * GeometryManager::get_widget(){
          return widget;
      }
@@ -73,7 +82,7 @@ namespace ei {
          return rel_width;
      }
 	 void GeometryManager::set_rel_width(float new_rel_width){
-         rel_width = new_rel_width; 
+         rel_width = new_rel_width;
      }
 
      float GeometryManager::get_rel_height(){

@@ -11,7 +11,7 @@ set(VERSION_MINOR   0   CACHE STRING "Project minor version number.")
 set(VERSION_PATCH   1   CACHE STRING "Project patch version number.")
 mark_as_advanced(VERSION_MAJOR VERSION_MINOR VERSION_PATCH)
 
-set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake) 
+set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
 if(MSVC)
 	message("Please install Allegro 5.2 with Nuget (https://wiki.allegro.cc/index.php?title=Windows,_Visual_Studio_2015_and_Nuget_Allegro_5)"
@@ -28,7 +28,7 @@ endif()
 
 add_definitions(-DDATA_DIR="${PROJECT_SOURCE_DIR}/data/")
 
-include(cmake/add_catch_tests.cmake) 
+include(cmake/add_catch_tests.cmake)
 
 if(APPLE)
 	link_directories("${PROJECT_SOURCE_DIR}/lib/_osx")
@@ -64,6 +64,7 @@ set(EI_SRC
         src/ei_button.cpp
         src/ei_frame.cpp
         src/ei_toplevel.cpp
+				src/ei_placer.cpp
         )
 add_library(ei ${EI_SRC})
 

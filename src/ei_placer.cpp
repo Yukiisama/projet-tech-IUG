@@ -5,8 +5,11 @@
 #include "ei_widget.h"
 using namespace std;
 namespace ei {
-	
+
+///modif///
 	Placer::Placer(){
+		return;
+		/*
 		set_placer(true);
         set_widget(NULL);
         set_anchor(NULL);
@@ -17,9 +20,11 @@ namespace ei {
         set_rel_x(NULL);
         set_rel_y(NULL);
         set_rel_width(NULL);
-        set_rel_height(NULL);
+        set_rel_height(NULL);*/
 	}
+Placer::~Placer(){
 
+}
 /**
  * @brief The Placer class
  */
@@ -63,37 +68,37 @@ namespace ei {
                     float*     rel_width,
                     float*     rel_height)
                     {
-                        if (widget == NULL) return;
+                        if (widget == nullptr) return;
                         set_widget(widget);
 
-                        if (anchor != NULL) set_anchor(anchor);
+                        if (anchor != nullptr) set_anchor(anchor);
                         else{
                             anchor_t anc = ei_anc_northwest;
                             set_anchor(&anc);
-                        } 
+                        }
 
-                        if (x != NULL) set_x(*x);
+                        if (x != nullptr) set_x(*x);
                         else set_x(0);
 
-                        if (y != NULL) set_y(y);
+                        if (y != nullptr) set_y(*y);
                         else set_y(0);
 
-                        if (width != NULL) set_width(*width);
+                        if (width != nullptr) set_width(*width);
                         else set_width(0);
 
-                        if (height != NULL) set_height(*height);
+                        if (height != nullptr) set_height(*height);
                         else set_height(0);
 
-                        if (rel_x != NULL) set_rel_x(*rel_x);
+                        if (rel_x != nullptr) set_rel_x(*rel_x);
                         else set_rel_x(0.0);
 
-                        if (rel_y != NULL) set_rel_y(*rel_y);
+                        if (rel_y != nullptr) set_rel_y(*rel_y);
                         else set_rel_y(0.0);
 
-                        if (rel_width != NULL) set_rel_width(*rel_width);
+                        if (rel_width != nullptr) set_rel_width(*rel_width);
                         else set_rel_width(0.0);
 
-                        if (rel_height != NULL) set_rel_height(*rel_height);
+                        if (rel_height != nullptr) set_rel_height(*rel_height);
                         else set_rel_height(0.0);
                     }
 
@@ -106,5 +111,3 @@ namespace ei {
     }
 
 }
-
-

@@ -17,6 +17,12 @@ namespace ei{
  * @param   parent      A pointer to the parent widget. Cannot be NULL except for the root widget.
  */
 
+ uint32_t Widget::s_idGenerator = 0;
+
+Widget::Widget(){
+  return;
+}
+
 Widget::Widget(const widgetclass_name_t& class_name, Widget* parent){
   this->name = class_name;
   if(parent){
@@ -25,7 +31,7 @@ Widget::Widget(const widgetclass_name_t& class_name, Widget* parent){
   }else{
     this->parent = nullptr;
   }
-  this->pick_id= s_idGenerator++; //increase by 1 to assure the uniqueness of the generated Ids
+  s_idGenerator++; //increase by 1 to assure the uniqueness of the generated Ids
   this->pick_color=ConvertIdToColor(this->pick_id);
   this->geom_manager = NULL;
   this->requested_size=(100,100); //set a default size
@@ -88,7 +94,7 @@ void Widget::geomnotify (Rect rect){
 Widget* Widget::pick(uint32_t id){
   //nullptr is returned if id is not belong to the existing widget id.
   if(id <0 || id>this->s_idGenerator){
-    return nullptr; 
+    return nullptr;
   }
   //case where id is equals to current widget's id.
   if(id==this->pick_id){
