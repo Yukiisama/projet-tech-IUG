@@ -3,20 +3,21 @@
 namespace ei
 {
 
-    Bouton::Button(Widget *parent) : Widget("Bouton", parent)
-    {
+    Button::Button(Widget *parent) : Widget("Button", parent){
+
+    }
 
 
-    Bouton::~Button()
+    Button::~Button()
     {
 
     }
 
-    void Bouton::draw(surface_t surface,
+    void Button::draw(surface_t surface,
                       surface_t pick_surface,
                       Rect *clipper)
     {
-        
+
     }
 
     /**

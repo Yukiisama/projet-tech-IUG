@@ -98,8 +98,8 @@ namespace ei {
      *              at this location (except for the root widget).
      */
     Widget* Application::widget_pick (const Point& where){
-      if((where.x < 0 || where.x > this->root_window.size.width)
-      || (where.y < 0 || where.y > this->root_window.size.height)){
+      if((where.x() < 0 || where.x() > hw_surface_get_size(this->root_window).width())
+      || (where.y() < 0 || where.y() > hw_surface_get_size(this->root_window).height())){
           fprintf(stderr,"Error occured for Application::widget_pick - param where is out the root_window\n");
           exit(EXIT_FAILURE);
       }
@@ -108,7 +108,7 @@ namespace ei {
         return nullptr;
       }
       uint32_t ID = ColorToUInt(color);
-      return Widget::pick(ID);
+      return this->widget_root->pick(ID);
     }
 
 }

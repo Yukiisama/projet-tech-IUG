@@ -1,7 +1,8 @@
 #include "ei_types.h"
 #include "ei_event.h"
 #include "ei_widget.h"
-
+#include "ei_geometrymanager.h"
+#include "hw_interface.h"
 
 namespace ei {
 
@@ -22,7 +23,7 @@ namespace ei {
     }
 
     Frame::~Frame(){
-        
+
     }
     void Frame::draw(surface_t surface,
                     surface_t pick_surface,
@@ -79,7 +80,7 @@ namespace ei {
                     surface_t*      img,
                     Rect**          img_rect,
                     anchor_t*       img_anchor){
-        
+
         //Error managment
         if(img && (!img_rect || !img_anchor)) return;
         if (text && (!text_font || !text_color || !text_anchor)) return;
@@ -93,12 +94,12 @@ namespace ei {
             hw_text_compute_size(*text, *text_font, this->requested_size);
         else
             this->requested_size = *requested_size;
-        
-        //The others (arg exists) ? assign arg : assign default; 
+
+        //The others (arg exists) ? assign arg : assign default;
         (relief) ? this->relief = *relief : this->relief = ei_relief_none;
         (text) ? this->text = *text : this->text = nullptr;
         (text_font) ? this->text_font = *text_font : this->text_font = default_font;
-        (text_color) ? this->text_color = *text_color : this->text_color = font_default_color; 
+        (text_color) ? this->text_color = *text_color : this->text_color = font_default_color;
         (img) ? this->img = img : this->img = nullptr;
         (img_rect) ? this->img_rect = *img_rect : this->img_rect = nullptr;
         (img_anchor) ? this->img_anchor = *img_anchor : this->img_anchor = ei_anc_center;
