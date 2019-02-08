@@ -69,7 +69,7 @@ public:
      *                      (i.e., = widget->screen_location).
      */
     virtual void geomnotify (Rect rect);
-
+    //From the root find the widget that pick_id is equal to id.
     Widget* pick(uint32_t id);
     uint32_t getPick_id() const;
 

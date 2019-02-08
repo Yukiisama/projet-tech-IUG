@@ -10,7 +10,9 @@ namespace ei {
 
     }
 
-    Frame::~Frame();
+    Frame::~Frame(){
+        
+    }
     void Frame::draw(surface_t surface,
                     surface_t pick_surface,
                     Rect *clipper)
