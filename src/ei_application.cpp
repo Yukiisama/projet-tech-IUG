@@ -20,13 +20,14 @@ namespace ei {
      * @param main_window_size  the size of the root window of the application.
      */
     Application::Application(Size* main_window_size){
-      if(main_window_size == NULL){
-        fprintf(stderr,"Error occured for Application::Application - main_window_size is NULL\n");
+      if(main_window_size == nullptr){
+        fprintf(stderr,"Error occured for Application::Application - main_window_size is nullptr\n");
         exit(EXIT_FAILURE);
       }
       hw_init();
       this->root_window = hw_create_window(main_window_size, EI_FALSE);
-      this->root_widget = Widget("Frame", NULL);
+      this->offscreen = hw_surface_create(this->root_window, main_window_size);
+      this->root_widget = Frame(nullptr);
     }
 
     /**
@@ -36,6 +37,8 @@ namespace ei {
     Application::~Application(){
       hw_surface_unlock(this->root_window);
       hw_surface_free(this->root_window);
+      hw_surface_free(this->offscreen);
+      ~Frame();
       hw_quit();
     }
 
@@ -93,7 +96,7 @@ namespace ei {
      *
      * @param   where       The location on screen, expressed in the root window coordinates.
      *
-     * @return      The top-most widget at this location, or NULL if there is no widget
+     * @return      The top-most widget at this location, or nullptr if there is no widget
      *              at this location (except for the root widget).
      */
     Widget* Application::widget_pick (const Point& where){
@@ -104,7 +107,7 @@ namespace ei {
       }
       color_t color = hw_get_pixel(this->root_window, where);
       if(color.red == 0 && color.green == 0 && color.blue == 0 && color.alpha == 0){
-        return NULL;
+        return nullptr;
       }
       uint32_t ID = ColorToUInt(color);
       return Widget::pick(ID);
