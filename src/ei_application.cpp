@@ -27,7 +27,7 @@ namespace ei {
       hw_init();
       this->root_window = hw_create_window(main_window_size, EI_FALSE);
       this->offscreen = hw_surface_create(this->root_window, main_window_size);
-      this->root_widget = Frame(nullptr);
+      this->widget_root = new Frame(nullptr);
     }
 
     /**
@@ -38,7 +38,7 @@ namespace ei {
       hw_surface_unlock(this->root_window);
       hw_surface_free(this->root_window);
       hw_surface_free(this->offscreen);
-      ~Frame();
+      delete widget_root;
       hw_quit();
     }
 
@@ -66,9 +66,7 @@ namespace ei {
      *    when pressing the "Escape" key).
      */
     void Application::quit_request(){
-        if(event.param.display.closed == EI_TRUE || event.param.key.key_sym == 59){
-          Application::~Application();
-        }
+        delete this;
     }
 
     /**
@@ -78,7 +76,7 @@ namespace ei {
      * @return      The root widget.
      */
     Frame* Application::root_widget(){
-        return this->root_widget;
+        return widget_root;
     }
 
     /**
