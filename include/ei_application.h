@@ -100,7 +100,8 @@ public:
 private:
     static Application *instance;
     surface_t root_window;
-    Widget* root_widget;
+    surface_t offscreen;
+    Frame* root_widget;
 };
 
 }
