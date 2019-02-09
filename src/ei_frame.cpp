@@ -96,11 +96,11 @@ namespace ei {
         //The others (arg exists) ? assign arg : assign default;
         (relief) ? this->relief = *relief : this->relief = ei_relief_none;
         (text) ? this->text = text : this->text = nullptr;
-        (text_font) ? this->text_font = *text_font : this->text_font = ei::default_font;
-        (text_color) ? this->text_color = *text_color : this->text_color = ei::font_default_color;
+        (text_font) ? this->text_font = *text_font : this->text_font = default_font;
+        (text_color) ? this->text_color = *text_color : this->text_color = font_default_color;
         (img) ? this->img = img : this->img = nullptr;
         (img_rect) ? this->img_rect = *img_rect : this->img_rect = nullptr;
         (img_anchor) ? this->img_anchor = img_anchor : this->img_anchor = img_anchor;
-        printf("ok\n");
+
     }
 }
