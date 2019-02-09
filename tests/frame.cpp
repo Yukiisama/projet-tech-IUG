@@ -43,8 +43,8 @@ int ei_main(int argc, char** argv)
     app->run();
 
     /* We just exited from the main loop. Terminate the application (cleanup). */
-    delete app;
-    delete p;
+    //delete app;
+    //delete p;
 
     return (EXIT_SUCCESS);
 }

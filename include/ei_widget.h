@@ -180,13 +180,13 @@ public:
     //private variables that belongs to frame class
     private:
         relief_t relief;
-        char* text;
+        char** text;
         font_t text_font;
         color_t text_color;
         anchor_t text_anchor;
         surface_t * img;
         Rect* img_rect;
-        anchor_t img_anchor;
+        anchor_t* img_anchor;
 };
 
 
