@@ -9,7 +9,7 @@ namespace ei {
 ///modif///
 	Placer::Placer(){
 		return;
-		/*
+		
 		set_placer(true);
         set_widget(NULL);
         set_anchor(NULL);
@@ -20,7 +20,7 @@ namespace ei {
         set_rel_x(NULL);
         set_rel_y(NULL);
         set_rel_width(NULL);
-        set_rel_height(NULL);*/
+        set_rel_height(NULL);
 	}
 Placer::~Placer(){
 

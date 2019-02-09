@@ -30,7 +30,7 @@ int ei_main(int argc, char** argv)
     /* Create the application and change the color of the background. */
     Application* app = new Application(&screen_size);
     app->root_widget()->configure(&screen_size, &root_bgcol, NULL, NULL, NULL, NULL,
-                                  NULL, NULL, NULL, NULL, NULL);
+                                NULL, NULL, NULL, NULL, NULL);
 
     /* Create, configure and place the frame on screen. */
     Frame* frame = new Frame(app->root_widget());
@@ -43,8 +43,8 @@ int ei_main(int argc, char** argv)
     app->run();
 
     /* We just exited from the main loop. Terminate the application (cleanup). */
-    delete app;
-    delete p;
+    //delete app;
+    //delete p;
 
     return (EXIT_SUCCESS);
 }

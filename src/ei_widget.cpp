@@ -29,9 +29,9 @@ Widget::Widget(const widgetclass_name_t& class_name, Widget* parent){
     this->parent=parent;
     this->parent->children.push_back(this); //add this widget as children to the parent in parameter.
   }else{
-    this->parent = nullptr;
+    this->parent = NULL;
   }
-  s_idGenerator++; //increase by 1 to assure the uniqueness of the generated Ids
+  this->pick_id=s_idGenerator++; //increase by 1 to assure the uniqueness of the generated Ids
   this->pick_color=ConvertIdToColor(this->pick_id);
   this->geom_manager = NULL;
   this->requested_size=(100,100); //set a default size
@@ -40,11 +40,7 @@ Widget::Widget(const widgetclass_name_t& class_name, Widget* parent){
   this->color=ei::default_background_color; //use default background color from ei_types
   this->border_width=0; //default value = 0.
 }
-/*
-  static uint32_t s_idGenerator; ///< Static counter to assure the uniqueness of the generated Ids
-  uint32_t     pick_id;    ///< Id of this widget in the picking offscreen.
-  color_t   pick_color;    ///< pick_id encoded as a color.
-*/
+
 
 /**
  * @brief   Destroys the widget. Removes it from screen if it is managed by a geometry manager.
@@ -119,8 +115,25 @@ Widget* Widget::getParent() const{
 
 color_t Widget::ConvertIdToColor(uint32_t id){
   //TODO
-};
+}
 uint32_t Widget::ConverColorToId(color_t color){
   //TODO
-};
+}
+
+void Widget::configure(Size * requested_size, const color_t * color, int * border_width){
+  //assign requested_size if it's not nullptr else this->requested_size stay unchange.
+  
+  this->requested_size = (requested_size) ? *requested_size : this->requested_size;
+  
+  if(color){
+    this->color.red = color->red;
+    this->color.green = color->green;
+    this->color.blue = color->blue;
+    this->color.alpha = color->alpha;
+  }
+  
+  if(border_width && *border_width>0){
+    this->border_width=*border_width;
+  }
+}
 }

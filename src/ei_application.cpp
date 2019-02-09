@@ -4,6 +4,7 @@
 #include "ei_application.h"
 #include "hw_interface.h"
 namespace ei {
+  Application *Application::instance = nullptr;
 
   uint32_t ColorToUInt(color_t color){
     return (uint32_t)((color.alpha << 24) | (color.red << 16) |
@@ -27,7 +28,10 @@ namespace ei {
       hw_init();
       this->root_window = hw_create_window(main_window_size, EI_FALSE);
       this->offscreen = hw_surface_create(this->root_window, main_window_size);
-      this->widget_root = new Frame(nullptr);
+      this->widget_root = new Frame(NULL);
+      this->instance = this;
+      color_t white = {225, 225, 225, 225};
+      this->widget_root->configure(main_window_size,&white,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
     }
 
     /**
@@ -103,11 +107,12 @@ namespace ei {
           fprintf(stderr,"Error occured for Application::widget_pick - param where is out the root_window\n");
           exit(EXIT_FAILURE);
       }
-      color_t color = hw_get_pixel(this->root_window, where);
+      color_t color = hw_get_pixel(this->offscreen, where);
       if(color.red == 0 && color.green == 0 && color.blue == 0 && color.alpha == 0){
         return nullptr;
       }
       uint32_t ID = ColorToUInt(color);
+      //printf("%lu\n",(unsigned long) ID);
       return this->widget_root->pick(ID);
     }
 

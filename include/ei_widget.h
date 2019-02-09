@@ -76,6 +76,7 @@ public:
     Widget *getParent() const;
     color_t ConvertIdToColor(uint32_t id);
     uint32_t ConverColorToId(color_t color);
+    void configure(Size * requested_size,const color_t * color,int * border_width);
 protected:
     widgetclass_name_t name; ///< The string name of this class of widget.
 
@@ -180,13 +181,13 @@ public:
     //private variables that belongs to frame class
     private:
         relief_t relief;
-        char* text;
+        char** text;
         font_t text_font;
         color_t text_color;
         anchor_t text_anchor;
         surface_t * img;
         Rect* img_rect;
-        anchor_t img_anchor;
+        anchor_t * img_anchor;
 };
 
 
