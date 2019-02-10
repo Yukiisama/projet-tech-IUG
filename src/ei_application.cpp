@@ -2,6 +2,7 @@
 #include "ei_event.h"
 #include "ei_widget.h"
 #include "ei_application.h"
+#include "ei_geometrymanager.h"
 #include "hw_interface.h"
 namespace ei {
   Application *Application::instance = nullptr;
@@ -51,6 +52,17 @@ namespace ei {
      *    \ref app_quit_request is called.
      */
     void Application::run(){
+		running = true;
+		while(running){
+			
+			Event* ev = hw_event_wait_next();
+			if(ev->type == ei_ev_keydown)
+				quit_request();
+			widget_root->draw(root_window,NULL,NULL);
+			hw_surface_update_rects(to_clear_rectangle_list);
+			//next step is to clear the rectangle list.
+				to_clear_rectangle_list.clear();
+		}	
         return;
     }
 
@@ -70,7 +82,8 @@ namespace ei {
      *    when pressing the "Escape" key).
      */
     void Application::quit_request(){
-        delete this;
+        running = false;
+        //delete this;
     }
 
     /**

@@ -102,6 +102,8 @@ private:
     surface_t root_window;
     surface_t offscreen;
     Frame* widget_root;
+    linked_rect_t   to_clear_rectangle_list;
+    bool running = false;
 };
 
 }
