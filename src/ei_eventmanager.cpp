@@ -1,7 +1,7 @@
 #include "ei_event.h"
 #include "ei_eventmanager.h"
 namespace ei {
-
+    EventManager::EventManager(){}
     /**
      * \brief	Binds a callback to an event type and a widget or a tag.
      *

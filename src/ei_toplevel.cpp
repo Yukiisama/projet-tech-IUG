@@ -1,10 +1,22 @@
 #include "ei_draw.h"
 #include "ei_widget.h"
+#include "ei_types.h"
+#include "ei_event.h"
+#include "ei_geometrymanager.h"
+#include "hw_interface.h"
 #include <functional>
 
 namespace ei {
 
     Toplevel::Toplevel(Widget *parent) : Widget("Toplevel", parent){
+      requested_size->width() = 320;
+      requested_size->height() = 240;
+      *border_width = 4;
+      *title = "Toplevel";
+      *closable = EI_TRUE;
+      *resizable = ei_axis_both;
+      min_size->width() = 160;
+      min_size->height() = 120;
     }
 
     void Widget::draw (surface_t surface,
@@ -34,13 +46,36 @@ namespace ei {
     void configure (Size*           requested_size,
                     color_t*        color,
                     int*            border_width,
-                    const char**    title,
+                    const char**          title,
                     bool_t*         closable,
                     axis_set_t*     resizable,
                     Size*           min_size){
-                        return;
-                    }
-
+        //Widget::configure(requested_size,color);
+        if(border_width == nullptr){
+            *border_width = 4;
+        }
+        if(requested_size == nullptr){
+            requested_size->width() = 320;
+            requested_size->height() = 240;
+        }
+        const char * t = "Toplevel";
+        (title) ? title = title : title=&t;
+        if(closable == nullptr){
+            *closable = EI_TRUE;
+        }
+        if(resizable == nullptr){
+            *resizable = ei_axis_both;
+        }
+        if(min_size == nullptr){
+            min_size->width() = 320;
+            min_size->height() = 240;
+        }
+        border_width = border_width;
+        requested_size = requested_size;
+        closable = closable;
+        resizable = resizable;
+        min_size = min_size;
+    }
 
 
 

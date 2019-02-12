@@ -92,7 +92,7 @@ namespace ei {
         else
             this->requested_size = *requested_size;
         */
-        Widget::configure(requested_size,color,border_width);
+        Widget::configure(requested_size,color);
         //The others (arg exists) ? assign arg : assign default;
         (relief) ? this->relief = *relief : this->relief = ei_relief_none;
         (text) ? this->text = text : this->text = nullptr;
@@ -100,7 +100,8 @@ namespace ei {
         (text_color) ? this->text_color = *text_color : this->text_color = font_default_color;
         (img) ? this->img = img : this->img = nullptr;
         (img_rect) ? this->img_rect = *img_rect : this->img_rect = nullptr;
-        (img_anchor) ? this->img_anchor = img_anchor : this->img_anchor = img_anchor;
+        if(img_anchor)this->img_anchor = img_anchor;
+        //else *img_anchor = ei_anc_center; //[TO DEBUG]
 
     }
 }

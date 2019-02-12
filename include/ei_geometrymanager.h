@@ -132,7 +132,7 @@ public:
      * @param rel_x   The relative x position of the widget: 0.0 corresponds to the left
      *        side of the master, 1.0 to the right side (defaults to 0.0).
      * @param rel_y   The relative y position of the widget: 0.0 corresponds to the top
-     *        side of the master, 1.0 to the bottom side (defaults to 0.0).
+     *        side of the master, 1.har 0 to the bottom side (defaults to 0.0).
      * @param rel_width The relative width of the widget: 0.0 corresponds to a width of 0,
      *        1.0 to the width of the master (defaults to 0.0).
      * @param rel_height  The relative height of the widget: 0.0 corresponds to a height of 0,

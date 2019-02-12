@@ -8,19 +8,19 @@ namespace ei {
 
 ///modif///
 	Placer::Placer(){
-		return;
+        return;
 		
 		set_placer(true);
         set_widget(NULL);
         set_anchor(NULL);
-        set_x(NULL);
-        set_y(NULL);
-        set_width(NULL);
-        set_height(NULL);
-        set_rel_x(NULL);
-        set_rel_y(NULL);
-        set_rel_width(NULL);
-        set_rel_height(NULL);
+        set_x((int)NULL);
+        set_y((int)NULL);
+        set_width((float)NULL);
+        set_height((float)NULL);
+        set_rel_x((float)NULL);
+        set_rel_y((float)NULL);
+        set_rel_width((float)NULL);
+        set_rel_height((float)NULL);
 	}
 Placer::~Placer(){
 

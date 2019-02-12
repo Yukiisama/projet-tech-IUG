@@ -76,7 +76,7 @@ public:
     Widget *getParent() const;
     color_t ConvertIdToColor(uint32_t id);
     uint32_t ConverColorToId(color_t color);
-    void configure(Size * requested_size,const color_t * color,int * border_width);
+    void configure(Size * requested_size, const color_t * color);
 protected:
     widgetclass_name_t name; ///< The string name of this class of widget.
 
@@ -133,7 +133,8 @@ public:
     /**
      * @brief   Configures the attributes of widgets of the class "frame".
      *
-     *      Parameters obey the "default" protocol: if a parameter is "NULL" and it has never
+     *      Parameters obey the "default" pr
+        color = default_background_color;otocol: if a parameter is "NULL" and it has never
      *      been defined before, then a default value should be used (default values are
      *      specified for each parameter). If the parameter is "NULL" but was defined on a
      *      previous call, then its value must not be changed.
@@ -180,14 +181,14 @@ public:
                     anchor_t*       img_anchor);
     //private variables that belongs to frame class
     private:
-        relief_t relief;
-        char** text;
-        font_t text_font;
-        color_t text_color;
-        anchor_t text_anchor;
+        relief_t    relief;
+        char**      text;
+        font_t      text_font;
+        color_t     text_color;
+        anchor_t    text_anchor;
         surface_t * img;
-        Rect* img_rect;
-        anchor_t * img_anchor;
+        Rect*       img_rect;
+        anchor_t *  img_anchor;
 };
 
 
@@ -221,13 +222,23 @@ public:
                     int*             border_width,
                     int*             corner_radius,
                     relief_t*        relief,
-                    const char **    text,
+                    const char             **text,
                     font_t*          text_font,
                     color_t*         text_color,
                     anchor_t*        text_anchor,
                     surface_t*       img,
                     Rect**           img_rect,
                     anchor_t*        img_anchor);
+private:
+    int*        corner_radius;
+    relief_t    relief;
+    const char**      text;
+    font_t      text_font;
+    color_t     text_color;
+    anchor_t    text_anchor;
+    surface_t * img;
+    Rect*       img_rect;
+    anchor_t *  img_anchor;
 };
 
 
@@ -268,6 +279,14 @@ public:
                     bool_t*         closable,
                     axis_set_t*     resizable,
                     Size*           min_size);
+private:
+    Size*          requested_size;
+    color_t*        color;
+    int*            border_width;
+    const char**    title;
+    bool_t*         closable;
+    axis_set_t*     resizable;
+    Size*           min_size;
 };
 
 }

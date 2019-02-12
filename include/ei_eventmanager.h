@@ -28,6 +28,7 @@ public:
         static EventManager instance;
         return instance;
     }
+
 private:
     EventManager();
 

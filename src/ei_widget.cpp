@@ -34,7 +34,7 @@ Widget::Widget(const widgetclass_name_t& class_name, Widget* parent){
   this->pick_id=s_idGenerator++; //increase by 1 to assure the uniqueness of the generated Ids
   this->pick_color=ConvertIdToColor(this->pick_id);
   this->geom_manager = NULL;
-  this->requested_size=(100,100); //set a default size
+  this->requested_size=(0,0); //set a default size
   this->screen_location = Rect(Point(0,0),requested_size); //set up default screen location
   this->content_rect = &screen_location;
   this->color=ei::default_background_color; //use default background color from ei_types
@@ -120,7 +120,7 @@ uint32_t Widget::ConverColorToId(color_t color){
   //TODO
 }
 
-void Widget::configure(Size * requested_size, const color_t * color, int * border_width){
+void Widget::configure(Size * requested_size, const color_t * color){
   //assign requested_size if it's not nullptr else this->requested_size stay unchange.
   
   this->requested_size = (requested_size) ? *requested_size : this->requested_size;
@@ -130,10 +130,6 @@ void Widget::configure(Size * requested_size, const color_t * color, int * borde
     this->color.green = color->green;
     this->color.blue = color->blue;
     this->color.alpha = color->alpha;
-  }
-  
-  if(border_width && *border_width>0){
-    this->border_width=*border_width;
   }
 }
 }
