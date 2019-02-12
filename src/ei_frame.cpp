@@ -14,11 +14,11 @@ namespace ei {
         text_anchor=ei_anc_center;
         img=nullptr;
         img_rect=nullptr;
-        img_anchor= nullptr;
+        img_anchor = new anchor_t{ei_anc_center};
     }
 
     Frame::~Frame(){
-
+        //delete this->img_anchor;
     }
     void Frame::draw(surface_t surface,
                     surface_t pick_surface,
@@ -101,7 +101,5 @@ namespace ei {
         (img) ? this->img = img : this->img = nullptr;
         (img_rect) ? this->img_rect = *img_rect : this->img_rect = nullptr;
         if(img_anchor)this->img_anchor = img_anchor;
-        //else *img_anchor = ei_anc_center; //[TO DEBUG]
-
     }
 }

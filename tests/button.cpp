@@ -98,8 +98,8 @@ int ei_main(int argc, char** argv)
     app->run();
 
     /* We just exited from the main loop. Terminate the application (cleanup). */
-    EventManager::getInstance().unbind(ei_ev_keydown, NULL, "all", process_key, app);
-    EventManager::getInstance().unbind(ei_ev_display, NULL, "all", process_display, app);
+    //EventManager::getInstance().unbind(ei_ev_keydown, NULL, "all", process_key, app);
+    //EventManager::getInstance().unbind(ei_ev_display, NULL, "all", process_display, app);
 
     delete app;
     delete p;

@@ -9,7 +9,7 @@ namespace ei
 
     Button::Button(Widget *parent) : Widget("Button", parent){
         border_width = default_button_border_width;
-        *corner_radius = default_button_corner_radius;
+        corner_radius = new int(default_button_corner_radius);// check this variable is free in destructor
         relief=ei_relief_raised;
         text=nullptr;
         text_font=default_font;
@@ -17,7 +17,7 @@ namespace ei
         text_anchor=ei_anc_center;
         img=nullptr;
         img_rect=nullptr;
-        img_anchor= nullptr;
+        img_anchor = new anchor_t{ei_anc_center};
     }
 
 
@@ -72,7 +72,6 @@ namespace ei
         (img) ? this->img = img : this->img = nullptr;
         (img_rect) ? this->img_rect = *img_rect : this->img_rect = nullptr;
         if(img_anchor)this->img_anchor = img_anchor;
-        //else *img_anchor = ei_anc_center;[TO DEBUG]
     }
 
 

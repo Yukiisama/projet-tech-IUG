@@ -40,8 +40,6 @@ namespace ei {
      *    (eventually calls \ref hw_quit).
      */
     Application::~Application(){
-      hw_surface_unlock(this->root_window);
-      hw_surface_free(this->root_window);
       hw_surface_free(this->offscreen);
       delete widget_root;
       hw_quit();
