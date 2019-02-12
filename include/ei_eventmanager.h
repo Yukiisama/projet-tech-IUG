@@ -31,6 +31,19 @@ public:
 private:
     EventManager();
 
+    typedef struct param_callback
+    {
+        /* data */
+        ei_eventtype_t eventtype;
+        Widget *widget;
+        tag_t tag;
+        ei::ei_callback_t callback;
+        void *user_param;
+    } param_callback;
+
+    std::vector<param_callback> vec_callback;
+   
+
 public:
     EventManager(EventManager const&)    = delete;
     void operator=(EventManager const&)  = delete;

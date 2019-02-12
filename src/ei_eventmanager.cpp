@@ -20,6 +20,25 @@ namespace ei {
                ei_callback_t  callback,
                void*          user_param){
 
+        param_callback _callback;
+        _callback.eventtype=eventtype;
+        
+
+        if (widget != nullptr )
+        {
+            _callback.widget = widget;
+            //can't assign null to std::string type
+
+        }
+        else
+        {
+            _callback.tag=tag;
+            _callback.widget= widget;
+        }
+        _callback.callback= callback;
+        _callback.user_param = user_param;
+        //add to the current vector the new callback
+        vec_callback.push_back(_callback);
     }
 
     /**
@@ -34,7 +53,18 @@ namespace ei {
                  tag_t          tag,
                  ei_callback_t  callback,
                  void*          user_param){
+        //run through vector of  callback event and seek if call back exists
+        for (auto it = vec_callback.begin(); it != vec_callback.end();)
+        {
+            
+                // if exist delete where all the paramaters have the same value
+                if (it->widget == widget && it->tag == tag 
+                && it->user_param == user_param && it->eventtype == eventtype)
+                {
+                    it = vec_callback.erase(it);
+                }
+            
+           
+        }
     }
-
-
 }
