@@ -56,7 +56,7 @@ namespace ei {
 			Event* ev = hw_event_wait_next();
 			if(ev->type == ei_ev_keydown)
 				quit_request();
-			widget_root->draw(root_window,NULL,NULL);
+            widget_root->draw(root_window,NULL,NULL);
 			hw_surface_update_rects(to_clear_rectangle_list);
 			//next step is to clear the rectangle list.
 				to_clear_rectangle_list.clear();

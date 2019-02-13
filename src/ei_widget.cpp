@@ -34,7 +34,7 @@ Widget::Widget(const widgetclass_name_t& class_name, Widget* parent){
   this->pick_id=s_idGenerator++; //increase by 1 to assure the uniqueness of the generated Ids
   this->pick_color=ConvertIdToColor(this->pick_id);
   this->geom_manager = NULL;
-  this->requested_size=(0,0); //set a default size
+  this->requested_size=(100,100); //set a default size
   this->screen_location = Rect(Point(0,0),requested_size); //set up default screen location
   this->content_rect = &screen_location;
   this->color=ei::default_background_color; //use default background color from ei_types
