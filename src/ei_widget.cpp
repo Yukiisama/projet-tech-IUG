@@ -114,17 +114,27 @@ Widget* Widget::getParent() const{
 }
 
 color_t Widget::ConvertIdToColor(uint32_t id){
-  //TODO
+
+  color_t color;
+  color.alpha = (unsigned char)(id >> 24);
+  color.red = (unsigned char)(id >> 16);
+  color.green = (unsigned char)(id >> 8);
+  color.blue = (unsigned char)(id >> 0);
+  return color;
+
 }
 uint32_t Widget::ConverColorToId(color_t color){
-  //TODO
+
+  return (uint32_t)((color.alpha << 24) | (color.red << 16) |
+                    (color.green << 8)  | (color.blue << 0));
+
 }
 
 void Widget::configure(Size * requested_size, const color_t * color){
   //assign requested_size if it's not nullptr else this->requested_size stay unchange.
-  
+
   this->requested_size = (requested_size) ? *requested_size : this->requested_size;
-  
+
   if(color){
     this->color.red = color->red;
     this->color.green = color->green;
