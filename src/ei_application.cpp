@@ -52,7 +52,7 @@ namespace ei {
     void Application::run(){
 		running = true;
 		while(running){
-			
+
 			Event* ev = hw_event_wait_next();
 			if(ev->type == ei_ev_keydown)
 				quit_request();
@@ -60,7 +60,7 @@ namespace ei {
 			hw_surface_update_rects(to_clear_rectangle_list);
 			//next step is to clear the rectangle list.
 				to_clear_rectangle_list.clear();
-		}	
+		}
         return;
     }
 
@@ -72,7 +72,11 @@ namespace ei {
      *        A copy is made, so it is safe to release the rectangle on return.
      */
     void Application::invalidate_rect(const Rect &rect){
-        return;
+        if(&rect == nullptr){
+          fprintf(stderr,"Error occured for Application::invalide_rect - rect is nullptr\n");
+          exit(EXIT_FAILURE);
+        }
+        to_clear_rectangle_list.push_back(rect);
     }
 
     /**
