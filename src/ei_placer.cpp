@@ -22,9 +22,10 @@ namespace ei {
         set_rel_width((float)NULL);
         set_rel_height((float)NULL);
 	}
-Placer::~Placer(){
 
+Placer::~Placer(){
 }
+
 /**
  * @brief The Placer class
  */

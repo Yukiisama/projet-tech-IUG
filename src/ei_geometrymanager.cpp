@@ -40,14 +40,15 @@ namespace ei {
          return x;
      }
 	 void GeometryManager::set_x(int new_x){
-         x = new_x;
+         widget->screen_location.top_left.x()=new_x;
      }
 
      int GeometryManager::get_y(){
          return y;
      }
 	 void GeometryManager::set_y(int new_y){
-         y = new_y;
+
+         widget->screen_location.top_left.y()=new_y;
      }
 
      float GeometryManager::get_width(){

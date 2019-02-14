@@ -20,11 +20,48 @@ namespace ei {
     Frame::~Frame(){
         //delete this->img_anchor;
     }
+    /**
+     * \brief   Method that draws the widget.
+     *
+     * @param   surface     Where to draw the widget. The actual location of the widget in the
+     *                      surface is stored in its "screen_location" field.
+     * @param   pick_surface  Offscreen buffer to draw the widget \ref pick_id
+     * @param   clipper     If not NULL, the drawing is restricted within this rectangle
+     *                      (expressed in the surface reference frame).
+     */
     void Frame::draw(surface_t surface,
                     surface_t pick_surface,
                     Rect *clipper)
     {
-     // SEE YA LATER
+
+        if(surface == nullptr){
+          fprintf(stderr,"Error occured for Frame::draw - surface is not valid\n");
+          exit(EXIT_FAILURE);
+        }
+
+        /*if(pick_surface == nullptr){
+          fprintf(stderr,"Error occured for Frame::draw - pick_surface is not vaild\n");
+          exit(EXIT_FAILURE);
+        }*/
+
+        //printf("dkqdfjoqjfqj\n");
+
+        //color_t color_test={123,123,123,255};
+        linked_point_t list_frame;
+        list_frame.push_back(screen_location.top_left);
+        list_frame.push_back(Point(screen_location.top_left.x()+requested_size.width(),
+                                   screen_location.top_left.y()));
+        list_frame.push_back(Point(screen_location.top_left.x()+requested_size.width(),
+                                   screen_location.top_left.y()+requested_size.height()));
+        list_frame.push_back(Point(screen_location.top_left.x(),
+                                   screen_location.top_left.y()+requested_size.height()));
+
+        draw_polygon(surface,list_frame,color,clipper);
+        //draw_polygon(pick_surface,list_frame,pick_color,clipper);
+
+        for(std::list<Widget*>::iterator it = children.begin();it!= children.end();it++){
+            (*it)->draw(surface,pick_surface,clipper);
+        }
     }
 
     /**

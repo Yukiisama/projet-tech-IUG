@@ -77,7 +77,7 @@ public:
     color_t ConvertIdToColor(uint32_t id);
     uint32_t ConverColorToId(color_t color);
     void configure(Size * requested_size, const color_t * color);
-protected:
+public:
     widgetclass_name_t name; ///< The string name of this class of widget.
 
     static uint32_t s_idGenerator; ///< Static counter to assure the uniqueness of the generated Ids
