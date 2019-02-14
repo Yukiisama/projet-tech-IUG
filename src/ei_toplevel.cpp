@@ -19,11 +19,15 @@ namespace ei {
       min_size->height() = 120;
     }
 
+    Toplevel::~Toplevel(){
+
+    }
+
     void Widget::draw (surface_t surface,
-                    surface_t pick_surface,
-                    Rect*     clipper){
-                        return;
-                    }
+                       surface_t pick_surface,
+                       Rect*     clipper){
+        return;
+    }
 
     /**
      * @brief   Configures the attributes of widgets of the class "toplevel".
@@ -43,40 +47,19 @@ namespace ei {
      *                      by the user. Defaults to \ref ei_axis_both.
      * @param   min_size    For resizable widgets, defines the minimum size. Defaults to (160, 120).
      */
-    void configure (Size*           requested_size,
-                    color_t*        color,
-                    int*            border_width,
-                    const char**          title,
-                    bool_t*         closable,
-                    axis_set_t*     resizable,
-                    Size*           min_size){
-        //Widget::configure(requested_size,color);
-        if(border_width == nullptr){
-            *border_width = 4;
-        }
-        if(requested_size == nullptr){
-            requested_size->width() = 320;
-            requested_size->height() = 240;
-        }
-        const char * t = "Toplevel";
-        (title) ? title = title : title=&t;
-        if(closable == nullptr){
-            *closable = EI_TRUE;
-        }
-        if(resizable == nullptr){
-            *resizable = ei_axis_both;
-        }
-        if(min_size == nullptr){
-            min_size->width() = 320;
-            min_size->height() = 240;
-        }
-        border_width = border_width;
-        requested_size = requested_size;
-        closable = closable;
-        resizable = resizable;
-        min_size = min_size;
+    void Toplevel::configure (Size*           requested_size,
+                              color_t*        color,
+                              int*            border_width,
+                              const char**          title,
+                              bool_t*         closable,
+                              axis_set_t*     resizable,
+                              Size*           min_size){
+        Widget::configure(requested_size,color);
+        if(title) this->title = title;
+        if(border_width) this->border_width = border_width;
+        if(requested_size) this->requested_size = requested_size;
+        if(closable) this->closable = closable;
+        if(resizable) this->resizable = resizable;
+        if(min_size) this->min_size = min_size;
     }
-
-
-
 }

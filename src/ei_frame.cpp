@@ -101,7 +101,7 @@ namespace ei {
      *                      when the size of the widget is bigger than the size of the image.
      *                      Defaults to \ref ei_anc_center.
      */
-    void Frame::configure (Size*           requested_size,
+    /*void Frame::configure (Size*           requested_size,
                     const color_t*  color,
                     int*            border_width,
                     relief_t*       relief,
@@ -128,7 +128,7 @@ namespace ei {
             hw_text_compute_size(*text, *text_font, this->requested_size);
         else
             this->requested_size = *requested_size;
-        */
+
         Widget::configure(requested_size,color);
         //The others (arg exists) ? assign arg : assign default;
         (relief) ? this->relief = *relief : this->relief = ei_relief_none;
@@ -138,5 +138,43 @@ namespace ei {
         (img) ? this->img = img : this->img = nullptr;
         (img_rect) ? this->img_rect = *img_rect : this->img_rect = nullptr;
         if(img_anchor)this->img_anchor = img_anchor;
-    }
+    }*/
+    void Frame::configure (Size*           requested_size,
+                        const color_t*  color,
+                        int*            border_width,
+                        relief_t*       relief,
+                        char**          text,
+                        font_t*         text_font,
+                        color_t*        text_color,
+                        anchor_t*       text_anchor,
+                        surface_t*      img,
+                        Rect**          img_rect,
+                        anchor_t*       img_anchor){
+
+            //Error managment
+            /*
+            if(img && (!img_rect || !img_anchor)) return;
+            if (text && (!text_font || !text_color || !text_anchor)) return;
+            */
+            /*
+            //Size
+            if(!img && !text)
+                this->requested_size = Size(0,0); //if doesnt compile, chances are that u need to come here
+            else if (requested_size && !text && img)
+                this->requested_size = Size((*img_rect)->size);
+            else if (requested_size && text && !img)
+                hw_text_compute_size(*text, *text_font, this->requested_size);
+            else
+                this->requested_size = *requested_size;
+            */
+            Widget::configure(requested_size,color);
+            //The others (arg exists) ? assign arg : assign default;
+            if(relief) this->relief = *relief;
+            if(text) this->text = text;
+            if(text_font) this->text_font = *text_font;
+            if(text_color) this->text_color = *text_color;
+            if(img) this->img = img;
+            if(img_rect) this->img_rect = *img_rect;
+            if(img_anchor)this->img_anchor = img_anchor;
+        }
 }

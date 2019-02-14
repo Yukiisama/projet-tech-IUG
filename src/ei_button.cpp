@@ -70,7 +70,7 @@ namespace ei
          * @param   corner_radius   The radius (in pixels) of the rounded corners of the button.
          *                          0 means straight corners. Defaults to k_default_button_corner_radius.
          */
-    void Button::configure(Size *requested_size,
+    /*void Button::configure(Size *requested_size,
                            const color_t    *color,
                            int              *border_width,
                            int              *corner_radius,
@@ -98,7 +98,31 @@ namespace ei
         (img) ? this->img = img : this->img = nullptr;
         (img_rect) ? this->img_rect = *img_rect : this->img_rect = nullptr;
         if(img_anchor)this->img_anchor = img_anchor;
-    }
+    }*/
+    void Button::configure(Size *requested_size,
+                               const color_t    *color,
+                               int              *border_width,
+                               int              *corner_radius,
+                               relief_t         *relief,
+                               const char       **text,
+                               font_t           *text_font,
+                               color_t          *text_color,
+                               anchor_t         *text_anchor,
+                               surface_t        *img,
+                               Rect             **img_rect,
+                               anchor_t         *img_anchor){
+            Widget::configure(requested_size,color);
+            //The others (arg exists) ? assign arg : assign default;
+            if(border_width) this->border_width = *border_width;
+            if(corner_radius) this->corner_radius = corner_radius;
+            if(relief) this->relief = *relief;
+            if(text) this->text = text;
+            if(text_font) this->text_font = *text_font;
+            if(text_color) this->text_color = *text_color;
+            if(img) this->img = img;
+            if(img_rect) this->img_rect = *img_rect;
+            if(img_anchor)this->img_anchor = img_anchor;
+        }
 
 
 }
