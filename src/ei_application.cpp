@@ -51,15 +51,26 @@ namespace ei {
      */
     void Application::run(){
 		running = true;
+    double current_time ;
+    Rect window_rect = hw_surface_get_rect(root_window);
+    invalidate_rect(window_rect);
 		while(running){
 
 			Event* ev = hw_event_wait_next();
 			if(ev->type == ei_ev_keydown)
 				quit_request();
-            widget_root->draw(root_window,NULL,NULL);
-			hw_surface_update_rects(to_clear_rectangle_list);
-			//next step is to clear the rectangle list.
+      current_time = hw_now();
+      
+      if(update_time<=current_time){
+        
+        if(!to_clear_rectangle_list.empty()){
+          widget_root->draw(root_window,offscreen,NULL);
+			    hw_surface_update_rects(to_clear_rectangle_list);
+        }
+			  //next step is to clear the rectangle list.
 				to_clear_rectangle_list.clear();
+        update_time  = current_time + (1/60);
+      }
 		}
         return;
     }

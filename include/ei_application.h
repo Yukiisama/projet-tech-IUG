@@ -104,6 +104,7 @@ private:
     Frame* widget_root;
     linked_rect_t   to_clear_rectangle_list;
     bool running = false;
+    double update_time = 0;
 };
 
 }
