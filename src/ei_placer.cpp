@@ -104,11 +104,94 @@ Placer::~Placer(){
                     }
 
     void Placer::run (Widget* widget){
+        if (!widget || !widget->getParent()) return;
+
+        // Creating the new rectangle and setting the right values into it
+        Rect new_rect = Rect();
+
+        // Positioning
+        int temp_x = widget->getParent()->getScreenLocation()->top_left.x(), temp_y = widget->getParent()->getScreenLocation()->top_left.y();
+
+        temp_x += widget->getParent()->getScreenLocation()->size.width() * get_rel_x();
+        temp_y += widget->getParent()->getScreenLocation()->size.height() * get_rel_y();
+        temp_x += get_x();
+        temp_y += get_y();
+
+        switch (*(get_anchor())){
+            case ei_anc_center:
+                temp_x -= get_width()/2;
+                temp_y -= get_height()/2;
+                break;
+            case ei_anc_north:
+                temp_x -= get_width()/2;
+                break;
+            case ei_anc_northeast:
+                temp_x -= get_width();
+                break;
+            case ei_anc_east:
+                temp_x -= get_width();
+                temp_y -= get_height()/2;
+                break;
+            case ei_anc_southeast:
+                temp_x -= get_width();
+                temp_y -= get_height();
+                break;
+            case ei_anc_south:
+                temp_x -= get_width()/2;
+                temp_y -= get_height();
+                break;
+            case ei_anc_southwest:
+                temp_y -= get_height();
+                break;
+            case ei_anc_west:
+                temp_y -= get_height()/2;
+                break;
+            case ei_anc_northwest:
+                break;
+        }
+
+        new_rect.top_left.x() = temp_x;
+        new_rect.top_left.y() = temp_y;
+
+        // Sizing
+        int temp_width = 0, temp_height = 0;
+
+        temp_width += widget->getParent()->getScreenLocation()->size.width() * get_rel_width();
+        temp_height += widget->getParent()->getScreenLocation()->size.height() * get_rel_height();
+        temp_width += get_width();
+        temp_height += get_height();
+
+        if (temp_width < 0 || temp_height < 0){
+            fprintf(stderr, "We won't be able to draw something with a negative width/height!\n");
+            return;
+        }
+        
+        new_rect.size.width() = temp_width;
+        new_rect.size.height() = temp_height;
+        
+        // Setting new positioning and sizing rectangle to the widget
+        widget->geomnotify(new_rect);
+
+        // Calling run for the widget's children
+        int children_list_size = widget->getChildren().size();
+        if (children_list_size > 0){
+            for (std::list<Widget*>::iterator it = widget->getChildren().begin();it!= widget->getChildren().end();it++){
+                (*it)->getGeom_manager()->run(*it);
+            }
+        }
+
         return;
     }
 
     void Placer::release (Widget* widget){
-        return;
+        if (get_widget() != widget) {
+            return;
+        }
+        else {
+            set_widget(nullptr);
+            set_x(0);
+            set_y(0);
+        }
     }
 
 }

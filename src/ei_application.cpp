@@ -54,8 +54,9 @@ namespace ei {
     double current_time ;
     Rect window_rect = hw_surface_get_rect(root_window);
     invalidate_rect(window_rect);
-		while(running){
-
+	
+    while(running){
+      //widget_root->getGeom_manager()->run(widget_root);
 			Event* ev = hw_event_wait_next();
 			if(ev->type == ei_ev_keydown)
 				quit_request();
