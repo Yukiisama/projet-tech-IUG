@@ -113,6 +113,10 @@ Widget* Widget::getParent() const{
   return this->parent;
 }
 
+std::list<Widget*> Widget::getChildren() const{
+    return children;
+}
+
 color_t Widget::ConvertIdToColor(uint32_t id){
 
   color_t color;
