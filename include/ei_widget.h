@@ -74,7 +74,8 @@ public:
     uint32_t getPick_id() const;
 
     Widget *getParent() const;
-    std::list<Widget*> getChildren() const;
+    std::list<Widget*> getChildren();
+    Rect *getScreenLocation();
     color_t ConvertIdToColor(uint32_t id);
     uint32_t ConverColorToId(color_t color);
     void configure(Size * requested_size, const color_t * color);

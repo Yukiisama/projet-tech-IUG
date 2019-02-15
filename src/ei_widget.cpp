@@ -113,8 +113,12 @@ Widget* Widget::getParent() const{
   return this->parent;
 }
 
-std::list<Widget*> Widget::getChildren() const{
+std::list<Widget*> Widget::getChildren(){
     return children;
+}
+
+Rect* Widget::getScreenLocation(){
+  return &screen_location;
 }
 
 color_t Widget::ConvertIdToColor(uint32_t id){
