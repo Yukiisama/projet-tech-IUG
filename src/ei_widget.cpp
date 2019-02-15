@@ -83,8 +83,10 @@ void Widget::draw (surface_t surface, surface_t pick_surface, Rect* clipper){
  *                      (i.e., = widget->screen_location).
  */
 void Widget::geomnotify (Rect rect){
-  this->screen_location.size=rect.size;
-  this->screen_location.top_left=rect.top_left;
+  this->screen_location.size.width() = rect.size.width();
+  this->screen_location.size.height() = rect.size.height();
+  this->screen_location.top_left.x() = rect.top_left.x();
+  this->screen_location.top_left.y() = rect.top_left.y();
 }
 
 Widget* Widget::pick(uint32_t id){
@@ -111,6 +113,10 @@ uint32_t Widget::getPick_id() const{
 
 Widget* Widget::getParent() const{
   return this->parent;
+}
+
+GeometryManager* Widget::getGeom_manager() const{
+  return this->geom_manager;
 }
 
 std::list<Widget*> Widget::getChildren(){
