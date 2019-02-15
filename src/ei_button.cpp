@@ -35,24 +35,9 @@ namespace ei
           exit(EXIT_FAILURE);
         }
 
-        /*if(pick_surface == nullptr){
-          fprintf(stderr,"Error occured for Frame::draw - pick_surface is not vaild\n");
-          exit(EXIT_FAILURE);
-        }*/
-
-        //printf("dkqdfjoqjfqj\n");
-
-        color_t color_test={123,123,123,255};
-
-
         //The Rect of the button
         Rect button_rect = Rect(screen_location.top_left,requested_size);
-        //The list of points to draw the button
-        linked_point_t list_frame = rounded_frame(button_rect, *corner_radius, BT_FULL);
-
-        draw_polygon(surface,list_frame,color,clipper);
-
-        //draw_polygon(pick_surface,list_frame,pick_color,clipper);
+        draw_button(surface,&button_rect,color,*corner_radius,clipper);
 
         for(std::list<Widget*>::iterator it = children.begin();it!= children.end();it++){
             (*it)->draw(surface,pick_surface,clipper);

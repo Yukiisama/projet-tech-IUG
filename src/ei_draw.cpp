@@ -387,6 +387,24 @@ void draw_polygon(surface_t surface, const linked_point_t &point_list,
     delete[] edge_table;
 }
 
+void draw_button(surface_t surface, Rect *rect, const color_t color, int radius, const Rect *clipper)
+{
+    color_t tint = {color.red + (0.25 * (255 - color.red)),
+                    color.green + (0.25 * (255 - color.green)),
+                    color.blue + (0.25 * (255 - color.blue)), 255};
+
+    color_t shade = {color.red * 0.25,
+                     color.green * 0.25,
+                     color.blue * 0.25, 255};
+    draw_polygon(surface, rounded_frame(*rect, radius, BT_TOP), tint,clipper);
+    draw_polygon(surface, rounded_frame(*rect, radius, BT_BOTTOM), shade,clipper);
+    Rect *inner_rect = rect;
+    inner_rect->top_left.x() = inner_rect->top_left.x() + radius / 2;
+    inner_rect->top_left.y() = inner_rect->top_left.y() + radius / 2;
+    inner_rect->size.width() = inner_rect->size.width() - radius;
+    inner_rect->size.height() = inner_rect->size.height() - radius;
+    draw_polygon(surface, rounded_frame(*inner_rect, radius, BT_FULL), color,clipper);
+}
 
 void draw_text(surface_t surface, const Point* where,
                   const char* text, const font_t font,

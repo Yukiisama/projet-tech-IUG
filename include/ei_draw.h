@@ -80,6 +80,22 @@ void draw_polygon(surface_t surface, const linked_point_t& point_list,
                   const color_t &color, const Rect* clipper);
 
 /**
+ * \bref Draws button on a surface 
+ *
+ *  @param surface   Where to draw the text. The surface must be *locked* by \ref hw_surface_lock.
+ *  @param rect      Rectangle which contains the button's topleft and it's size.
+ *  @param color     The color of the button.
+ *  @param radius    Radius used to round the button.
+ *  @param clipper     If not NULL, the drawing is restricted within this rectangle.
+ * 
+ * convert: original color
+ * Shade (rs,gs,bs): rs = r * 0.25, gs = g * 0.25, bs = b * 0.25 (that is a pretty dark shade); 
+ * Tint (rt,gt,bt): rt = r + (0.25 * (255 - r)), gt = g + (0.25 * (255 - g)), bt = b + (0.25 * (255 - b))
+ */
+void draw_button(surface_t surface, Rect *rect, const color_t color, int radius, 
+                    const Rect *clipper);
+
+/**
  * \brief Draws text by calling \ref hw_text_create_surface.
  *
  * @param surface   Where to draw the text. The surface must be *locked* by \ref hw_surface_lock.
@@ -88,9 +104,9 @@ void draw_polygon(surface_t surface, const linked_point_t& point_list,
  * @param font      The font used to render the text. If NULL, the \ref ei_default_font is used.
  * @param color     The text color. Can't be NULL. The alpha parameter is not used.
  */
-void draw_text(surface_t surface, const Point* where,
-               const char* text, const font_t font,
-               const color_t* color);
+void draw_text(surface_t surface, const Point *where,
+               const char *text, const font_t font,
+               const color_t *color);
 
 /**
  * \brief Fills the surface with the specified color.
