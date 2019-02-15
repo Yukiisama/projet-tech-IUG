@@ -54,6 +54,7 @@ namespace ei {
                               bool_t*         closable,
                               axis_set_t*     resizable,
                               Size*           min_size){
+        if(img && text) fprintf(stderr,"Only one of the parameter \"text\" and \"img\" should be used (i.e. non-NULL).");
         Widget::configure(requested_size,color);
         if(title) this->title = title;
         if(border_width) this->border_width = border_width;
