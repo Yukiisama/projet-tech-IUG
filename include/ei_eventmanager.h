@@ -29,7 +29,7 @@ public:
         return instance;
     }
 
-private:
+  private:
     EventManager();
 
     typedef struct param_callback
@@ -38,7 +38,7 @@ private:
         ei_eventtype_t eventtype;
         Widget *widget;
         tag_t tag;
-        ei::ei_callback_t callback;
+        ei_callback_t callback;
         void *user_param;
     } param_callback;
 
@@ -48,7 +48,6 @@ private:
 public:
     EventManager(EventManager const&)    = delete;
     void operator=(EventManager const&)  = delete;
-
     /**
      * \brief	Binds a callback to an event type and a widget or a tag.
      *

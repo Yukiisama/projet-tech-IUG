@@ -1,5 +1,6 @@
 #include "ei_event.h"
 #include "ei_eventmanager.h"
+#include <iostream>
 namespace ei {
     EventManager::EventManager(){}
     /**
@@ -20,17 +21,20 @@ namespace ei {
                ei_callback_t  callback,
                void*          user_param){
 
-        param_callback _callback;
+        if ((widget != nullptr && !tag.empty()) || (widget == nullptr && tag.empty()))
+            return;
+
+        param_callback _callback; //creat param_callback structure to bind.
         _callback.eventtype=eventtype;
         
-
-        if (widget != nullptr )
+        //Bind with widget
+        if (widget != nullptr && tag.empty())
         {
             _callback.widget = widget;
-            //can't assign null to std::string type
-
+            _callback.tag = ""; //can't assign null to std::string type
         }
-        else
+        //Bind with tag
+        else if(widget ==nullptr && !tag.empty())
         {
             _callback.tag=tag;
             _callback.widget= widget;
@@ -54,17 +58,36 @@ namespace ei {
                  ei_callback_t  callback,
                  void*          user_param){
         //run through vector of  callback event and seek if call back exists
-        for (auto it = vec_callback.begin(); it != vec_callback.end();)
+        //unbind with tags
+        if(widget ==nullptr && !tag.empty()){
+        for (std::vector<param_callback>::iterator it = vec_callback.begin(); it != vec_callback.end();)
         {
-            
-                // if exist delete where all the paramaters have the same value
-                if (it->widget == widget && it->tag == tag 
-                && it->user_param == user_param && it->eventtype == eventtype)
-                {
+            // if exist delete where all the paramaters have the same value
+            if (!it->tag.compare(tag) 
+            && it->user_param == user_param 
+            && it->eventtype == eventtype 
+            && it->callback.target<bool_t(Widget *, Event *, void *)>() == callback.target<bool_t(Widget *, Event *, void *)>())
+            {
+             it=vec_callback.erase(it);   
+            }else{
+                ++it;
+            }
+        }
+        }
+
+        //unbind with widget
+        if(widget!= nullptr && tag.empty()){
+            for (std::vector<param_callback>::iterator it = vec_callback.begin(); it != vec_callback.end();)
+            {
+                if(it->widget->getPick_id()==widget->getPick_id()
+                && it->user_param==user_param
+                && it->eventtype== eventtype
+                && it->callback.target<bool_t(Widget *, Event *, void *)>() == callback.target<bool_t(Widget *, Event *, void *)>()){
                     it = vec_callback.erase(it);
+                }else{
+                ++it;
                 }
-            
-           
+            }
         }
     }
 }
