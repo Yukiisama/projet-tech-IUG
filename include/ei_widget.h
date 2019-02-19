@@ -75,6 +75,7 @@ public:
 
     Widget *getParent() const;
     std::list<Widget*> getChildren();
+    GeometryManager *getGeom_manager() const;
     Rect *getScreenLocation();
     color_t ConvertIdToColor(uint32_t id);
     uint32_t ConverColorToId(color_t color);
