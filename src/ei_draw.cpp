@@ -414,15 +414,15 @@ void draw_text(surface_t surface, const Point* where,
         fprintf(stderr, "no text or color specified");
         return;
     }
-
+printf("1st step \n");
     surface_t s_text;
-
+printf("2nd step \n");
     if (font == NULL) {
         s_text = hw_text_create_surface(text, default_font, color);
+        printf("3rd step \n");
     } else {
         s_text = hw_text_create_surface(text, font, color);
     }
-
     ei_copy_surface(surface, s_text, where, EI_TRUE);
 
     hw_surface_free(s_text);

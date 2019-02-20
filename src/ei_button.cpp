@@ -12,7 +12,7 @@ namespace ei
         corner_radius = new int(default_button_corner_radius);// check this variable is free in destructor
         relief=ei_relief_raised;
         text=nullptr;
-        text_font=default_font;
+        text_font= hw_text_font_create(default_font_filename, font_default_size);
         text_color=font_default_color;
         text_anchor=ei_anc_center;
         img=nullptr;
@@ -23,7 +23,7 @@ namespace ei
 
     Button::~Button()
     {
-
+        hw_text_font_free(text_font);
     }
 
     void Button::draw(surface_t surface,
@@ -38,6 +38,13 @@ namespace ei
         //The Rect of the button
         Rect button_rect = Rect(screen_location.top_left,requested_size);
         draw_button(surface,&button_rect,color,*corner_radius,clipper);
+
+        draw_polygon(pick_surface, rounded_frame(button_rect,*corner_radius,BT_FULL), pick_color,clipper);
+
+        if(text){
+            Point where = Widget::getAnchorPosition(screen_location,text_anchor);
+            draw_text(surface,&where,*text,text_font,&text_color);
+        }
 
         for(std::list<Widget*>::iterator it = children.begin();it!= children.end();it++){
             (*it)->draw(surface,pick_surface,clipper);

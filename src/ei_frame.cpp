@@ -39,14 +39,11 @@ namespace ei {
           exit(EXIT_FAILURE);
         }
 
-        /*if(pick_surface == nullptr){
+        if(pick_surface == nullptr){
           fprintf(stderr,"Error occured for Frame::draw - pick_surface is not vaild\n");
           exit(EXIT_FAILURE);
-        }*/
+        }
 
-        //printf("dkqdfjoqjfqj\n");
-
-        //color_t color_test={123,123,123,255};
         linked_point_t list_frame;
         list_frame.push_back(screen_location.top_left);
         list_frame.push_back(Point(screen_location.top_left.x()+requested_size.width(),
@@ -57,7 +54,7 @@ namespace ei {
                                    screen_location.top_left.y()+requested_size.height()));
 
         draw_polygon(surface,list_frame,color,clipper);
-        //draw_polygon(pick_surface,list_frame,pick_color,clipper);
+        draw_polygon(pick_surface,list_frame,pick_color,clipper);
 
         for(std::list<Widget*>::iterator it = children.begin();it!= children.end();it++){
             (*it)->draw(surface,pick_surface,clipper);
