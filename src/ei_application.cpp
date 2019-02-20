@@ -3,7 +3,9 @@
 #include "ei_widget.h"
 #include "ei_application.h"
 #include "ei_geometrymanager.h"
+#include "ei_eventmanager.h"
 #include "hw_interface.h"
+#include <iostream>
 namespace ei {
   Application *Application::instance = nullptr;
 
@@ -72,6 +74,7 @@ namespace ei {
 				to_clear_rectangle_list.clear();
         update_time  = current_time + (1/60);
       }
+      EventManager::getInstance().eventHandler();
 		}
         return;
     }

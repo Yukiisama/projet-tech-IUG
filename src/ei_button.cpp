@@ -39,6 +39,12 @@ namespace ei
         Rect button_rect = Rect(screen_location.top_left,requested_size);
         draw_button(surface,&button_rect,color,*corner_radius,clipper);
 
+        font_t f = hw_text_font_create(default_font_filename, font_default_size);
+        Point p = Point(100,100);
+        draw_text(surface,&p,*text,f,&text_color);
+
+
+
         for(std::list<Widget*>::iterator it = children.begin();it!= children.end();it++){
             (*it)->draw(surface,pick_surface,clipper);
         }
