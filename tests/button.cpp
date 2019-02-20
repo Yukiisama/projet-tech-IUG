@@ -93,14 +93,13 @@ int ei_main(int argc, char** argv)
     /* Hook the keypress and close button callbacks to the event. */
     EventManager::getInstance().bind(ei_ev_keydown, NULL, "all", process_key, app);
     EventManager::getInstance().bind(ei_ev_display, NULL, "all", process_display, app);
-
+    
     /* Run the application's main loop. */
     app->run();
 
     /* We just exited from the main loop. Terminate the application (cleanup). */
-    //EventManager::getInstance().unbind(ei_ev_keydown, NULL, "all", process_key, app);
-    //EventManager::getInstance().unbind(ei_ev_display, NULL, "all", process_display, app);
-
+    EventManager::getInstance().unbind(ei_ev_keydown, NULL, "all", process_key, app);
+    EventManager::getInstance().unbind(ei_ev_display, NULL, "all", process_display, app);
     delete app;
     delete p;
 
