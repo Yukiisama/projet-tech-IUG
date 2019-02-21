@@ -75,6 +75,47 @@ void Widget::draw (surface_t surface, surface_t pick_surface, Rect* clipper){
   }
 }
 
+Point Widget::getAnchorPosition(Rect rect, anchor_t anchor) const{
+    int x, y;
+    if(anchor == ei_anc_center){
+        x = rect.top_left.x()+rect.size.width()/2;
+        y = rect.top_left.y()+requested_size.height()/2;
+    }
+    if(anchor == ei_anc_north){
+        x = rect.top_left.x()+requested_size.width()/2;
+        y = rect.top_left.y();
+    }
+    if(anchor == ei_anc_northeast){
+        x = rect.top_left.x()+requested_size.width();
+        y = rect.top_left.y();
+    }
+    if(anchor == ei_anc_east){
+        x = rect.top_left.x()+requested_size.width();
+        y = rect.top_left.y()+requested_size.height()/2;
+    }
+    if(anchor == ei_anc_southeast){
+        x = rect.top_left.x()+requested_size.width();
+        y = rect.top_left.y()+requested_size.height();
+    }
+    if(anchor == ei_anc_south){
+        x = rect.top_left.x()+requested_size.width()/2;
+        y = rect.top_left.y()+requested_size.height();
+    }
+    if(anchor == ei_anc_southwest){
+        x = rect.top_left.x();
+        y = rect.top_left.y()+requested_size.height();
+    }
+    if(anchor == ei_anc_west){
+        x = rect.top_left.x();
+        y = rect.top_left.y()+requested_size.height()/2;
+    }
+    if(anchor == ei_anc_northwest){
+        x = rect.top_left.x();
+        y = rect.top_left.y();
+    }
+    return Point(x,y);
+}
+
 /**
  * \brief   Method that is called to notify the widget that its geometry has been modified
  *      by its geometry manager.
@@ -130,7 +171,7 @@ Rect* Widget::getScreenLocation(){
 color_t Widget::ConvertIdToColor(uint32_t id){
 
   color_t color;
-  color.alpha = (unsigned char)(id >> 24);
+  color.alpha = (unsigned char)255;
   color.red = (unsigned char)(id >> 16);
   color.green = (unsigned char)(id >> 8);
   color.blue = (unsigned char)(id >> 0);

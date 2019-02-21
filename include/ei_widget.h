@@ -73,6 +73,7 @@ public:
     Widget* pick(uint32_t id);
     uint32_t getPick_id() const;
 
+    Point getAnchorPosition(Rect rect, anchor_t anchor) const;
     Widget *getParent() const;
     std::list<Widget*> getChildren();
     GeometryManager *getGeom_manager() const;
@@ -225,7 +226,7 @@ public:
                     int*             border_width,
                     int*             corner_radius,
                     relief_t*        relief,
-                    const char             **text,
+                    const char       **text,
                     font_t*          text_font,
                     color_t*         text_color,
                     anchor_t*        text_anchor,
