@@ -3,7 +3,8 @@
 #include "ei_widget.h"
 #include "ei_geometrymanager.h"
 #include "hw_interface.h"
-
+#include <iostream>
+#include "ei_application.h"
 namespace ei {
 
     Frame::Frame(Widget *parent):Widget("frame",parent){
@@ -33,6 +34,7 @@ namespace ei {
                     surface_t pick_surface,
                     Rect *clipper)
     {
+<<<<<<< HEAD
 
         if(surface == nullptr){
           fprintf(stderr,"Error occured for Frame::draw - surface is not valid\n");
@@ -44,6 +46,9 @@ namespace ei {
           exit(EXIT_FAILURE);
         }
 
+=======
+        std::cout << "Im frame" << std::endl;
+>>>>>>> 9f97565becde406a33dd67467bf7d73344a583e3
         linked_point_t list_frame;
         list_frame.push_back(screen_location.top_left);
         list_frame.push_back(Point(screen_location.top_left.x()+requested_size.width(),
@@ -52,13 +57,24 @@ namespace ei {
                                    screen_location.top_left.y()+requested_size.height()));
         list_frame.push_back(Point(screen_location.top_left.x(),
                                    screen_location.top_left.y()+requested_size.height()));
-
+        hw_surface_lock(pick_surface);
+        draw_polygon(pick_surface,list_frame,pick_color,nullptr);
         draw_polygon(surface,list_frame,color,clipper);
+<<<<<<< HEAD
         draw_polygon(pick_surface,list_frame,pick_color,clipper);
 
         for(std::list<Widget*>::iterator it = children.begin();it!= children.end();it++){
             (*it)->draw(surface,pick_surface,clipper);
+=======
+        hw_surface_unlock(pick_surface);
+        if(!children.empty()){
+            for (std::list<Widget *>::iterator it = children.begin(); it != children.end(); it++)
+            {
+                (*it)->draw(surface, pick_surface, clipper);
+            }
+>>>>>>> 9f97565becde406a33dd67467bf7d73344a583e3
         }
+       
     }
 
     /**

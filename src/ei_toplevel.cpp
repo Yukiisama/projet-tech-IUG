@@ -23,7 +23,7 @@ namespace ei {
 
     }
 
-    void Widget::draw (surface_t surface,
+    void Toplevel::draw (surface_t surface,
                        surface_t pick_surface,
                        Rect*     clipper){
         return;

@@ -1,5 +1,6 @@
 #include "ei_event.h"
 #include "ei_eventmanager.h"
+#include "ei_application.h"
 #include <iostream>
 namespace ei {
     EventManager::EventManager(){}
@@ -89,5 +90,37 @@ namespace ei {
                 }
             }
         }
+    }
+
+
+
+
+    void EventManager::eventHandler(Event *event)
+    {
+        //Event * event = hw_event_wait_next();
+        //Handle with mouse type of event.
+        if(event->type==ei_ev_mouse_buttondown || event->type==ei_ev_mouse_buttonup 
+            ||event->type==ei_ev_mouse_move ){
+            //Casting Event to MouseEvent
+            MouseEvent* M = static_cast<MouseEvent*>(event);
+            Widget * w = Application::getInstance()->widget_pick(M->where);
+            std::cout<< M->where.x()<<std::endl;
+            if(w==nullptr){
+                //std::cout<<"w failed"<<std::endl;
+                }
+                else{
+                    //std::cout << "w ok" << std::endl;
+                    //std::cout << w->getName() << std::endl;
+                
+                }
+
+            }
+    
+    
+    
+    
+    
+    
+    
     }
 }
