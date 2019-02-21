@@ -57,7 +57,8 @@ namespace ei {
       //widget_root->getGeom_manager()->run(widget_root);
 			Event* ev = hw_event_wait_next();
       EventManager::getInstance().eventHandler(ev);
-      if(ev->type == ei_ev_keydown)
+      KeyEvent * ev_key = static_cast<KeyEvent*>  (ev);
+      if( ev->type == ei_ev_keydown && ev_key->key_sym == ALLEGRO_KEY_ESCAPE)  // 59 == escape
 				quit_request();
       current_time = hw_now();
       
