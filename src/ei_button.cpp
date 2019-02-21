@@ -40,12 +40,16 @@ namespace ei
         draw_button(surface,&button_rect,color,*corner_radius,clipper);
         font_t f = hw_text_font_create(default_font_filename, font_default_size);
         Point p = Point(100,100);
-        draw_text(surface,&p,*text,f,&text_color);
         //The list of points to draw the button
         linked_point_t list_frame = rounded_frame(button_rect, *corner_radius, BT_FULL);
+        pick_color.alpha=255;
         draw_polygon(pick_surface, list_frame, pick_color, clipper);
         hw_surface_unlock(pick_surface);
-
+        if (text)
+        {
+            Point where = Widget::getAnchorPosition(screen_location, text_anchor);
+            draw_text(surface, &where, *text, text_font, &text_color);
+        }
         for(std::list<Widget*>::iterator it = children.begin();it!= children.end();it++){
             (*it)->draw(surface,pick_surface,clipper);
         }

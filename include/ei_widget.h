@@ -78,7 +78,7 @@ public:
     GeometryManager *getGeom_manager() const;
     Rect *getScreenLocation();
     color_t ConvertIdToColor(uint32_t id);
-    uint32_t ConverColorToId(color_t color);
+    uint32_t ConvertColorToId(color_t color);
     widgetclass_name_t getName(); //used to test in eventmanager
     void configure(Size *requested_size, const color_t *color);
 

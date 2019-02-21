@@ -104,16 +104,20 @@ namespace ei {
             //Casting Event to MouseEvent
             MouseEvent* M = static_cast<MouseEvent*>(event);
             Widget * w = Application::getInstance()->widget_pick(M->where);
-            std::cout<< M->where.x()<<std::endl;
-            if(w==nullptr){
-                //std::cout<<"w failed"<<std::endl;
+            //std::cout<< M->where.x()<<std::endl;
+            if(w){
+                for(std::vector<param_callback>::iterator it =vec_callback.begin(); it !=vec_callback.end();++it){
+                    if(it->widget){
+                        if (it->widget->getPick_id() == w->getPick_id())
+                        {
+                            it->callback(it->widget,event,it->user_param);
+                        }
+                    }
+                   
                 }
-                else{
-                    //std::cout << "w ok" << std::endl;
-                    //std::cout << w->getName() << std::endl;
+                //std::cout << "w ok" << std::endl;
+                //w->getPick_id();
                 
-                }
-
             }
     
     
@@ -123,4 +127,7 @@ namespace ei {
     
     
     }
+}
+
+
 }

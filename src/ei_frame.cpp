@@ -34,7 +34,6 @@ namespace ei {
                     surface_t pick_surface,
                     Rect *clipper)
     {
-        std::cout << "Im frame" << std::endl;
         linked_point_t list_frame;
         list_frame.push_back(screen_location.top_left);
         list_frame.push_back(Point(screen_location.top_left.x()+requested_size.width(),
@@ -44,7 +43,8 @@ namespace ei {
         list_frame.push_back(Point(screen_location.top_left.x(),
                                    screen_location.top_left.y()+requested_size.height()));
         hw_surface_lock(pick_surface);
-        draw_polygon(pick_surface,list_frame,pick_color,nullptr);
+        pick_color.alpha=255;
+        draw_polygon(pick_surface,list_frame,pick_color,clipper);
         draw_polygon(surface,list_frame,color,clipper);
         hw_surface_unlock(pick_surface);
         if(!children.empty()){

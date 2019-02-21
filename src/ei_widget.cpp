@@ -95,32 +95,18 @@ void Widget::geomnotify (Rect rect){
 
 Widget* Widget::pick(uint32_t id){
   //nullptr is returned if id is not belong to the existing widget id.
-  /*if(id <0 || id>this->s_idGenerator){
-    std::cout << "out\n";
-    return nullptr;
-  }*/
+  if(id <0 || id>this->s_idGenerator) return nullptr;
   //case where id is equals to current widget's id.
-  if(id==this->pick_id){
-    std::cout << getName()<<std::endl;
-    return this;  //return current widget;
-  }else if(!children.empty()){
-    for (std::list<Widget *>::iterator it = children.begin(); it != children.end(); ++it)
+  if(id==this->pick_id) return this;  //return current widget;
+  for (std::list<Widget *>::iterator it = children.begin(); it != children.end(); ++it)
     {
-      if ((*it)->getPick_id() == id) {
-        std::cout << "found\n";
-        return *(it);
-      }
+      if ((*it)->getPick_id() == id) return *(it);
       Widget *res = (*it)->pick(id); //recursive
-      if(res){
-          std::cout << "found\n";
-          return res;
-        
-      }
+      if(res) return res;
     }
+    return nullptr;
   }
-  return nullptr;
-  
-}
+
 uint32_t Widget::getPick_id() const{
   return this->pick_id;
 }
@@ -144,21 +130,22 @@ Rect* Widget::getScreenLocation(){
 color_t Widget::ConvertIdToColor(uint32_t id){
 
   color_t color;
-  color.alpha = (unsigned char)(id >> 24);
+  //color.alpha = (unsigned char)(id >> 24);
   color.red = (unsigned char)(id >> 16);
   color.green = (unsigned char)(id >> 8);
   color.blue = (unsigned char)(id >> 0);
   return color;
 
 }
-uint32_t Widget::ConverColorToId(color_t color){
+uint32_t Widget::ConvertColorToId(color_t color){
 
-  return (uint32_t)((color.alpha << 24) | (color.red << 16) |
+  return (uint32_t)((color.red << 16) |
                     (color.green << 8)  | (color.blue << 0));
 
 }
 widgetclass_name_t Widget::getName(){
-  return this->name;
+    if(!this->name.empty()) return this->name ;
+    return "name is null" ;
 }
 
 void Widget::configure(Size * requested_size, const color_t * color){

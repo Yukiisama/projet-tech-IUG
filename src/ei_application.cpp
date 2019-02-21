@@ -137,13 +137,8 @@ namespace ei {
           exit(EXIT_FAILURE);
       }
       color_t color = hw_get_pixel(this->offscreen, where);
-      /*
-      if(color.red == 0 && color.green == 0 && color.blue == 0 && color.alpha == 0){
-        return nullptr;
-      }
-      */
-      uint32_t ID = getInstance()->root_widget()->ConverColorToId(color);
-      return this->widget_root->pick(ID);
+      uint32_t ID = widget_root->ConvertColorToId(color);
+      return widget_root->pick(ID);
     }
 
 }
