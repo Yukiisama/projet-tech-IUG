@@ -3,14 +3,12 @@
 #include "ei_widget.h"
 #include "ei_application.h"
 #include "ei_geometrymanager.h"
+#include "ei_eventmanager.h"
 #include "hw_interface.h"
+#include <iostream>
 namespace ei {
   Application *Application::instance = nullptr;
 
-  uint32_t ColorToUInt(color_t color){
-    return (uint32_t)((color.alpha << 24) | (color.red << 16) |
-                  (color.green << 8)  | (color.blue << 0));
-  }
     /**
      * \brief Creates an application.
      *    <ul>
@@ -31,8 +29,8 @@ namespace ei {
       this->offscreen = hw_surface_create(this->root_window, main_window_size);
       this->widget_root = new Frame(NULL);
       this->instance = this;
-      color_t white = {225, 225, 225, 225};
-      this->widget_root->configure(main_window_size,&white,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
+      //color_t white = {225, 225, 225, 225};
+      //this->widget_root->configure(main_window_size,&white,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
     }
 
     /**
@@ -58,7 +56,8 @@ namespace ei {
     while(running){
       //widget_root->getGeom_manager()->run(widget_root);
 			Event* ev = hw_event_wait_next();
-			if(ev->type == ei_ev_keydown)
+      EventManager::getInstance().eventHandler(ev);
+      if(ev->type == ei_ev_keydown)
 				quit_request();
       current_time = hw_now();
       
@@ -72,6 +71,7 @@ namespace ei {
 				to_clear_rectangle_list.clear();
         update_time  = current_time + (1/60);
       }
+      
 		}
         return;
     }
@@ -84,10 +84,12 @@ namespace ei {
      *        A copy is made, so it is safe to release the rectangle on return.
      */
     void Application::invalidate_rect(const Rect &rect){
-        if(&rect == nullptr){
+        /*
+        if(&rect == NULL){
           fprintf(stderr,"Error occured for Application::invalide_rect - rect is nullptr\n");
           exit(EXIT_FAILURE);
         }
+        */
         to_clear_rectangle_list.push_back(rect);
     }
 
@@ -135,12 +137,8 @@ namespace ei {
           exit(EXIT_FAILURE);
       }
       color_t color = hw_get_pixel(this->offscreen, where);
-      if(color.red == 0 && color.green == 0 && color.blue == 0 && color.alpha == 0){
-        return nullptr;
-      }
-      uint32_t ID = ColorToUInt(color);
-      //printf("%lu\n",(unsigned long) ID);
-      return this->widget_root->pick(ID);
+      uint32_t ID = widget_root->ConvertColorToId(color);
+      return widget_root->pick(ID);
     }
 
 }

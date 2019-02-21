@@ -4,6 +4,7 @@
 #include "ei_main.h"
 #include "ei_draw.h"
 #include "hw_interface.h"
+#include "ei_widget.h"
 
 using namespace ei;
 
@@ -48,6 +49,13 @@ TEST_CASE("fill_window", "[unit]")
         REQUIRE( query_color.red == font_default_color.red );
         REQUIRE( query_color.green == font_default_color.green );
         REQUIRE( query_color.blue == font_default_color.blue );
+    }
+
+    SECTION ("conver_id_color"){
+        Widget w;
+        color_t c = w.ConvertIdToColor(7631988);
+        uint32_t id = w.ConvertColorToId(c);
+        REQUIRE(id == 7631988);
     }
 
 }

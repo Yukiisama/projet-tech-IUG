@@ -78,6 +78,14 @@ public:
                  tag_t          tag,
                  ei_callback_t  callback,
                  void*          user_param);
+    /**
+     * \bref
+     * 
+     * @param   eventtype   The type of the event.
+     * @param   widget      The callback is only called if the event is related to this widget.    
+     */
+    void eventHandler(Event *event);
+
 };
 
 }

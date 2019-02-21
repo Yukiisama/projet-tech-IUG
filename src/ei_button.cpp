@@ -3,7 +3,8 @@
 #include "ei_event.h"
 #include "ei_geometrymanager.h"
 #include "hw_interface.h"
-
+#include <iostream>
+#include "ei_application.h"
 namespace ei
 {
 
@@ -18,6 +19,7 @@ namespace ei
         img=nullptr;
         img_rect=nullptr;
         img_anchor = new anchor_t{ei_anc_center};
+        clicked=EI_FALSE;
     }
 
 
@@ -34,16 +36,29 @@ namespace ei
           fprintf(stderr,"Error occured for Frame::draw - surface is not valid\n");
           exit(EXIT_FAILURE);
         }
-
+        hw_surface_lock(pick_surface);
         //The Rect of the button
         Rect button_rect = Rect(screen_location.top_left,requested_size);
-        draw_button(surface,&button_rect,color,*corner_radius,clipper);
-
-        draw_polygon(pick_surface, rounded_frame(button_rect,*corner_radius,BT_FULL), pick_color,clipper);
-
-        if(text){
-            Point where = Widget::getAnchorPosition(screen_location,text_anchor);
-            draw_text(surface,&where,*text,text_font,&text_color);
+        if(clicked){
+            Application::getInstance()->invalidate_rect(*content_rect);
+            color.alpha-=100;
+            draw_button(surface,&button_rect,color,*corner_radius,clipper);
+            clicked=EI_FALSE;
+            color.alpha+=100;
+        }else{
+            draw_button(surface,&button_rect,color,*corner_radius,clipper);
+        }
+        font_t f = hw_text_font_create(default_font_filename, font_default_size);
+        Point p = Point(100,100);
+        //The list of points to draw the button
+        linked_point_t list_frame = rounded_frame(button_rect, *corner_radius, BT_FULL);
+        pick_color.alpha=255;
+        draw_polygon(pick_surface, list_frame, pick_color, clipper);
+        hw_surface_unlock(pick_surface);
+        if (text)
+        {
+            Point where = Widget::getAnchorPosition(screen_location, text_anchor);
+            draw_text(surface, &where, *text, text_font, &text_color);
         }
 
         for(std::list<Widget*>::iterator it = children.begin();it!= children.end();it++){

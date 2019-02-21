@@ -79,9 +79,12 @@ public:
     GeometryManager *getGeom_manager() const;
     Rect *getScreenLocation();
     color_t ConvertIdToColor(uint32_t id);
-    uint32_t ConverColorToId(color_t color);
-    void configure(Size * requested_size, const color_t * color);
-protected:
+    uint32_t ConvertColorToId(color_t color);
+    widgetclass_name_t getName(); //used to test in eventmanager
+    Rect getRect();               //used to add to invalidate_rec in Application to update
+    void configure(Size *requested_size, const color_t *color);
+
+  protected:
     widgetclass_name_t name; ///< The string name of this class of widget.
 
     static uint32_t s_idGenerator; ///< Static counter to assure the uniqueness of the generated Ids
@@ -201,7 +204,7 @@ struct MouseEvent;
 class Button : public Widget
 {
 public:
-
+    bool_t clicked;
     Button(Widget* parent);
 
     virtual ~Button();
