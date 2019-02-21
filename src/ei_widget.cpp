@@ -30,6 +30,7 @@ Widget::Widget(const widgetclass_name_t& class_name, Widget* parent){
     this->parent->children.push_back(this); //add this widget as children to the parent in parameter.
   }else{
     this->parent = NULL;
+    this->name = "root";
   }
   this->pick_id=s_idGenerator++; //increase by 1 to assure the uniqueness of the generated Ids
   this->pick_color=ConvertIdToColor(this->pick_id);
@@ -59,7 +60,9 @@ Widget::Widget(const widgetclass_name_t& class_name, Widget* parent){
  * @param   clipper     If not NULL, the drawing is restricted within this rectangle
  *                      (expressed in the surface reference frame).
  */
+
 void Widget::draw (surface_t surface, surface_t pick_surface, Rect* clipper){
+  std::cout << getName() << std::endl;
   if(surface == NULL){
     fprintf(stderr,"Error occured for Widget::draw - surface is NULL\n");
     exit(EXIT_FAILURE);
@@ -74,6 +77,7 @@ void Widget::draw (surface_t surface, surface_t pick_surface, Rect* clipper){
 
   }
 }
+
 
 /**
  * \brief   Method that is called to notify the widget that its geometry has been modified
@@ -91,21 +95,31 @@ void Widget::geomnotify (Rect rect){
 
 Widget* Widget::pick(uint32_t id){
   //nullptr is returned if id is not belong to the existing widget id.
-  if(id <0 || id>this->s_idGenerator){
+  /*if(id <0 || id>this->s_idGenerator){
+    std::cout << "out\n";
     return nullptr;
-  }
+  }*/
   //case where id is equals to current widget's id.
   if(id==this->pick_id){
+    std::cout << getName()<<std::endl;
     return this;  //return current widget;
-  }else{
+  }else if(!children.empty()){
     for (std::list<Widget *>::iterator it = children.begin(); it != children.end(); ++it)
     {
-      if ((*it)->getPick_id() == id) return *(it);
+      if ((*it)->getPick_id() == id) {
+        std::cout << "found\n";
+        return *(it);
+      }
       Widget *res = (*it)->pick(id); //recursive
-      if(res->pick_id==id) return res;
+      if(res){
+          std::cout << "found\n";
+          return res;
+        
+      }
     }
-    return nullptr;
   }
+  return nullptr;
+  
 }
 uint32_t Widget::getPick_id() const{
   return this->pick_id;
@@ -142,6 +156,9 @@ uint32_t Widget::ConverColorToId(color_t color){
   return (uint32_t)((color.alpha << 24) | (color.red << 16) |
                     (color.green << 8)  | (color.blue << 0));
 
+}
+widgetclass_name_t Widget::getName(){
+  return this->name;
 }
 
 void Widget::configure(Size * requested_size, const color_t * color){

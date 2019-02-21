@@ -3,7 +3,7 @@
 #include "ei_event.h"
 #include "ei_geometrymanager.h"
 #include "hw_interface.h"
-
+#include <iostream>
 namespace ei
 {
 
@@ -34,16 +34,17 @@ namespace ei
           fprintf(stderr,"Error occured for Frame::draw - surface is not valid\n");
           exit(EXIT_FAILURE);
         }
-
+        hw_surface_lock(pick_surface);
         //The Rect of the button
         Rect button_rect = Rect(screen_location.top_left,requested_size);
         draw_button(surface,&button_rect,color,*corner_radius,clipper);
-
         font_t f = hw_text_font_create(default_font_filename, font_default_size);
         Point p = Point(100,100);
         draw_text(surface,&p,*text,f,&text_color);
-
-
+        //The list of points to draw the button
+        linked_point_t list_frame = rounded_frame(button_rect, *corner_radius, BT_FULL);
+        draw_polygon(pick_surface, list_frame, pick_color, clipper);
+        hw_surface_unlock(pick_surface);
 
         for(std::list<Widget*>::iterator it = children.begin();it!= children.end();it++){
             (*it)->draw(surface,pick_surface,clipper);
