@@ -1,5 +1,6 @@
 #include "ei_event.h"
 #include "ei_eventmanager.h"
+#include "ei_application.h"
 #include <iostream>
 namespace ei {
     EventManager::EventManager(){}
@@ -90,4 +91,58 @@ namespace ei {
             }
         }
     }
+
+
+
+
+    void EventManager::eventHandler(Event *event)
+    {
+        //Event * event = hw_event_wait_next();
+        //Handle with mouse type of event.
+        if(event->type==ei_ev_mouse_buttondown || event->type==ei_ev_mouse_buttonup 
+            ||event->type==ei_ev_mouse_move ){
+            //Casting Event to MouseEvent
+            MouseEvent* M = static_cast<MouseEvent*>(event);
+            Widget * w = Application::getInstance()->widget_pick(M->where);
+            //std::cout<< M->where.x()<<std::endl;
+            if(w){
+                for(std::vector<param_callback>::iterator it =vec_callback.begin(); it !=vec_callback.end();++it){
+                    if(it->widget){
+                        if (it->widget->getPick_id() == w->getPick_id())
+                        {   if(event->type==ei_ev_mouse_buttondown){
+                                static_cast<Button *>(it->widget)->clicked=EI_TRUE;
+                                Application::getInstance()->invalidate_rect(it->widget->getRect());
+                                it->callback(it->widget,event,it->user_param);
+                                break;
+                            }
+                            if(event->type==ei_ev_mouse_buttonup){
+                                static_cast<Button *>(it->widget)->clicked=EI_FALSE;
+                                Application::getInstance()->invalidate_rect(it->widget->getRect());
+                                it->callback(it->widget,event,it->user_param);
+                                break;
+                            }
+                       
+                        }
+                    }  
+                }
+        }else{
+            //other types of events
+            for(std::vector<param_callback>::iterator it =vec_callback.begin(); it !=vec_callback.end();++it){
+                if(it->widget){
+                    Application::getInstance()->invalidate_rect(it->widget->getRect());
+                    it->callback(it->widget,event,it->user_param);
+                }
+            }
+        }
+    
+    
+    
+    
+    
+    
+    
+    }
+}
+
+
 }
