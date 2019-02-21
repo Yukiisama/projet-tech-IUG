@@ -73,6 +73,7 @@ public:
     Widget* pick(uint32_t id);
     uint32_t getPick_id() const;
 
+    Point getAnchorPosition(Rect rect, anchor_t anchor) const;
     Widget *getParent() const;
     std::list<Widget*> getChildren();
     GeometryManager *getGeom_manager() const;
@@ -80,6 +81,7 @@ public:
     color_t ConvertIdToColor(uint32_t id);
     uint32_t ConvertColorToId(color_t color);
     widgetclass_name_t getName(); //used to test in eventmanager
+    Rect getRect();               //used to add to invalidate_rec in Application to update
     void configure(Size *requested_size, const color_t *color);
 
   protected:
@@ -202,7 +204,7 @@ struct MouseEvent;
 class Button : public Widget
 {
 public:
-
+    bool_t clicked;
     Button(Widget* parent);
 
     virtual ~Button();
@@ -227,7 +229,7 @@ public:
                     int*             border_width,
                     int*             corner_radius,
                     relief_t*        relief,
-                    const char             **text,
+                    const char       **text,
                     font_t*          text_font,
                     color_t*         text_color,
                     anchor_t*        text_anchor,

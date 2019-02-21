@@ -4,6 +4,7 @@
 #include "ei_geometrymanager.h"
 #include "hw_interface.h"
 #include <iostream>
+#include "ei_application.h"
 namespace ei
 {
 
@@ -12,18 +13,19 @@ namespace ei
         corner_radius = new int(default_button_corner_radius);// check this variable is free in destructor
         relief=ei_relief_raised;
         text=nullptr;
-        text_font=default_font;
+        text_font= hw_text_font_create(default_font_filename, font_default_size);
         text_color=font_default_color;
         text_anchor=ei_anc_center;
         img=nullptr;
         img_rect=nullptr;
         img_anchor = new anchor_t{ei_anc_center};
+        clicked=EI_FALSE;
     }
 
 
     Button::~Button()
     {
-
+        hw_text_font_free(text_font);
     }
 
     void Button::draw(surface_t surface,
@@ -37,7 +39,15 @@ namespace ei
         hw_surface_lock(pick_surface);
         //The Rect of the button
         Rect button_rect = Rect(screen_location.top_left,requested_size);
-        draw_button(surface,&button_rect,color,*corner_radius,clipper);
+        if(clicked){
+            Application::getInstance()->invalidate_rect(*content_rect);
+            color.alpha-=100;
+            draw_button(surface,&button_rect,color,*corner_radius,clipper);
+            clicked=EI_FALSE;
+            color.alpha+=100;
+        }else{
+            draw_button(surface,&button_rect,color,*corner_radius,clipper);
+        }
         font_t f = hw_text_font_create(default_font_filename, font_default_size);
         Point p = Point(100,100);
         //The list of points to draw the button
@@ -50,6 +60,7 @@ namespace ei
             Point where = Widget::getAnchorPosition(screen_location, text_anchor);
             draw_text(surface, &where, *text, text_font, &text_color);
         }
+
         for(std::list<Widget*>::iterator it = children.begin();it!= children.end();it++){
             (*it)->draw(surface,pick_surface,clipper);
         }

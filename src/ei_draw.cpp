@@ -418,15 +418,12 @@ void draw_text(surface_t surface, const Point* where,
         fprintf(stderr, "no text or color specified");
         return;
     }
-
     surface_t s_text;
-
     if (font == NULL) {
         s_text = hw_text_create_surface(text, default_font, color);
     } else {
         s_text = hw_text_create_surface(text, font, color);
     }
-
     ei_copy_surface(surface, s_text, where, EI_TRUE);
 
     hw_surface_free(s_text);

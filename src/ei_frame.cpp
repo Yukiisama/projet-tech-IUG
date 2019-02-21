@@ -52,6 +52,7 @@ namespace ei {
             {
                 (*it)->draw(surface, pick_surface, clipper);
             }
+
         }
        
     }
