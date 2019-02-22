@@ -8,7 +8,7 @@ namespace ei {
 
 ///modif///
 Placer::Placer():GeometryManager(){
-    /*
+    
     set_widget(nullptr);
     set_placer(true);
     set_anchor(ei_anc_northwest);
@@ -20,7 +20,7 @@ Placer::Placer():GeometryManager(){
     set_rel_y(0.0);
     set_rel_width(0.0);
     set_rel_height(0.0);
-    */
+    
 }
 
 Placer::~Placer(){
@@ -103,10 +103,14 @@ Placer::~Placer(){
                     }
 
     void Placer::run (Widget* widget){
-        if (!widget || !widget->getParent()) return;
+        if (!widget ) return;
+        if (widget){
+            if(!widget->getParent())
+                return;
+        }
 
-        // Creating the new rectangle and setting the right values into it
-        Rect new_rect = Rect();
+            // Creating the new rectangle and setting the right values into it
+            Rect new_rect = Rect();
 
         // Positioning
         int temp_x = widget->getParent()->getScreenLocation()->top_left.x(), temp_y = widget->getParent()->getScreenLocation()->top_left.y();
@@ -175,12 +179,16 @@ Placer::~Placer(){
 
         // Calling run for the widget's children
         int children_list_size = widget->getChildren().size();
-        if (children_list_size > 0){
-            for (std::list<Widget*>::iterator it = widget->getChildren().begin();it!= widget->getChildren().end();it++){
-                if ((*it)->getGeom_manager()) (*it)->getGeom_manager()->run(*it);
+        
+        if (!widget->getChildren().empty())
+        {   
+            /*
+            for (list<Widget*>::iterator it = widget->getChildren().begin();it!= widget->getChildren().end();++it){
+                //if ((*it)->getGeom_manager()) (*it)->getGeom_manager()->run(*it);
             }
+            */
         }
-
+        
         return;
     }
 
