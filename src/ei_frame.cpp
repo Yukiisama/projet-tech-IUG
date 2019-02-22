@@ -3,8 +3,7 @@
 #include "ei_widget.h"
 #include "ei_geometrymanager.h"
 #include "hw_interface.h"
-#include <iostream>
-#include "ei_application.h"
+
 namespace ei {
 
     Frame::Frame(Widget *parent):Widget("frame",parent){
@@ -34,6 +33,17 @@ namespace ei {
                     surface_t pick_surface,
                     Rect *clipper)
     {
+
+
+        if(!surface){
+          fprintf(stderr,"Error occured for Frame::draw - surface is not valid\n");
+          exit(EXIT_FAILURE);
+        }
+
+        if(!pick_surface){
+          fprintf(stderr,"Error occured for Frame::draw - pick_surface is not vaild\n");
+          exit(EXIT_FAILURE);
+        }
         linked_point_t list_frame;
         list_frame.push_back(screen_location.top_left);
         list_frame.push_back(Point(screen_location.top_left.x()+requested_size.width(),
@@ -42,6 +52,7 @@ namespace ei {
                                    screen_location.top_left.y()+requested_size.height()));
         list_frame.push_back(Point(screen_location.top_left.x(),
                                    screen_location.top_left.y()+requested_size.height()));
+
         hw_surface_lock(pick_surface);
         pick_color.alpha=255;
         draw_polygon(pick_surface,list_frame,pick_color,clipper);
@@ -53,8 +64,8 @@ namespace ei {
                 (*it)->draw(surface, pick_surface, clipper);
             }
 
+
         }
-       
     }
 
     /**

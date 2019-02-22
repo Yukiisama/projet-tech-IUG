@@ -26,11 +26,24 @@ Widget::Widget(){
 Widget::Widget(const widgetclass_name_t& class_name, Widget* parent){
   this->name = class_name;
   if(parent){
-    this->parent=parent;
-    this->parent->children.push_back(this); //add this widget as children to the parent in parameter.
+      if(class_name == "Toplevel"){
+          Toplevel* top = (Toplevel*) parent;
+          if(top->getSetted()==EI_TRUE){
+              this->parent=top->getIn_window();
+              top->children.push_back(this); //add this widget as children to the parent in parameter.
+          }
+          else{
+              this->parent=parent;
+              this->parent->children.push_back(this); //add this widget as children to the parent in parameter.
+          }
+      }
+      else{
+          this->parent=parent;
+          this->parent->children.push_back(this); //add this widget as children to the parent in parameter.
+      }
+
   }else{
     this->parent = NULL;
-    this->name = "root";
   }
   this->pick_id=s_idGenerator++; //increase by 1 to assure the uniqueness of the generated Ids
   this->pick_color=ConvertIdToColor(this->pick_id);
@@ -61,9 +74,7 @@ Widget::Widget(const widgetclass_name_t& class_name, Widget* parent){
  * @param   clipper     If not NULL, the drawing is restricted within this rectangle
  *                      (expressed in the surface reference frame).
  */
-
 void Widget::draw (surface_t surface, surface_t pick_surface, Rect* clipper){
-  std::cout << getName() << std::endl;
   if(surface == NULL){
     fprintf(stderr,"Error occured for Widget::draw - surface is NULL\n");
     exit(EXIT_FAILURE);
@@ -183,6 +194,7 @@ uint32_t Widget::ConvertColorToId(color_t color){
                     (color.green << 8)  | (color.blue << 0));
 
 }
+
 widgetclass_name_t Widget::getName(){
     if(!this->name.empty()) return this->name ;
     return "name is null" ;

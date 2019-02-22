@@ -48,6 +48,7 @@ namespace ei
         }
         font_t f = hw_text_font_create(default_font_filename, font_default_size);
         Point p = Point(100,100);
+
         //The list of points to draw the button
         linked_point_t list_frame = rounded_frame(button_rect, *corner_radius, BT_FULL);
         pick_color.alpha=255;
