@@ -13,7 +13,10 @@
 #include "ei_draw.h"
 
 #include <functional>
+#include <sstream>
+#include <string>
 
+using namespace std;
 namespace ei {
 
 struct Event;
@@ -82,6 +85,9 @@ public:
     uint32_t ConvertColorToId(color_t color);
     widgetclass_name_t getName(); //used to test in eventmanager
     Rect getRect();               //used to add to invalidate_rec in Application to update
+    Size getRequested_size();     //used to initialiser default value of requested width and height in geomanager
+    void setGeom_manager(GeometryManager* geom_manager);
+    virtual string to_string();
     void configure(Size *requested_size, const color_t *color);
 
   protected:
@@ -132,7 +138,7 @@ public:
     Frame(Widget* parent);
 
     virtual ~Frame();
-
+    virtual string to_string();
     virtual void draw (surface_t surface,
                        surface_t pick_surface,
                        Rect*     clipper);

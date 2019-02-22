@@ -54,8 +54,15 @@ namespace ei {
     invalidate_rect(window_rect);
 	
     while(running){
-      //widget_root->getGeom_manager()->run(widget_root);
-			Event* ev = hw_event_wait_next();
+      std::list<Widget *> w_geo = widget_root->getChildren();
+      for(std::list<Widget *>::iterator it =w_geo.begin() ;it!=w_geo.end();++it){
+        if((*it)->getGeom_manager()){
+          (*it)->getGeom_manager()->run((*it));
+          std::cout<<"after run \n"<<std::endl;
+          std::cout << (*it)->to_string()<<std::endl;
+        }
+      }
+      Event *ev = hw_event_wait_next();
       EventManager::getInstance().eventHandler(ev);
       KeyEvent * ev_key = static_cast<KeyEvent*>  (ev);
       if( ev->type == ei_ev_keydown && ev_key->key_sym == ALLEGRO_KEY_ESCAPE)  // 59 == escape

@@ -116,4 +116,22 @@ namespace ei {
         if(img_rect) this->img_rect = *img_rect;
         if(img_anchor)this->img_anchor = img_anchor;
     }
+
+    string Frame::to_string()
+    {
+        stringstream stream;
+        stream << Widget::to_string();
+        stream << "relief_t relief : " << relief << "\n";
+        stream << "char** text : " << text << "\n";
+        stream << "font_t text_font : " << text_font << "\n";
+        stream << "color_t text_color : "
+               << "Red : " << (int)text_color.red << " Green : " << (int)text_color.green << " Blue : " << (int)text_color.blue << " Alpha : " << (int)text_color.alpha << "\n";
+        stream << "anchor_t text_anchor : " << text_anchor << "\n";
+        stream << "surface_t* img : " << img << "\n";
+        if (img_rect)
+            stream << "Rect* img_rect : "
+                   << "Width : " << img_rect->size.width() << " Height : " << img_rect->size.height() << " X : " << img_rect->top_left.x() << " Y : " << img_rect->top_left.y() << "\n";
+        stream << "anchor_t* img_anchor : " << img_anchor << "\n";
+        return stream.str();
+    }
 }

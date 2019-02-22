@@ -35,7 +35,8 @@ Widget::Widget(const widgetclass_name_t& class_name, Widget* parent){
   this->pick_id=s_idGenerator++; //increase by 1 to assure the uniqueness of the generated Ids
   this->pick_color=ConvertIdToColor(this->pick_id);
   this->geom_manager = NULL;
-  this->requested_size=(100,100); //set a default size
+  this->requested_size.width()=100; //set a default size
+  this->requested_size.height()=100;
   this->screen_location = Rect(Point(0,0),requested_size); //set up default screen location
   this->content_rect = &screen_location;
   this->color=ei::default_background_color; //use default background color from ei_types
@@ -191,6 +192,14 @@ Rect Widget::getRect(){
   return *content_rect;
 }
 
+Size Widget::getRequested_size(){
+  return requested_size;
+}
+
+void Widget::setGeom_manager(GeometryManager *geom_manager){
+  this->geom_manager=geom_manager;
+}
+
 void Widget::configure(Size * requested_size, const color_t * color){
   //assign requested_size if it's not nullptr else this->requested_size stay unchange.
 
@@ -202,5 +211,27 @@ void Widget::configure(Size * requested_size, const color_t * color){
     this->color.blue = color->blue;
     this->color.alpha = color->alpha;
   }
+}
+
+string Widget::to_string()
+{
+  stringstream stream;
+  stream << "widgetclass_name_t name : " << name << "\n";
+  stream << "uint32_t s_idGenerator : " << s_idGenerator << "\n";
+  stream << "uint32_t pick_id : " << pick_id << "\n";
+  stream << "color_t pick_color : "
+         << "Red : " << (int)pick_color.red << " Green : " << (int)pick_color.green << " Blue : " << (int)pick_color.blue << " Alpha : " << (int)pick_color.alpha << "\n";
+  stream << "Widget* parent : " << parent << "\n";
+  stream << "GeometryManager* geom_manager : " << geom_manager << "\n";
+  stream << "Size requested_size : "
+         << "Width : " << requested_size.width() << " Height : " << requested_size.height() << "\n";
+  stream << "Rect screen_location : "
+         << "Width : " << screen_location.size.width() << " Height : " << screen_location.size.height() << " X : " << screen_location.top_left.x() << " Y : " << screen_location.top_left.y() << "\n";
+  stream << "Rect* content_rect : "
+         << "Width : " << content_rect->size.width() << " Height : " << content_rect->size.height() << " X : " << content_rect->top_left.x() << " Y : " << content_rect->top_left.y() << "\n";
+  stream << "color_t color : "
+         << "Red : " << (int)color.red << " Green : " << (int)color.green << " Blue : " << (int)color.blue << " Alpha : " << (int)color.alpha << "\n";
+  stream << "int border_width : " << border_width << "\n";
+  return stream.str();
 }
 }
