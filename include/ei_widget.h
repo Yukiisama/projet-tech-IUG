@@ -256,6 +256,9 @@ public:
 
     virtual ~Toplevel();
 
+    Frame* getIn_window() const;
+    bool_t getSetted() const;
+
     virtual void draw (surface_t surface,
                        surface_t pick_surface,
                        Rect*     clipper);
@@ -286,13 +289,16 @@ public:
                     axis_set_t*     resizable,
                     Size*           min_size);
 private:
-    Size*          requested_size;
-    color_t*        color;
     int*            border_width;
+    double*         top_bar_height;//The width of the top bar
     const char**    title;
     bool_t*         closable;
     axis_set_t*     resizable;
     Size*           min_size;
+    Button*         button_close;//The button that close the window
+    Frame*          in_window;//The reachable zone of the window
+    Frame*          resize_button;//The button at the right bottom to resize the window
+    bool_t          setted=EI_FALSE;//True if the toplevel is setted
 };
 
 }

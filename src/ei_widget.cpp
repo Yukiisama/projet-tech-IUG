@@ -26,11 +26,24 @@ Widget::Widget(){
 Widget::Widget(const widgetclass_name_t& class_name, Widget* parent){
   this->name = class_name;
   if(parent){
-    this->parent=parent;
-    this->parent->children.push_back(this); //add this widget as children to the parent in parameter.
+      if(class_name == "Toplevel"){
+          Toplevel* top = (Toplevel*) parent;
+          if(top->getSetted()==EI_TRUE){
+              this->parent=top->getIn_window();
+              top->children.push_back(this); //add this widget as children to the parent in parameter.
+          }
+          else{
+              this->parent=parent;
+              this->parent->children.push_back(this); //add this widget as children to the parent in parameter.
+          }
+      }
+      else{
+          this->parent=parent;
+          this->parent->children.push_back(this); //add this widget as children to the parent in parameter.
+      }
+
   }else{
     this->parent = NULL;
-    this->name = "root";
   }
   this->pick_id=s_idGenerator++; //increase by 1 to assure the uniqueness of the generated Ids
   this->pick_color=ConvertIdToColor(this->pick_id);
@@ -60,9 +73,7 @@ Widget::Widget(const widgetclass_name_t& class_name, Widget* parent){
  * @param   clipper     If not NULL, the drawing is restricted within this rectangle
  *                      (expressed in the surface reference frame).
  */
-
 void Widget::draw (surface_t surface, surface_t pick_surface, Rect* clipper){
-  std::cout << getName() << std::endl;
   if(surface == NULL){
     fprintf(stderr,"Error occured for Widget::draw - surface is NULL\n");
     exit(EXIT_FAILURE);
@@ -78,7 +89,6 @@ void Widget::draw (surface_t surface, surface_t pick_surface, Rect* clipper){
   }
 }
 
-<<<<<<< HEAD
 Point Widget::getAnchorPosition(Rect rect, anchor_t anchor) const{
     int x, y;
     if(anchor == ei_anc_center){
@@ -119,8 +129,6 @@ Point Widget::getAnchorPosition(Rect rect, anchor_t anchor) const{
     }
     return Point(x,y);
 }
-=======
->>>>>>> 9f97565becde406a33dd67467bf7d73344a583e3
 
 /**
  * \brief   Method that is called to notify the widget that its geometry has been modified
@@ -138,31 +146,21 @@ void Widget::geomnotify (Rect rect){
 
 Widget* Widget::pick(uint32_t id){
   //nullptr is returned if id is not belong to the existing widget id.
-  /*if(id <0 || id>this->s_idGenerator){
-    std::cout << "out\n";
+  if(id <0 || id>this->s_idGenerator){
     return nullptr;
-  }*/
+  }
   //case where id is equals to current widget's id.
   if(id==this->pick_id){
-    std::cout << getName()<<std::endl;
     return this;  //return current widget;
-  }else if(!children.empty()){
+  }else{
     for (std::list<Widget *>::iterator it = children.begin(); it != children.end(); ++it)
     {
-      if ((*it)->getPick_id() == id) {
-        std::cout << "found\n";
-        return *(it);
-      }
+      if ((*it)->getPick_id() == id) return *(it);
       Widget *res = (*it)->pick(id); //recursive
-      if(res){
-          std::cout << "found\n";
-          return res;
-        
-      }
+      if(res->pick_id==id) return res;
     }
+    return nullptr;
   }
-  return nullptr;
-  
 }
 uint32_t Widget::getPick_id() const{
   return this->pick_id;
@@ -187,7 +185,7 @@ Rect* Widget::getScreenLocation(){
 color_t Widget::ConvertIdToColor(uint32_t id){
 
   color_t color;
-  color.alpha = (unsigned char)255;
+  color.alpha = (unsigned char)(id >> 24);
   color.red = (unsigned char)(id >> 16);
   color.green = (unsigned char)(id >> 8);
   color.blue = (unsigned char)(id >> 0);
@@ -199,9 +197,6 @@ uint32_t Widget::ConverColorToId(color_t color){
   return (uint32_t)((color.alpha << 24) | (color.red << 16) |
                     (color.green << 8)  | (color.blue << 0));
 
-}
-widgetclass_name_t Widget::getName(){
-  return this->name;
 }
 
 void Widget::configure(Size * requested_size, const color_t * color){

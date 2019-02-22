@@ -38,9 +38,9 @@ namespace ei
         //The Rect of the button
         Rect button_rect = Rect(screen_location.top_left,requested_size);
         draw_button(surface,&button_rect,color,*corner_radius,clipper);
-        font_t f = hw_text_font_create(default_font_filename, font_default_size);
+        /*font_t f = hw_text_font_create(default_font_filename, font_default_size);
         Point p = Point(100,100);
-        draw_text(surface,&p,*text,f,&text_color);
+        draw_text(surface,&p,*text,f,&text_color);*/
         //The list of points to draw the button
         linked_point_t list_frame = rounded_frame(button_rect, *corner_radius, BT_FULL);
         draw_polygon(pick_surface, list_frame, pick_color, clipper);
