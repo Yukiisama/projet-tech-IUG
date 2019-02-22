@@ -41,12 +41,10 @@ namespace ei
         Rect button_rect = Rect(screen_location.top_left,requested_size);
         if(clicked){
             Application::getInstance()->invalidate_rect(*content_rect);
-            color.alpha-=100;
-            draw_button(surface,&button_rect,color,*corner_radius,clipper);
+            draw_button(surface,&button_rect,color,*corner_radius,clipper,clicked);
             clicked=EI_FALSE;
-            color.alpha+=100;
         }else{
-            draw_button(surface,&button_rect,color,*corner_radius,clipper);
+            draw_button(surface,&button_rect,color,*corner_radius,clipper,clicked);
         }
         font_t f = hw_text_font_create(default_font_filename, font_default_size);
         Point p = Point(100,100);

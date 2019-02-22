@@ -387,7 +387,7 @@ void draw_polygon(surface_t surface, const linked_point_t &point_list,
     delete[] edge_table;
 }
 
-void draw_button(surface_t surface, Rect *rect, const color_t color, int radius, const Rect *clipper)
+void draw_button(surface_t surface, Rect *rect, const color_t color, int radius, const Rect *clipper,bool_t clicked)
 {
     color_t tint;
     tint.red = color.red + (0.25 * (255-color.red));
@@ -399,15 +399,24 @@ void draw_button(surface_t surface, Rect *rect, const color_t color, int radius,
     shade.green = color.green * 0.25;
     shade.blue = color.blue * 0.25;
     shade.alpha = 255;
-
-    draw_polygon(surface, rounded_frame(*rect, radius, BT_TOP), tint,clipper);
-    draw_polygon(surface, rounded_frame(*rect, radius, BT_BOTTOM), shade,clipper);
+    if(clicked){
+        draw_polygon(surface, rounded_frame(*rect, radius, BT_BOTTOM), tint, clipper);
+        draw_polygon(surface, rounded_frame(*rect, radius, BT_TOP), shade, clipper);
+    }else
+    {
+        draw_polygon(surface, rounded_frame(*rect, radius, BT_TOP), tint, clipper);
+        draw_polygon(surface, rounded_frame(*rect, radius, BT_BOTTOM), shade, clipper);
+    }
+    
+  
     Rect *inner_rect = rect;
     inner_rect->top_left.x() = inner_rect->top_left.x() + radius / 2;
     inner_rect->top_left.y() = inner_rect->top_left.y() + radius / 2;
     inner_rect->size.width() = inner_rect->size.width() - radius;
     inner_rect->size.height() = inner_rect->size.height() - radius;
     draw_polygon(surface, rounded_frame(*inner_rect, radius, BT_FULL), color,clipper);
+
+    
 }
 
 void draw_text(surface_t surface, const Point* where,
