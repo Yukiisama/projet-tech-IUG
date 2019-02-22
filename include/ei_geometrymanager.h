@@ -11,8 +11,12 @@
 #ifndef EI_GEOMETRYMANAGER_H
 #define EI_GEOMETRYMANAGER_H
 
+#include <string>
+
 #include "ei_types.h"
 #include "ei_widget.h"
+
+using namespace std;
 
 namespace ei {
 
@@ -46,55 +50,60 @@ public:
      * @param widget    The widget instance that must be forgotten by the geometry manager.
      */
     virtual void release (Widget* widget) = 0;
+
     virtual string to_string();
+    
 
-    //GETTERS AND SETTERS
+	//GETTERS AND SETTERS
+	
+     bool is_placer();
+	 void set_placer(bool state);
 
-    bool is_placer();
-    void set_placer(bool state);
+     Widget* get_widget();
+	 void set_widget(Widget* new_widget);
 
-    Widget *get_widget();
-    void set_widget(Widget *new_widget);
+     anchor_t get_anchor();
+	 void set_anchor(anchor_t new_anchor);
 
-    anchor_t *get_anchor();
-    void set_anchor(anchor_t *new_anchor);
+     int get_x();
+	 void set_x(int new_x);
 
-    int *get_x();
-    void set_x(int *new_x);
+     int get_y();
+	 void set_y(int new_y);
 
-    int *get_y();
-    void set_y(int *new_y);
+     float get_width();
+	 void set_width(float new_width);
 
-    float *get_width();
-    void set_width(float *new_width);
+     float get_height();
+	 void set_height(float new_height);
 
-    float *get_height();
-    void set_height(float *new_height);
+     float get_rel_x();
+	 void set_rel_x(float new_rel_x);
 
-    float *get_rel_x();
-    void set_rel_x(float *new_rel_x);
+     float get_rel_y();
+	 void set_rel_y(float new_rel_y);
 
-    float *get_rel_y();
-    void set_rel_y(float *new_rel_y);
+     float get_rel_width();
+	 void set_rel_width(float new_rel_width);
 
-    float *get_rel_width();
-    void set_rel_width(float *new_rel_width);
+     float get_rel_height();
+	 void set_rel_height(float new_rel_height);
 
-    float *get_rel_height();
-    void set_rel_height(float *new_rel_height);
 
-  protected:
-    bool placer = false;
-    Widget *widget;
-    anchor_t *anchor;
-    int *x;
-    int *y;
-    float *width;
-    float *height;
-    float *rel_x;
-    float *rel_y;
-    float *rel_width;
-    float *rel_height;
+	
+	 
+private:
+	 bool placer = false;
+	 Widget*    widget;
+     anchor_t*  anchor;
+     int*       x;
+     int*       y;
+     float*     width;
+     float*     height;
+     float*     rel_x;
+     float*     rel_y;
+     float*     rel_width;
+     float*     rel_height;
 };
 
 

@@ -54,7 +54,7 @@ namespace ei
         draw_polygon(pick_surface, list_frame, pick_color, clipper);
         hw_surface_unlock(pick_surface);
         if (text)
-        {
+        {   
             Point where = Widget::getAnchorPosition(screen_location, text_anchor);
             draw_text(surface, &where, *text, text_font, &text_color);
         }
