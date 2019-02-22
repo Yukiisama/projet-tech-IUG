@@ -44,7 +44,7 @@ Widget::Widget(const widgetclass_name_t& class_name, Widget* parent){
 
   }else{
     this->parent = NULL;
-    this->name="root"
+    this->name="root";
   }
   this->pick_id=s_idGenerator++; //increase by 1 to assure the uniqueness of the generated Ids
   this->pick_color=ConvertIdToColor(this->pick_id);
