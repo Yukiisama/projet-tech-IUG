@@ -58,8 +58,8 @@ namespace ei {
       for(std::list<Widget *>::iterator it =w_geo.begin() ;it!=w_geo.end();++it){
         if((*it)->getGeom_manager()){
           (*it)->getGeom_manager()->run((*it));
-          std::cout<<"after run \n"<<std::endl;
-          std::cout << (*it)->to_string()<<std::endl;
+          //std::cout<<"after run \n"<<std::endl;
+          //std::cout << (*it)->to_string()<<std::endl;
         }
       }
       Event *ev = hw_event_wait_next();

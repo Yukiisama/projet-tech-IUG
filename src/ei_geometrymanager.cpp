@@ -25,6 +25,24 @@ GeometryManager::GeometryManager(){
 //Destructor
 GeometryManager::~GeometryManager()
 {
+    if (anchor)
+        delete this->anchor;
+    if (x)
+        delete this->x;
+    if (y)
+        delete this->y;
+    if (widget)
+        delete this->widget;
+    if (height)
+        delete this->height;
+    if (rel_x)
+        delete this->rel_x;
+    if (rel_y)
+        delete this->rel_y;
+    if (rel_width)
+        delete this->rel_width;
+    if (rel_height)
+        delete this->rel_height;
 }
 
 bool GeometryManager::is_placer()
