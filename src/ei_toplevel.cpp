@@ -10,13 +10,13 @@ namespace ei {
 
 Toplevel::Toplevel(Widget *parent) : Widget("Toplevel", parent){
     color = default_background_color;
-    border_width = 4;
-    top_bar_height = 20;
-    title = "Toplevel";
-    closable = EI_TRUE;
-    resizable = ei_axis_both;
-    min_size = {160,120};
-    /*
+    border_width = new int(4);
+    top_bar_height = new double(20);
+    title = new const char*("Toplevel");
+    closable = new bool_t(EI_TRUE);
+    resizable = new axis_set_t (ei_axis_both);
+    min_size = new Size(160,120);
+
     ///Button close
     button_close = new Button(this);
     Size button_size = Size(24.0,24.0);
@@ -24,32 +24,32 @@ Toplevel::Toplevel(Widget *parent) : Widget("Toplevel", parent){
     button_close->configure(&button_size,&button_color,
                             NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
 
+    ///Resize button
+    resize_button = new Button(this);
+    Size resize_button_window_size = Size(24.0,24.0);
+    resize_button->configure(&resize_button_window_size,&color,
+                             NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
+
     ///Frame zone
     in_window = new Frame(this);
-    Size in_window_size = Size(requested_size.width()-*border_width*2,
-                               requested_size.height()-(*border_width)-(*top_bar_height));
     color_t in_window_color = {255,255,255,255};
-    in_window->configure(&in_window_size,&in_window_color,
+    in_window->configure(&requested_size,&in_window_color,
                          NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
-
-    ///Resize button
-    resize_button = new Frame(this);
-    Size resize_button_window_size = Size(30.0,30.0);
-    in_window->configure(&in_window_size,&in_window_color,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
-    setted = EI_TRUE;
-    */
 }
 
     Toplevel::~Toplevel(){
     }
 
-    Frame* Toplevel::getIn_window() const{
-        //return in_window;
-        return nullptr;
+    Button* Toplevel::getButton_close() const{
+        return button_close;
     }
 
-    bool_t Toplevel::getSetted() const{
-        return setted;
+    Button* Toplevel::getResize_button() const{
+        return resize_button;
+    }
+
+    Frame* Toplevel::getIn_window() const{
+        return in_window;
     }
 
     void Toplevel::draw (surface_t surface,
@@ -65,37 +65,37 @@ Toplevel::Toplevel(Widget *parent) : Widget("Toplevel", parent){
 
         ///Outside the window
 
-        float border = (float)border_width;
-        float top_bar = (float)top_bar_height;
+        float border = (float)*border_width;
+        float top_bar = (float)*top_bar_height;
 
         list_point.push_back(Point(screen_location.top_left.x()+border,
+                                   screen_location.top_left.y()+top_bar));
+        list_point.push_back(Point(screen_location.top_left.x(),
+                                   screen_location.top_left.y()+top_bar));
+        list_point.push_back(Point(screen_location.top_left.x(),
+                                   screen_location.top_left.y()+requested_size.height()+top_bar+border));
+        list_point.push_back(Point(screen_location.top_left.x()+requested_size.width()+2*border,
+                                   screen_location.top_left.y()+requested_size.height()+top_bar+border));
+        list_point.push_back(Point(screen_location.top_left.x()+requested_size.width()+2*border,
                                    screen_location.top_left.y()));
         list_point.push_back(screen_location.top_left);
 
         list_point.push_back(Point(screen_location.top_left.x(),
-                                   screen_location.top_left.y()+requested_size.height()));
-        list_point.push_back(Point(screen_location.top_left.x()+requested_size.width(),
-                                   screen_location.top_left.y()+requested_size.height()));
-        list_point.push_back(Point(screen_location.top_left.x()+requested_size.width(),
-                                   screen_location.top_left.y()));
-        list_point.push_back(Point(screen_location.top_left.x()+border,
-                                   screen_location.top_left.y()));
-        list_point.push_back(Point(screen_location.top_left.x()+border,
                                    screen_location.top_left.y()+top_bar));
-        list_point.push_back(Point(screen_location.top_left.x()+requested_size.width()-border,
+        list_point.push_back(Point(screen_location.top_left.x()+requested_size.width()+border,
                                    screen_location.top_left.y()+top_bar));
-        list_point.push_back(Point(screen_location.top_left.x()+requested_size.width()-border,
-                                   screen_location.top_left.y()+requested_size.height()-border));
+        list_point.push_back(Point(screen_location.top_left.x()+requested_size.width()+border,
+                                   screen_location.top_left.y()+requested_size.height()+top_bar));
         list_point.push_back(Point(screen_location.top_left.x()+border,
-                                   screen_location.top_left.y()+requested_size.height()-border));
+                                   screen_location.top_left.y()+requested_size.height()+top_bar));
         draw_polygon(surface,list_point,color,clipper);
 
         ///Title of the window
 
         color_t color_white = {255,255,255,255};
 
-        Point where = Point(screen_location.top_left.x()+40,screen_location.top_left.y()+top_bar_height*0.05);
-        draw_text(surface,&where,title,hw_text_font_create(default_font_filename, top_bar_height*0.8),&color_white);
+        Point where = Point(screen_location.top_left.x()+40,screen_location.top_left.y()+*top_bar_height*0.05);
+        draw_text(surface,&where,*title,hw_text_font_create(default_font_filename, *top_bar_height*0.8),&color_white);
 
         for(std::list<Widget*>::iterator it = children.begin();it!= children.end();it++){
             (*it)->draw(surface,pick_surface,clipper);
@@ -129,15 +129,13 @@ Toplevel::Toplevel(Widget *parent) : Widget("Toplevel", parent){
                               axis_set_t*     resizable,
                               Size*           min_size){
         Widget::configure(requested_size,color);
-        if(title) this->title = *title;
-        if(border_width) this->border_width = *border_width;
-        if(closable) this->closable = *closable;
-        if(resizable) this->resizable = *resizable;
-        if(min_size) this->min_size = *min_size;
-        Size in_window_size = Size(this->requested_size.width() - this->border_width * 2,
-                                   this->requested_size.height() - (this->border_width) - (top_bar_height));
-        color_t in_window_color = {255, 255, 255, 255};
-        //in_window->configure(&in_window_size, &in_window_color,
-        //                     NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+        if(title) this->title = title;
+        if(border_width) this->border_width = border_width;
+        if(closable) this->closable = closable;
+        if(resizable) this->resizable = resizable;
+        if(min_size) this->min_size = min_size;
+
+        in_window->configure(&this->requested_size,NULL,
+                             NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
     }
 }
