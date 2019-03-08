@@ -15,9 +15,13 @@ linked_point_t arc(const Point& center, float radius, int start_angle, int end_a
     float angle = float(end_angle - start_angle) * M_PI/180.f;
     int nbpts = radius * fabs(angle);
     for(int i=0; i<=nbpts; i++){
-        Point p = Point(round(radius * cosf(start_angle * M_PI/180.f + (float)i * angle / (float)nbpts) + center.x()),
-                        round(radius * sinf(start_angle * M_PI/180.f + (float)i * angle / (float)nbpts) + center.y()));
-        list.push_back(p);
+        if(radius>0.f){
+            Point p = Point(round(radius * cosf(start_angle * M_PI / 180.f + (float)i * angle / (float)nbpts) + center.x()),
+                            round(radius * sinf(start_angle * M_PI / 180.f + (float)i * angle / (float)nbpts) + center.y()));
+            list.push_back(p);
+        }else{
+            list.push_back(center);
+        }
     }
     return list;
 }

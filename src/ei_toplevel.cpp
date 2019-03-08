@@ -10,13 +10,13 @@ namespace ei {
 
 Toplevel::Toplevel(Widget *parent) : Widget("Toplevel", parent){
     color = default_background_color;
-    border_width = new int(4);
-    top_bar_height = new double(20);
-    title = new const char*("Toplevel");
-    closable = new bool_t(EI_TRUE);
-    resizable = new axis_set_t (ei_axis_both);
-    min_size = new Size(160,120);
-
+    border_width = 4;
+    top_bar_height = 20;
+    title = "Toplevel";
+    closable = EI_TRUE;
+    resizable = ei_axis_both;
+    min_size = {160,120};
+    /*
     ///Button close
     button_close = new Button(this);
     Size button_size = Size(24.0,24.0);
@@ -37,13 +37,15 @@ Toplevel::Toplevel(Widget *parent) : Widget("Toplevel", parent){
     Size resize_button_window_size = Size(30.0,30.0);
     in_window->configure(&in_window_size,&in_window_color,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
     setted = EI_TRUE;
+    */
 }
 
     Toplevel::~Toplevel(){
     }
 
     Frame* Toplevel::getIn_window() const{
-        return in_window;
+        //return in_window;
+        return nullptr;
     }
 
     bool_t Toplevel::getSetted() const{
@@ -63,8 +65,8 @@ Toplevel::Toplevel(Widget *parent) : Widget("Toplevel", parent){
 
         ///Outside the window
 
-        float border = (float)*border_width;
-        float top_bar = (float)*top_bar_height;
+        float border = (float)border_width;
+        float top_bar = (float)top_bar_height;
 
         list_point.push_back(Point(screen_location.top_left.x()+border,
                                    screen_location.top_left.y()));
@@ -92,8 +94,8 @@ Toplevel::Toplevel(Widget *parent) : Widget("Toplevel", parent){
 
         color_t color_white = {255,255,255,255};
 
-        Point where = Point(screen_location.top_left.x()+40,screen_location.top_left.y()+*top_bar_height*0.05);
-        draw_text(surface,&where,*title,hw_text_font_create(default_font_filename, *top_bar_height*0.8),&color_white);
+        Point where = Point(screen_location.top_left.x()+40,screen_location.top_left.y()+top_bar_height*0.05);
+        draw_text(surface,&where,title,hw_text_font_create(default_font_filename, top_bar_height*0.8),&color_white);
 
         for(std::list<Widget*>::iterator it = children.begin();it!= children.end();it++){
             (*it)->draw(surface,pick_surface,clipper);
@@ -127,10 +129,15 @@ Toplevel::Toplevel(Widget *parent) : Widget("Toplevel", parent){
                               axis_set_t*     resizable,
                               Size*           min_size){
         Widget::configure(requested_size,color);
-        if(title) this->title = title;
-        if(border_width) this->border_width = border_width;
-        if(closable) this->closable = closable;
-        if(resizable) this->resizable = resizable;
-        if(min_size) this->min_size = min_size;
+        if(title) this->title = *title;
+        if(border_width) this->border_width = *border_width;
+        if(closable) this->closable = *closable;
+        if(resizable) this->resizable = *resizable;
+        if(min_size) this->min_size = *min_size;
+        Size in_window_size = Size(this->requested_size.width() - this->border_width * 2,
+                                   this->requested_size.height() - (this->border_width) - (top_bar_height));
+        color_t in_window_color = {255, 255, 255, 255};
+        //in_window->configure(&in_window_size, &in_window_color,
+        //                     NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
     }
 }

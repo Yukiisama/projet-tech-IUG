@@ -26,7 +26,8 @@ Widget::Widget(){
 Widget::Widget(const widgetclass_name_t& class_name, Widget* parent){
   this->name = class_name;
   if(parent){
-      if(class_name == "Toplevel"){
+      /*
+      if(parent->getName() == "Toplevel"){
           Toplevel* top = (Toplevel*) parent;
           if(top->getSetted()==EI_TRUE){
               this->parent=top->getIn_window();
@@ -36,15 +37,15 @@ Widget::Widget(const widgetclass_name_t& class_name, Widget* parent){
               this->parent=parent;
               this->parent->children.push_back(this); //add this widget as children to the parent in parameter.
           }
-      }
-      else{
+      }*/
+      //else{
           this->parent=parent;
           this->parent->children.push_back(this); //add this widget as children to the parent in parameter.
-      }
+      //}
 
   }else{
     this->parent = NULL;
-    this->name="root"
+    this->name="root";
   }
   this->pick_id=s_idGenerator++; //increase by 1 to assure the uniqueness of the generated Ids
   this->pick_color=ConvertIdToColor(this->pick_id);
@@ -93,8 +94,9 @@ void Widget::draw (surface_t surface, surface_t pick_surface, Rect* clipper){
 
 Point Widget::getAnchorPosition(Rect rect, anchor_t anchor) const{
     int x, y;
+    
     if(anchor == ei_anc_center){
-        x = rect.top_left.x()+rect.size.width()/2;
+        x = rect.top_left.x()+requested_size.width()/2;
         y = rect.top_left.y()+requested_size.height()/2;
     }
     if(anchor == ei_anc_north){
