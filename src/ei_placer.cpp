@@ -14,8 +14,8 @@ Placer::Placer():GeometryManager(){
     set_anchor(ei_anc_northwest);
     set_x(0);
     set_y(0);
-    set_width(0);
-    set_height(0);
+    set_width((0.0));
+    set_height((0.0));
     set_rel_x(0.0);
     set_rel_y(0.0);
     set_rel_width(0.0);

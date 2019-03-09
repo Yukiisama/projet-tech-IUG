@@ -185,7 +185,7 @@ namespace ei {
                         const color_t*  color,
                         int*            border_width,
                         relief_t*       relief,
-                        char**          text,
+                        const char**          text,
                         font_t*         text_font,
                         color_t*        text_color,
                         anchor_t*       text_anchor,
@@ -195,7 +195,7 @@ namespace ei {
         //private variables that belongs to frame class
         private:
             relief_t    relief;
-            char**      text;
+            const char**      text;
             font_t      text_font;
             color_t     text_color;
             anchor_t    text_anchor;

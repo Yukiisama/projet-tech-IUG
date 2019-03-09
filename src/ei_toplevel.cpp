@@ -38,6 +38,16 @@ Toplevel::Toplevel(Widget *parent) : Widget("Toplevel", parent){
 }
 
     Toplevel::~Toplevel(){
+        delete border_width;
+        delete top_bar_height;
+        delete title;
+        delete closable;
+        delete resizable;
+        delete min_size;
+        delete button_close;
+        delete resize_button;
+        delete in_window;
+        
     }
 
     Button* Toplevel::getButton_close() const{

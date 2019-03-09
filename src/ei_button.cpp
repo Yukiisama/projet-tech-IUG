@@ -10,7 +10,7 @@ namespace ei
 
     Button::Button(Widget *parent) : Widget("Button", parent){
         border_width = default_button_border_width;
-        corner_radius = new int(default_button_corner_radius);// check this variable is free in destructor
+        corner_radius = new int(default_button_corner_radius);
         relief=ei_relief_raised;
         text=nullptr;
         text_font= hw_text_font_create(default_font_filename, font_default_size);
@@ -26,6 +26,8 @@ namespace ei
     Button::~Button()
     {
         hw_text_font_free(text_font);
+        delete corner_radius;
+        delete img_anchor;
     }
 
     void Button::draw(surface_t surface,
@@ -63,6 +65,7 @@ namespace ei
         for(std::list<Widget*>::iterator it = children.begin();it!= children.end();it++){
             (*it)->draw(surface,pick_surface,clipper);
         }
+        //OUBLIE DIMAGE TODO
     }
 
     /**

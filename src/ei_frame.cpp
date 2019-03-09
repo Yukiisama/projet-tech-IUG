@@ -9,7 +9,7 @@ namespace ei {
     Frame::Frame(Widget *parent):Widget("frame",parent){
         relief=ei_relief_none;
         text=nullptr;
-        text_font=default_font;
+        text_font=hw_text_font_create(default_font_filename, font_default_size);
         text_color=font_default_color;
         text_anchor=ei_anc_center;
         img=nullptr;
@@ -18,7 +18,7 @@ namespace ei {
     }
 
     Frame::~Frame(){
-        //delete this->img_anchor;
+        delete img_anchor;
     }
     /**
      * \brief   Method that draws the widget.
@@ -52,18 +52,23 @@ namespace ei {
                                    screen_location.top_left.y()+requested_size.height()));
         list_frame.push_back(Point(screen_location.top_left.x(),
                                    screen_location.top_left.y()+requested_size.height()));
-
+        
         hw_surface_lock(pick_surface);
         pick_color.alpha=255;
         draw_polygon(pick_surface,list_frame,pick_color,clipper);
         draw_polygon(surface,list_frame,color,clipper);
         hw_surface_unlock(pick_surface);
+        if (text)
+        {
+            Point where = Widget::getAnchorPosition(screen_location, text_anchor);
+            draw_text(surface, &where, *text, text_font, &text_color);
+        }
         if(!children.empty()){
             for (std::list<Widget *>::iterator it = children.begin(); it != children.end(); it++)
             {
                 (*it)->draw(surface, pick_surface, clipper);
             }
-
+        //OUBLIE IMAGE TODO
 
         }
     }
@@ -110,7 +115,7 @@ namespace ei {
                            const color_t*  color,
                            int*            border_width,
                            relief_t*       relief,
-                           char**          text,
+                           const char**          text,
                            font_t*         text_font,
                            color_t*        text_color,
                            anchor_t*       text_anchor,
