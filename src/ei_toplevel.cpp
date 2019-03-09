@@ -24,30 +24,32 @@ Toplevel::Toplevel(Widget *parent) : Widget("Toplevel", parent){
     button_close->configure(&button_size,&button_color,
                             NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
 
+    ///Resize button
+    resize_button = new Button(this);
+    Size resize_button_window_size = Size(24.0,24.0);
+    resize_button->configure(&resize_button_window_size,&color,
+                             NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
+
     ///Frame zone
     in_window = new Frame(this);
-    Size in_window_size = Size(requested_size.width()-*border_width*2,
-                               requested_size.height()-(*border_width)-(*top_bar_height));
     color_t in_window_color = {255,255,255,255};
-    in_window->configure(&in_window_size,&in_window_color,
+    in_window->configure(&requested_size,&in_window_color,
                          NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
-
-    ///Resize button
-    resize_button = new Frame(this);
-    Size resize_button_window_size = Size(30.0,30.0);
-    in_window->configure(&in_window_size,&in_window_color,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
-    setted = EI_TRUE;
 }
 
     Toplevel::~Toplevel(){
     }
 
-    Frame* Toplevel::getIn_window() const{
-        return in_window;
+    Button* Toplevel::getButton_close() const{
+        return button_close;
     }
 
-    bool_t Toplevel::getSetted() const{
-        return setted;
+    Button* Toplevel::getResize_button() const{
+        return resize_button;
+    }
+
+    Frame* Toplevel::getIn_window() const{
+        return in_window;
     }
 
     void Toplevel::draw (surface_t surface,
@@ -67,25 +69,25 @@ Toplevel::Toplevel(Widget *parent) : Widget("Toplevel", parent){
         float top_bar = (float)*top_bar_height;
 
         list_point.push_back(Point(screen_location.top_left.x()+border,
+                                   screen_location.top_left.y()+top_bar));
+        list_point.push_back(Point(screen_location.top_left.x(),
+                                   screen_location.top_left.y()+top_bar));
+        list_point.push_back(Point(screen_location.top_left.x(),
+                                   screen_location.top_left.y()+requested_size.height()+top_bar+border));
+        list_point.push_back(Point(screen_location.top_left.x()+requested_size.width()+2*border,
+                                   screen_location.top_left.y()+requested_size.height()+top_bar+border));
+        list_point.push_back(Point(screen_location.top_left.x()+requested_size.width()+2*border,
                                    screen_location.top_left.y()));
         list_point.push_back(screen_location.top_left);
 
         list_point.push_back(Point(screen_location.top_left.x(),
-                                   screen_location.top_left.y()+requested_size.height()));
-        list_point.push_back(Point(screen_location.top_left.x()+requested_size.width(),
-                                   screen_location.top_left.y()+requested_size.height()));
-        list_point.push_back(Point(screen_location.top_left.x()+requested_size.width(),
-                                   screen_location.top_left.y()));
-        list_point.push_back(Point(screen_location.top_left.x()+border,
-                                   screen_location.top_left.y()));
-        list_point.push_back(Point(screen_location.top_left.x()+border,
                                    screen_location.top_left.y()+top_bar));
-        list_point.push_back(Point(screen_location.top_left.x()+requested_size.width()-border,
+        list_point.push_back(Point(screen_location.top_left.x()+requested_size.width()+border,
                                    screen_location.top_left.y()+top_bar));
-        list_point.push_back(Point(screen_location.top_left.x()+requested_size.width()-border,
-                                   screen_location.top_left.y()+requested_size.height()-border));
+        list_point.push_back(Point(screen_location.top_left.x()+requested_size.width()+border,
+                                   screen_location.top_left.y()+requested_size.height()+top_bar));
         list_point.push_back(Point(screen_location.top_left.x()+border,
-                                   screen_location.top_left.y()+requested_size.height()-border));
+                                   screen_location.top_left.y()+requested_size.height()+top_bar));
         draw_polygon(surface,list_point,color,clipper);
 
         ///Title of the window
@@ -132,5 +134,8 @@ Toplevel::Toplevel(Widget *parent) : Widget("Toplevel", parent){
         if(closable) this->closable = closable;
         if(resizable) this->resizable = resizable;
         if(min_size) this->min_size = min_size;
+
+        in_window->configure(&this->requested_size,NULL,
+                             NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
     }
 }
