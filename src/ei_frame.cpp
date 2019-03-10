@@ -3,6 +3,8 @@
 #include "ei_widget.h"
 #include "ei_geometrymanager.h"
 #include "hw_interface.h"
+#include <iostream>
+
 
 namespace ei {
 
@@ -19,6 +21,7 @@ namespace ei {
 
     Frame::~Frame(){
         delete img_anchor;
+        if(img)delete img;
     }
     /**
      * \brief   Method that draws the widget.
@@ -34,7 +37,7 @@ namespace ei {
                     Rect *clipper)
     {
 
-
+        
         if(!surface){
           fprintf(stderr,"Error occured for Frame::draw - surface is not valid\n");
           exit(EXIT_FAILURE);
@@ -63,14 +66,35 @@ namespace ei {
             Point where = Widget::getAnchorPosition(screen_location, text_anchor);
             draw_text(surface, &where, *text, text_font, &text_color);
         }
+        else if(img){
+            cout<<"img detected"<<endl;
+            hw_surface_lock(surface);
+            
+            Point frameImgRectTopLeft = Point(200, 200);
+            //surface_t a = hw_image_load(DATA_DIR"img.jpg");
+            /*ei::Size frameImgRectSize(30, 40);
+            Rect* frameImgRect = new Rect(frameImgRectTopLeft, frameImgRectSize);*/
+            Point * where = new Point;
+            //cout<<a<<endl;
+            if(img_anchor)    
+                (*where) = Widget::getAnchorPosition(screen_location, *img_anchor);
+            else
+                where=NULL;
+            
+            ei_copy_surface(surface,(*img),where,EI_TRUE);
+            
+            hw_surface_unlock(surface);           
+            
+            //cas IMG RECT a faire 
+        }
         if(!children.empty()){
             for (std::list<Widget *>::iterator it = children.begin(); it != children.end(); it++)
             {
                 (*it)->draw(surface, pick_surface, clipper);
             }
-        //OUBLIE IMAGE TODO
-
         }
+        
+
     }
 
     /**
@@ -128,9 +152,11 @@ namespace ei {
         if(text) this->text = text;
         if(text_font) this->text_font = *text_font;
         if(text_color) this->text_color = *text_color;
-        if(img) this->img = img;
+        
+        if(img) {this->img = new surface_t;(*this->img) = *img;}
+        //if(img) {this->img = new surface_t; surface_t a = hw_image_load(DATA_DIR"img.jpg"); (*this->img) = a;}
         if(img_rect) this->img_rect = *img_rect;
-        if(img_anchor)this->img_anchor = img_anchor;
+        if(img_anchor)(*this->img_anchor) = *img_anchor;
     }
 
     string Frame::to_string()

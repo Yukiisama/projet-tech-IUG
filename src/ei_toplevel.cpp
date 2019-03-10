@@ -47,7 +47,7 @@ Toplevel::Toplevel(Widget *parent) : Widget("Toplevel", parent){
         delete button_close;
         delete resize_button;
         delete in_window;
-        
+
     }
 
     Button* Toplevel::getButton_close() const{
@@ -63,7 +63,7 @@ Toplevel::Toplevel(Widget *parent) : Widget("Toplevel", parent){
     }
 
     void Toplevel::draw (surface_t surface,
-                       surface_t pick_surface,
+                        surface_t pick_surface,
                        Rect*     clipper){
 
         if(surface == nullptr){
