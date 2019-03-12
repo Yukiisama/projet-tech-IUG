@@ -111,13 +111,13 @@ namespace ei {
                         if (it->widget->getPick_id() == w->getPick_id())
                         {   if(event->type==ei_ev_mouse_buttondown){
                                 static_cast<Button *>(it->widget)->clicked=EI_TRUE;
-                                Application::getInstance()->invalidate_rect(it->widget->getRect());
+                                Application::getInstance()->invalidate_rect(it->widget->getContent_rect());
                                 it->callback(it->widget,event,it->user_param);
                                 break;
                             }
                             if(event->type==ei_ev_mouse_buttonup){
                                 static_cast<Button *>(it->widget)->clicked=EI_FALSE;
-                                Application::getInstance()->invalidate_rect(it->widget->getRect());
+                                Application::getInstance()->invalidate_rect(it->widget->getContent_rect());
                                 it->callback(it->widget,event,it->user_param);
                                 break;
                             }
@@ -129,7 +129,7 @@ namespace ei {
             //other types of events
             for(std::vector<param_callback>::iterator it =vec_callback.begin(); it !=vec_callback.end();++it){
                 if(it->widget){
-                    Application::getInstance()->invalidate_rect(it->widget->getRect());
+                    Application::getInstance()->invalidate_rect(it->widget->getContent_rect());
                     it->callback(it->widget,event,it->user_param);
                 }
             }

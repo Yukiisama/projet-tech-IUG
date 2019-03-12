@@ -16,12 +16,11 @@ namespace ei {
         text_anchor=ei_anc_center;
         img=nullptr;
         img_rect=nullptr;
-        img_anchor = new anchor_t{ei_anc_center};
+        img_anchor = ei_anc_center;
     }
 
     Frame::~Frame(){
-        delete img_anchor;
-        if(img)delete img;
+        hw_text_font_free(text_font);
     }
     /**
      * \brief   Method that draws the widget.
@@ -59,34 +58,36 @@ namespace ei {
         hw_surface_lock(pick_surface);
         pick_color.alpha=255;
         draw_polygon(pick_surface,list_frame,pick_color,clipper);
-        draw_polygon(surface,list_frame,color,clipper);
         hw_surface_unlock(pick_surface);
-        if (text)
+        draw_polygon(surface,list_frame,color,clipper);
+        if (text && !img)
         {
-            Point where = Widget::getAnchorPosition(screen_location, text_anchor);
-            draw_text(surface, &where, *text, text_font, &text_color);
+            Point where = anchor_to_pos(screen_location, text_anchor);
+            draw_text(surface, &where, text, text_font, &text_color);
         }
-        else if(img){
-            cout<<"img detected"<<endl;
+        else if(img && !text){
+
             hw_surface_lock(surface);
+            hw_surface_lock(img);
+            if(img_rect){ //case where only subpart of img should be display.
+                for (int i =img_rect->top_left.x();i<img_rect->top_left.x()+img_rect->size.width();i++) {
+                    for (int j = img_rect->top_left.y();j<img_rect->top_left.y()+img_rect->size.height();j++) {
+                        Point pos = Point(i,j);
+                        color_t img_c = hw_get_pixel(img,pos);
+                        hw_put_pixel(surface,pos,img_c);
+                    }
+                }
+            }else {       //default case, display img according to img_anchor.
+                cout<<"img detected"<<endl;
+                Point pos = anchor_to_pos(screen_location,img_anchor);
+                ei_copy_surface(surface,img,&pos,EI_TRUE);
+            }
             
-            Point frameImgRectTopLeft = Point(200, 200);
-            //surface_t a = hw_image_load(DATA_DIR"img.jpg");
-            /*ei::Size frameImgRectSize(30, 40);
-            Rect* frameImgRect = new Rect(frameImgRectTopLeft, frameImgRectSize);*/
-            Point * where = new Point;
-            //cout<<a<<endl;
-            if(img_anchor)    
-                (*where) = Widget::getAnchorPosition(screen_location, *img_anchor);
-            else
-                where=NULL;
-            
-            ei_copy_surface(surface,(*img),where,EI_TRUE);
-            
-            hw_surface_unlock(surface);           
-            
-            //cas IMG RECT a faire 
+            hw_surface_unlock(surface);
+            hw_surface_unlock(img);
+
         }
+        //recursive method that draw all the children.
         if(!children.empty()){
             for (std::list<Widget *>::iterator it = children.begin(); it != children.end(); it++)
             {
@@ -149,14 +150,13 @@ namespace ei {
         if(img && text) fprintf(stderr,"Only one of the parameter \"text\" and \"img\" should be used (i.e. non-NULL).");
         Widget::configure(requested_size,color);
         if(relief) this->relief = *relief;
-        if(text) this->text = text;
+        if(text) this->text = *text;
         if(text_font) this->text_font = *text_font;
         if(text_color) this->text_color = *text_color;
-        
-        if(img) {this->img = new surface_t;(*this->img) = *img;}
+        if(img) this->img = *img;
         //if(img) {this->img = new surface_t; surface_t a = hw_image_load(DATA_DIR"img.jpg"); (*this->img) = a;}
         if(img_rect) this->img_rect = *img_rect;
-        if(img_anchor)(*this->img_anchor) = *img_anchor;
+        if(img_anchor)this->img_anchor = *img_anchor;
     }
 
     string Frame::to_string()

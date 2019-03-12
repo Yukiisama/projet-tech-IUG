@@ -48,39 +48,39 @@ namespace ei {
      *    \ref app_quit_request is called.
      */
     void Application::run(){
-		running = true;
-    double current_time ;
-    Rect window_rect = hw_surface_get_rect(root_window);
-    invalidate_rect(window_rect);
-	
-    while(running){
-      std::list<Widget *> w_geo = widget_root->getChildren();
-      for(std::list<Widget *>::iterator it =w_geo.begin() ;it!=w_geo.end();++it){
-        if((*it)->getGeom_manager()){
-          (*it)->getGeom_manager()->run((*it));
-          //std::cout<<"after run \n"<<std::endl;
-          //std::cout << (*it)->to_string()<<std::endl;
+        running = true;
+        double current_time ;
+        Rect window_rect = hw_surface_get_rect(root_window);
+        invalidate_rect(window_rect);
+
+        while(running){
+            std::list<Widget *> w_geo = widget_root->getChildren();
+            for(std::list<Widget *>::iterator it =w_geo.begin() ;it!=w_geo.end();++it){
+                if((*it)->getGeom_manager()){
+                    (*it)->getGeom_manager()->run((*it));
+                    //std::cout<<"after run \n"<<std::endl;
+                    //std::cout << (*it)->to_string()<<std::endl;
+                }
+            }
+            Event *ev = hw_event_wait_next();
+            EventManager::getInstance().eventHandler(ev);
+            KeyEvent * ev_key = static_cast<KeyEvent*>  (ev);
+            if( ev->type == ei_ev_keydown && ev_key->key_sym == ALLEGRO_KEY_ESCAPE)  // 59 == escape
+                quit_request();
+            current_time = hw_now();
+
+            if(update_time<=current_time){
+
+                if(!to_clear_rectangle_list.empty()){
+                    widget_root->draw(root_window,offscreen,NULL);
+                    hw_surface_update_rects(to_clear_rectangle_list);
+                }
+                //next step is to clear the rectangle list.
+                to_clear_rectangle_list.clear();
+                update_time  = current_time + (1/60);
+            }
+
         }
-      }
-      Event *ev = hw_event_wait_next();
-      EventManager::getInstance().eventHandler(ev);
-      KeyEvent * ev_key = static_cast<KeyEvent*>  (ev);
-      if( ev->type == ei_ev_keydown && ev_key->key_sym == ALLEGRO_KEY_ESCAPE)  // 59 == escape
-				quit_request();
-      current_time = hw_now();
-      
-      if(update_time<=current_time){
-        
-        if(!to_clear_rectangle_list.empty()){
-          widget_root->draw(root_window,offscreen,NULL);
-			    hw_surface_update_rects(to_clear_rectangle_list);
-        }
-			  //next step is to clear the rectangle list.
-				to_clear_rectangle_list.clear();
-        update_time  = current_time + (1/60);
-      }
-      
-		}
         return;
     }
 
@@ -145,7 +145,7 @@ namespace ei {
           exit(EXIT_FAILURE);
       }
       color_t color = hw_get_pixel(this->offscreen, where);
-      uint32_t ID = widget_root->ConvertColorToId(color);
+      uint32_t ID = widget_root->conver_color_id(color);
       return widget_root->pick(ID);
     }
 

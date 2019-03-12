@@ -17,15 +17,18 @@ namespace ei{
      * @param   parent      A pointer to the parent widget. Cannot be NULL except for the root widget.
      */
 
-     uint32_t Widget::s_idGenerator = 0;
+    uint32_t Widget::s_idGenerator = 0;
 
     Widget::Widget(){
       return;
     }
 
     Widget::Widget(const widgetclass_name_t& class_name, Widget* parent){
-      this->name = class_name;
       if(parent){
+          name = class_name;
+          this->parent=parent;
+          parent->children.push_back(this); //add this widget as children to the parent in parameter.
+          /*
           if(parent->getName() == "Toplevel"){
               Toplevel* top = dynamic_cast<Toplevel*>(parent);
               if(top!=NULL){
@@ -42,20 +45,21 @@ namespace ei{
           else{
               this->parent=parent;
               parent->children.push_back(this); //add this widget as children to the parent in parameter.
-          }
+          }*/
 
       }else{
-        this->parent = NULL;
+          name="root";
+          parent = NULL;
       }
-      this->pick_id=s_idGenerator++; //increase by 1 to assure the uniqueness of the generated Ids
-      this->pick_color=ConvertIdToColor(this->pick_id);
-      this->geom_manager = NULL;
-      this->requested_size.width()=100; //set a default size
-      this->requested_size.height()=100;
-      this->screen_location = Rect(Point(0,0),requested_size); //set up default screen location
-      this->content_rect = &screen_location;
-      this->color=ei::default_background_color; //use default background color from ei_types
-      this->border_width=0; //default value = 0.
+      pick_id=s_idGenerator++; //increase by 1 to assure the uniqueness of the generated Ids
+      pick_color=convert_id_color(this->pick_id);
+      geom_manager = NULL;
+      requested_size.width()=100; //set a default size
+      requested_size.height()=100;
+      screen_location = Rect(Point(0,0),requested_size); //set up default screen location
+      content_rect = &screen_location;
+      color=default_background_color; //use default background color from ei_types
+      border_width=0; //default value = 0.
     }
 
 
@@ -77,22 +81,77 @@ namespace ei{
      *                      (expressed in the surface reference frame).
      */
     void Widget::draw (surface_t surface, surface_t pick_surface, Rect* clipper){
-      if(surface == NULL){
-        fprintf(stderr,"Error occured for Widget::draw - surface is NULL\n");
-        exit(EXIT_FAILURE);
-      }
-      if(pick_surface == NULL){
-        fprintf(stderr,"Error occured for Widget::draw - pick_surface is NULL\n");
-        exit(EXIT_FAILURE);
-      }
-      if(clipper==NULL){
 
-      }else{
-
-      }
+    }
+    //Getter
+    widgetclass_name_t Widget::getName(){
+        if(!name.empty()) return name ;
+        return "name is null" ;
+    }
+    uint32_t Widget::getPick_id() const{
+      return pick_id;
+    }
+    color_t Widget::getPick_color()const{
+        return pick_color;
+    }
+    Widget* Widget::getParent() const{
+      return parent;
     }
 
-    Point Widget::getAnchorPosition(Rect rect, anchor_t anchor) const{
+    std::list<Widget*> Widget::getChildren(){
+        return children;
+    }
+
+    GeometryManager* Widget::getGeom_manager() const{
+      return geom_manager;
+    }
+
+    Size Widget::getRequested_size(){
+      return requested_size;
+    }
+
+    Rect Widget::getScreen_location(){
+      return screen_location;
+    }
+
+    Rect Widget::getContent_rect(){
+      return *content_rect;
+    }
+
+    color_t Widget::getColor()const{
+        return color;
+    }
+
+    int Widget::getBorder_width()const{
+        return border_width;
+    }
+    //Setter
+    void Widget::setGeom_manager(GeometryManager *geom_manager){
+        if(geom_manager)this->geom_manager=geom_manager;
+    }
+
+    void Widget::setRequested_size(Size  requested_size){
+        this->requested_size=requested_size;
+    }
+
+    void Widget::setScreen_location(Rect screen_location){
+        this->screen_location=screen_location;
+    }
+
+    void Widget::setContent_rect(Rect * content_rect){
+        if(content_rect)this->content_rect=content_rect;
+    }
+
+    void Widget::setColor(color_t color){
+        this->color=color;
+    }
+
+    void Widget::setBorder_width(int border_width){
+        this->border_width=border_width;
+    }
+
+    //Methods
+    Point Widget::anchor_to_pos(Rect rect, anchor_t anchor) const{
         int x, y;
         if(anchor == ei_anc_center){
             x = rect.top_left.x()+requested_size.width()/2;
@@ -133,6 +192,22 @@ namespace ei{
         return Point(x,y);
     }
 
+    color_t Widget::convert_id_color(uint32_t id){
+
+      color_t color;
+      color.red = (unsigned char)(id >> 16);
+      color.green = (unsigned char)(id >> 8);
+      color.blue = (unsigned char)(id >> 0);
+      return color;
+
+    }
+    uint32_t Widget::conver_color_id(color_t color){
+
+      return (uint32_t)((color.red << 16) |
+                        (color.green << 8)  | (color.blue << 0));
+
+    }
+
     /**
      * \brief   Method that is called to notify the widget that its geometry has been modified
      *      by its geometry manager.
@@ -160,59 +235,6 @@ namespace ei{
         }
         return nullptr;
       }
-
-    uint32_t Widget::getPick_id() const{
-      return this->pick_id;
-    }
-
-    Widget* Widget::getParent() const{
-      return this->parent;
-    }
-
-    GeometryManager* Widget::getGeom_manager() const{
-      return this->geom_manager;
-    }
-
-    std::list<Widget*> Widget::getChildren(){
-        return children;
-    }
-
-    Rect* Widget::getScreenLocation(){
-      return &screen_location;
-    }
-
-    color_t Widget::ConvertIdToColor(uint32_t id){
-
-      color_t color;
-      color.red = (unsigned char)(id >> 16);
-      color.green = (unsigned char)(id >> 8);
-      color.blue = (unsigned char)(id >> 0);
-      return color;
-
-    }
-    uint32_t Widget::ConvertColorToId(color_t color){
-
-      return (uint32_t)((color.red << 16) |
-                        (color.green << 8)  | (color.blue << 0));
-
-    }
-
-    widgetclass_name_t Widget::getName(){
-        if(!this->name.empty()) return this->name ;
-        return "name is null" ;
-    }
-
-    Rect Widget::getRect(){
-      return *content_rect;
-    }
-
-    Size Widget::getRequested_size(){
-      return requested_size;
-    }
-
-    void Widget::setGeom_manager(GeometryManager *geom_manager){
-      this->geom_manager=geom_manager;
-    }
 
     void Widget::configure(Size * requested_size, const color_t * color){
       //assign requested_size if it's not nullptr else this->requested_size stay unchange.

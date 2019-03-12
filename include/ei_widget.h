@@ -64,6 +64,32 @@ namespace ei {
          */
         virtual void draw (surface_t surface, surface_t pick_surface, Rect* clipper);
 
+
+        //Getter
+        widgetclass_name_t getName(); //used to test in eventmanager
+        uint32_t getPick_id() const;
+        color_t getPick_color()const;
+        Widget *getParent() const;
+        std::list<Widget*> getChildren();
+        GeometryManager *getGeom_manager() const;
+        Size getRequested_size();     //used to initialiser default value of requested width and height in geomanager
+        Rect getScreen_location();
+        Rect getContent_rect();       //used to add to invalidate_rec in Application to update
+        color_t getColor()const;
+        int getBorder_width()const;
+
+        //Setter
+        void setGeom_manager(GeometryManager *geom_manager);
+        void setRequested_size(Size  requested_size);
+        void setScreen_location(Rect screen_location);
+        void setContent_rect(Rect * content_rect);
+        void setColor(color_t color);
+        void setBorder_width(int border_width);
+
+        //Methods
+        Point anchor_to_pos(Rect rect, anchor_t anchor) const;
+        color_t convert_id_color(uint32_t id);
+        uint32_t conver_color_id(color_t color);
         /**
          * \brief   Method that is called to notify the widget that its geometry has been modified
          *      by its geometry manager.
@@ -74,21 +100,8 @@ namespace ei {
         virtual void geomnotify (Rect rect);
         //From the root find the widget that pick_id is equal to id.
         Widget* pick(uint32_t id);
-        uint32_t getPick_id() const;
-
-        Point getAnchorPosition(Rect rect, anchor_t anchor) const;
-        Widget *getParent() const;
-        std::list<Widget*> getChildren();
-        GeometryManager *getGeom_manager() const;
-        Rect *getScreenLocation();
-        color_t ConvertIdToColor(uint32_t id);
-        uint32_t ConvertColorToId(color_t color);
-        widgetclass_name_t getName(); //used to test in eventmanager
-        Rect getRect();               //used to add to invalidate_rec in Application to update
-        Size getRequested_size();     //used to initialiser default value of requested width and height in geomanager
-        void setGeom_manager(GeometryManager* geom_manager);
-        virtual string to_string();
         void configure(Size *requested_size, const color_t *color);
+        virtual string to_string();
 
       protected:
         widgetclass_name_t name; ///< The string name of this class of widget.
@@ -195,13 +208,13 @@ namespace ei {
         //private variables that belongs to frame class
         private:
             relief_t    relief;
-            const char**      text;
+            const char*      text;
             font_t      text_font;
             color_t     text_color;
             anchor_t    text_anchor;
-            surface_t * img;
+            surface_t  img;
             Rect*       img_rect;
-            anchor_t *  img_anchor;
+            anchor_t  img_anchor;
     };
 
 
@@ -243,15 +256,15 @@ namespace ei {
                         Rect**           img_rect,
                         anchor_t*        img_anchor);
     private:
-        int*        corner_radius;
+        int        corner_radius;
         relief_t    relief;
-        const char**      text;
+        const char*      text;
         font_t      text_font;
         color_t     text_color;
         anchor_t    text_anchor;
-        surface_t * img;
+        surface_t  img;
         Rect*       img_rect;
-        anchor_t *  img_anchor;
+        anchor_t   img_anchor;
     };
 
 

@@ -113,10 +113,10 @@ Placer::~Placer(){
             Rect new_rect = Rect();
 
         // Positioning
-        int temp_x = widget->getParent()->getScreenLocation()->top_left.x(), temp_y = widget->getParent()->getScreenLocation()->top_left.y();
+        int temp_x = widget->getParent()->getScreen_location().top_left.x(), temp_y = widget->getParent()->getScreen_location().top_left.y();
 
-        if (get_rel_x()) temp_x += widget->getParent()->getScreenLocation()->size.width() * get_rel_x();
-        if (get_rel_y()) temp_y += widget->getParent()->getScreenLocation()->size.height() * get_rel_y();
+        if (get_rel_x()) temp_x += widget->getParent()->getScreen_location().size.width() * get_rel_x();
+        if (get_rel_y()) temp_y += widget->getParent()->getScreen_location().size.height() * get_rel_y();
         if (get_x()) temp_x += get_x();
         if (get_y()) temp_y += get_y();
 
@@ -161,8 +161,8 @@ Placer::~Placer(){
         // Sizing
         int temp_width = 0, temp_height = 0;
 
-        if (get_rel_width()) temp_width += widget->getParent()->getScreenLocation()->size.width() * get_rel_width();
-        if (get_rel_height()) temp_height += widget->getParent()->getScreenLocation()->size.height() * get_rel_height();
+        if (get_rel_width()) temp_width += widget->getParent()->getScreen_location().size.width() * get_rel_width();
+        if (get_rel_height()) temp_height += widget->getParent()->getScreen_location().size.height() * get_rel_height();
         if (get_width()) temp_width += get_width();
         if (get_height()) temp_height += get_height();
 
