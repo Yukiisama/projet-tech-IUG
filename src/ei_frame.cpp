@@ -60,12 +60,12 @@ namespace ei {
         draw_polygon(pick_surface,list_frame,pick_color,clipper);
         hw_surface_unlock(pick_surface);
         draw_polygon(surface,list_frame,color,clipper);
-        if (text && !img)
+        if (text)
         {
             Point where = anchor_to_pos(screen_location, text_anchor);
             draw_text(surface, &where, text, text_font, &text_color);
         }
-        else if(img && !text){
+        if(img){
 
             hw_surface_lock(surface);
             hw_surface_lock(img);
@@ -91,7 +91,8 @@ namespace ei {
         if(!children.empty()){
             for (std::list<Widget *>::iterator it = children.begin(); it != children.end(); it++)
             {
-                (*it)->draw(surface, pick_surface, clipper);
+                //Children should be display inside the content_rect of his parent.
+                (*it)->draw(surface, pick_surface, content_rect);
             }
         }
         
@@ -150,10 +151,10 @@ namespace ei {
         if(img && text) fprintf(stderr,"Only one of the parameter \"text\" and \"img\" should be used (i.e. non-NULL).");
         Widget::configure(requested_size,color);
         if(relief) this->relief = *relief;
-        if(text) this->text = *text;
+        if(text && !img) this->text = *text;
         if(text_font) this->text_font = *text_font;
         if(text_color) this->text_color = *text_color;
-        if(img) this->img = *img;
+        if(img && !text) this->img = *img;
         //if(img) {this->img = new surface_t; surface_t a = hw_image_load(DATA_DIR"img.jpg"); (*this->img) = a;}
         if(img_rect) this->img_rect = *img_rect;
         if(img_anchor)this->img_anchor = *img_anchor;

@@ -132,6 +132,7 @@ namespace ei{
 
     void Widget::setRequested_size(Size  requested_size){
         this->requested_size=requested_size;
+        screen_location.size=requested_size;
     }
 
     void Widget::setScreen_location(Rect screen_location){
@@ -239,8 +240,7 @@ namespace ei{
     void Widget::configure(Size * requested_size, const color_t * color){
       //assign requested_size if it's not nullptr else this->requested_size stay unchange.
 
-      this->requested_size = (requested_size) ? *requested_size : this->requested_size;
-
+      setRequested_size(*requested_size);
       if(color){
         this->color.red = color->red;
         this->color.green = color->green;

@@ -61,6 +61,36 @@ namespace ei
             draw_button(surface,&button_rect,color,corner_radius,clipper,clicked);
         }
 
+        if (text)
+        {
+            Point where = anchor_to_pos(screen_location, text_anchor);
+            draw_text(surface, &where, text, text_font, &text_color);
+        }
+        if(img){
+
+            hw_surface_lock(surface);
+            hw_surface_lock(img);
+            if(img_rect){ //case where only subpart of img should be display.
+                for (int i =img_rect->top_left.x();i<img_rect->top_left.x()+img_rect->size.width();i++) {
+                    for (int j = img_rect->top_left.y();j<img_rect->top_left.y()+img_rect->size.height();j++) {
+                        Point pos = Point(i,j);
+                        color_t img_c = hw_get_pixel(img,pos);
+                        hw_put_pixel(surface,pos,img_c);
+                    }
+                }
+            }else {       //default case, display img according to img_anchor.
+                cout<<"img detected"<<endl;
+                Point pos = anchor_to_pos(screen_location,img_anchor);
+                ei_copy_surface(surface,img,&pos,EI_TRUE);
+            }
+
+            hw_surface_unlock(surface);
+            hw_surface_unlock(img);
+
+        }
+
+
+
         //Draw text on current button.
         if (text)
         {
@@ -70,7 +100,8 @@ namespace ei
         }
         //Recursive method that draw all children of current button.
         for(std::list<Widget*>::iterator it = children.begin();it!= children.end();it++){
-            (*it)->draw(surface,pick_surface,clipper);
+            //Children should be display inside the content_rect of his parent.
+            (*it)->draw(surface,pick_surface,content_rect);
         }
         //OUBLIE DIMAGE TODO
     }
@@ -103,11 +134,11 @@ namespace ei
         if(border_width) this->border_width = *border_width;
         if(corner_radius) this->corner_radius = *corner_radius;
         if(relief) this->relief = *relief;
-        if(text) this->text = *text;
+        if(text && !img) this->text = *text;
         if(text_font) this->text_font = *text_font;
         if(text_color) this->text_color = *text_color;
         if(text_anchor) this->text_anchor = *text_anchor;
-        if(img) this->img = img;
+        if(img && !text) this->img = img;
         if(img_rect) this->img_rect = *img_rect;
         if(img_anchor)this->img_anchor = *img_anchor;
     }

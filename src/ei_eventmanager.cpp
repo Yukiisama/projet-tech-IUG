@@ -22,28 +22,34 @@ namespace ei {
                ei_callback_t  callback,
                void*          user_param){
 
-        if ((widget != nullptr && !tag.empty()) || (widget == nullptr && tag.empty()))
+        if ((widget && !tag.empty()) || (!widget && tag.empty())){
+            fprintf(stder,"Please check widget and tag\n");
             return;
+        }
 
         param_callback _callback; //creat param_callback structure to bind.
-        _callback.eventtype=eventtype;
         
         //Bind with widget
-        if (widget != nullptr && tag.empty())
+        if (widget && tag.empty())
         {
             _callback.widget = widget;
-            _callback.tag = ""; //can't assign null to std::string type
         }
         //Bind with tag
-        else if(widget ==nullptr && !tag.empty())
+        else if(!widget && !tag.empty())
         {
             _callback.tag=tag;
-            _callback.widget= widget;
         }
         _callback.callback= callback;
         _callback.user_param = user_param;
-        //add to the current vector the new callback
-        vec_callback.push_back(_callback);
+
+        //Add eventtype as key, if it's not in hashMap.
+        if(hashMap.find(eventtype)==hashMap.end()){
+            hashMap[eventtype]=std::vector<param_callback>();
+            hashMap[eventtype].push_back(_callback); //add _callback to the vecot where it's key is eventtype.
+        }else{//evettype already existe as key in hashMap.
+            hashMap[eventtype].push_back(_callback); //add _callback to the vecot where it's key is eventtype.
+        }
+
     }
 
     /**
@@ -58,22 +64,25 @@ namespace ei {
                  tag_t          tag,
                  ei_callback_t  callback,
                  void*          user_param){
-        //run through vector of  callback event and seek if call back exists
+
         //unbind with tags
-        if(widget ==nullptr && !tag.empty()){
-        for (std::vector<param_callback>::iterator it = vec_callback.begin(); it != vec_callback.end();)
-        {
-            // if exist delete where all the paramaters have the same value
-            if (!it->tag.compare(tag) 
-            && it->user_param == user_param 
-            && it->eventtype == eventtype 
-            && it->callback.target<bool_t(Widget *, Event *, void *)>() == callback.target<bool_t(Widget *, Event *, void *)>())
-            {
-             it=vec_callback.erase(it);   
-            }else{
-                ++it;
+        if(!widget && !tag.empty()){
+            if(hashMap.find(eventtype)!=hashMap.end()){
+                for (std::vector<param_callback>::iterator it = hashMap[eventtype].begin(); it != hashMap[eventtype].end();)
+                {
+                    // if exist delete where all the paramaters have the same value
+                    if (!it->tag.compare(tag)
+                            && it->user_param == user_param
+                            && it->eventtype == eventtype
+                            && it->callback.target<bool_t(Widget *, Event *, void *)>() == callback.target<bool_t(Widget *, Event *, void *)>())
+                    {
+                        it=hashMap[eventtype].erase(it);
+                    }else{
+                        ++it;
+                    }
+                }
             }
-        }
+
         }
 
         //unbind with widget

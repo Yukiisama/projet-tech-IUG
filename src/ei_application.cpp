@@ -68,7 +68,6 @@ namespace ei {
             if( ev->type == ei_ev_keydown && ev_key->key_sym == ALLEGRO_KEY_ESCAPE)  // 59 == escape
                 quit_request();
             current_time = hw_now();
-
             if(update_time<=current_time){
 
                 if(!to_clear_rectangle_list.empty()){
