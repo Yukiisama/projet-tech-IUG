@@ -37,14 +37,12 @@ void EventManager::bind(ei_eventtype_t eventtype,
     if (widget && tag.empty())
     {
         _callback.widget = widget;
-        
     }
     //Bind with tag
     else if (!widget && !tag.empty())
     {
         _callback.tag = tag;
         _callback.widget = NULL;
-        
     }
     _callback.callback = callback;
     _callback.user_param = user_param;
@@ -83,7 +81,8 @@ void EventManager::unbind(ei_eventtype_t eventtype,
             for (std::vector<param_callback>::iterator it = hashMap[eventtype].begin(); it != hashMap[eventtype].end();)
             {
                 // if exist delete where all the paramaters have the same value
-                if (!it->tag.compare(tag) && it->user_param == user_param && it->callback.target<bool_t(Widget *, Event *, void *)>() == callback.target<bool_t(Widget *, Event *, void *)>())
+                if (!it->tag.compare(tag) && it->user_param == user_param 
+                && it->callback.target<bool_t(Widget *, Event *, void *)>() == callback.target<bool_t(Widget *, Event *, void *)>())
                 {
                     it = hashMap[eventtype].erase(it);
                 }
@@ -100,7 +99,8 @@ void EventManager::unbind(ei_eventtype_t eventtype,
     {
         for (std::vector<param_callback>::iterator it = hashMap[eventtype].begin(); it != hashMap[eventtype].end();)
         {
-            if (it->widget->getPick_id() == widget->getPick_id() && it->user_param == user_param && it->callback.target<bool_t(Widget *, Event *, void *)>() == callback.target<bool_t(Widget *, Event *, void *)>())
+            if (it->widget->getPick_id() == widget->getPick_id() && it->user_param == user_param 
+            && it->callback.target<bool_t(Widget *, Event *, void *)>() == callback.target<bool_t(Widget *, Event *, void *)>())
             {
                 it = hashMap[eventtype].erase(it);
             }
@@ -114,7 +114,7 @@ void EventManager::unbind(ei_eventtype_t eventtype,
 
 void EventManager::eventHandler(Event *event)
 {
-    
+
     //Event * event = hw_event_wait_next();
     //Handle with mouse type of event.
     if (event->type == ei_ev_mouse_buttondown || event->type == ei_ev_mouse_buttonup || event->type == ei_ev_mouse_move)
@@ -129,7 +129,6 @@ void EventManager::eventHandler(Event *event)
             {
                 if (it->widget)
                 {
-                    cout<<"coucou moi"<<endl;
                     if (it->widget->getPick_id() == w->getPick_id())
                     {
                         if (event->type == ei_ev_mouse_buttondown)
@@ -153,31 +152,24 @@ void EventManager::eventHandler(Event *event)
                     std::list<Widget *> w_geo = Application::getInstance()->root_widget()->getChildren();
                     for (std::list<Widget *>::iterator it2 = w_geo.begin(); it2 != w_geo.end(); ++it2)
                     {
-                        cout<<(*it2)->getName()<<endl;
-                    
-                        if ((*it2)->getName()==(it->tag))
+                        if ((*it2)->getName() == (it->tag) || (it->tag) == "all")
                         {
-                            
-                                    if (event->type == ei_ev_mouse_buttondown)
-                                    {
-                                        static_cast<Button *>(*it2)->clicked = EI_TRUE;
-                                        Application::getInstance()->invalidate_rect((*it2)->getContent_rect());
-                                        it->callback((*it2), event, it->user_param);
-                                        break;
-                                    }
-                                    if (event->type == ei_ev_mouse_buttonup)
-                                    {
-                                            static_cast<Button *>(*it2)->clicked=EI_FALSE;
-                                            Application::getInstance()->invalidate_rect((*it2)->getContent_rect());
-                                            it->callback((*it2),event,it->user_param);
-                                            break;
-                                    }
-                                
-                            
+                            if (event->type == ei_ev_mouse_buttondown)
+                            {
+                                static_cast<Button *>(*it2)->clicked = EI_TRUE;
+                                Application::getInstance()->invalidate_rect((*it2)->getContent_rect());
+                                it->callback((*it2), event, it->user_param);
+                                break;
+                            }
+                            if (event->type == ei_ev_mouse_buttonup)
+                            {
+                                static_cast<Button *>(*it2)->clicked = EI_FALSE;
+                                Application::getInstance()->invalidate_rect((*it2)->getContent_rect());
+                                it->callback((*it2), event, it->user_param);
+                                break;
+                            }
                         }
-                        
                     }
-                    
                 }
             }
         }
@@ -194,18 +186,15 @@ void EventManager::eventHandler(Event *event)
             }
             else
             {
-                cout<<"coucou"<<endl;
                 std::list<Widget *> w_geo = Application::getInstance()->root_widget()->getChildren();
-                    for (std::list<Widget *>::iterator it2 = w_geo.begin(); it2 != w_geo.end(); ++it2)
+                for (std::list<Widget *>::iterator it2 = w_geo.begin(); it2 != w_geo.end(); ++it2)
+                {
+                    if ((*it2)->getName() == (it->tag) || (it->tag) == "all")
                     {
-                        if ((*it2)->getName()==(it->tag))
-                        {
-                            Application::getInstance()->invalidate_rect((*it2)->getContent_rect());
-                            it->callback((*it2), event, it->user_param);
-                        }
-
-                
+                        Application::getInstance()->invalidate_rect((*it2)->getContent_rect());
+                        it->callback((*it2), event, it->user_param);
                     }
+                }
             }
         }
     }
