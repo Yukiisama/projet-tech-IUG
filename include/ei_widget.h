@@ -309,18 +309,18 @@ namespace ei {
                         axis_set_t*     resizable,
                         Size*           min_size);
     private:
-        int            border_width;
-        double         top_bar_height;//The width of the top bar
-        const char*    title;
+        int             border_width;
+        double          top_bar_height;//The width of the top bar
+        const char*     title;
         bool_t          closable;
-        axis_set_t     resizable;
-        Size           min_size;
+        axis_set_t      resizable;
+        Size            min_size;
         Button*         button_close;//The button that close the window
-        Placer* p_button_close;
+        Placer*         p_button_close;
         Button*         resize_button;//The button at the right bottom to resize the window
-        Placer* p_resize_button;
-        Frame*          in_window;//The reachable zone of the window
-        Placer* p_in_window;
+        Placer*         p_resize_button;
+        //Frame*          in_window;//The reachable zone of the window
+        Placer*         p_in_window;
     };
 
 }

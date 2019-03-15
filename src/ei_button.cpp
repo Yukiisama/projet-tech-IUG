@@ -68,9 +68,10 @@ namespace ei
         }
         if(img){
 
-            hw_surface_lock(surface);
-            hw_surface_lock(img);
+
             if(img_rect){ //case where only subpart of img should be display.
+                hw_surface_lock(surface);
+                hw_surface_lock(img);
                 for (int i =img_rect->top_left.x();i<img_rect->top_left.x()+img_rect->size.width();i++) {
                     for (int j = img_rect->top_left.y();j<img_rect->top_left.y()+img_rect->size.height();j++) {
                         Point pos = Point(i,j);
@@ -78,14 +79,15 @@ namespace ei
                         hw_put_pixel(surface,pos,img_c);
                     }
                 }
+                hw_surface_unlock(surface);
+                hw_surface_unlock(img);
             }else {       //default case, display img according to img_anchor.
                 cout<<"img detected"<<endl;
                 Point pos = anchor_to_pos(screen_location,img_anchor);
                 ei_copy_surface(surface,img,&pos,EI_TRUE);
             }
 
-            hw_surface_unlock(surface);
-            hw_surface_unlock(img);
+
 
         }
 

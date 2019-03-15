@@ -29,8 +29,6 @@ int ei_main(int argc, char** argv)
     color_t  button_text_color   = {0x00, 0x00, 0x00, 0xff};
     surface_t img_a = hw_image_load(DATA_DIR"img.jpg");
     
-    cout<<img_a<<endl;
-    
     
     relief_t frame_relief = ei_relief_raised;
     int frame_border_width = 6;

@@ -37,9 +37,9 @@ Toplevel::Toplevel(Widget *parent) : Widget("Toplevel", parent){
     p_resize_button=new Placer();
 
     ///Frame zone
-    in_window = new Frame(this);
+    //in_window = new Frame(this);
     //TODO button_close placer according to toplevel requested size
-    p_in_window=new Placer();
+    //p_in_window=new Placer();
 }
 
     Toplevel::~Toplevel(){
@@ -48,7 +48,7 @@ Toplevel::Toplevel(Widget *parent) : Widget("Toplevel", parent){
         delete p_in_window;
         delete button_close;
         delete resize_button;
-        delete in_window;
+        //delete in_window;
 
     }
 
@@ -61,7 +61,8 @@ Toplevel::Toplevel(Widget *parent) : Widget("Toplevel", parent){
     }
 
     Frame* Toplevel::getIn_window() const{
-        return in_window;
+        //return in_window;
+        return NULL;
     }
 
     void Toplevel::draw (surface_t surface,
@@ -148,7 +149,7 @@ Toplevel::Toplevel(Widget *parent) : Widget("Toplevel", parent){
         if(resizable) this->resizable = *resizable;
         if(min_size) this->min_size = *min_size;
 
-        in_window->configure(&this->requested_size,NULL,
-                             NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
+        //in_window->configure(&this->requested_size,NULL,
+        //                     NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
     }
 }
