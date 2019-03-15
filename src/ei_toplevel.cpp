@@ -13,7 +13,7 @@ Toplevel::Toplevel(Widget *parent) : Widget("Toplevel", parent){
     border_width = new int(4);
     top_bar_height = new double(20);
     title = new const char*("Toplevel");
-    closable = new bool_t(EI_TRUE);
+    closable = EI_TRUE;
     resizable = new axis_set_t (ei_axis_both);
     min_size = new Size(160,120);
 
@@ -50,6 +50,54 @@ Toplevel::Toplevel(Widget *parent) : Widget("Toplevel", parent){
 
     Frame* Toplevel::getIn_window() const{
         return in_window;
+    }
+
+    Point Toplevel::getMouse_pos() const{
+        return mouse_pos;
+    }
+
+    Size Toplevel::getMin_size() const{
+        return *min_size;
+    }
+
+    void Toplevel::setMouse_pos(Point point){
+        mouse_pos = point;
+    }
+
+    bool_t Toplevel::inside_top_bar(Point where) const{
+        if(where.x()>=screen_location.top_left.x()
+                && where.x()<=screen_location.top_left.x()+requested_size.width()
+                && where.y()>=screen_location.top_left.y()
+                /*&& where.y()<=screen_location.top_left.y()+top_bar_height*/){
+            return EI_TRUE;
+        }
+        else{
+            return EI_FALSE;
+        }
+    }
+
+    bool_t Toplevel::moving() const{
+        return top_bar_clicked;
+    }
+
+    bool_t Toplevel::resizing() const{
+        return resize_button_pressed;
+    }
+
+    bool_t Toplevel::closing() const{
+        return button_close_pressed;
+    }
+
+    void Toplevel::set_top_bar_clicked(bool_t clicking){
+        top_bar_clicked = clicking;
+    }
+
+    void Toplevel::set_resize_button_pressed(bool_t pressed){
+        resize_button_pressed = pressed;
+    }
+
+    void Toplevel::set_button_close_pressed(bool_t pressed){
+        button_close_pressed = pressed;
     }
 
     void Toplevel::draw (surface_t surface,
@@ -131,7 +179,7 @@ Toplevel::Toplevel(Widget *parent) : Widget("Toplevel", parent){
         Widget::configure(requested_size,color);
         if(title) this->title = title;
         if(border_width) this->border_width = border_width;
-        if(closable) this->closable = closable;
+        if(closable) this->closable = *closable;
         if(resizable) this->resizable = resizable;
         if(min_size) this->min_size = min_size;
 

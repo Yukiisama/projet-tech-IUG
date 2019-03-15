@@ -43,6 +43,104 @@ namespace ei {
       hw_quit();
     }
 
+    bool_t resize_toplevel(Widget* widget, Event* event, void* user_param)
+    {
+        MouseEvent* e = static_cast<MouseEvent*>(event);
+        Toplevel* top = static_cast<Toplevel*>(widget);
+
+        if(Application::getInstance()->widget_pick(e->where)->getPick_id()
+                ==top->getResize_button()->getPick_id()){
+            if(top->moving()==EI_TRUE){
+                float new_width = (e->where.x())-(top->getScreenLocation()->top_left.x());
+                float new_height = (e->where.y())-(top->getScreenLocation()->top_left.y());
+
+                if(new_width < top->getMin_size().width()){
+                    new_width = top->getRequested_size().width();
+                }
+                if(new_height < top->getMin_size().height()){
+                    new_height = top->getRequested_size().height();
+                }
+
+                top->configure(new Size(new_width,new_height),NULL,NULL,NULL,NULL,NULL,NULL);
+
+                return EI_TRUE;
+            }
+        }
+        return EI_FALSE;
+    }
+
+    bool_t click_up(Widget* widget, Event* event, void* user_param)
+    {
+        MouseEvent* e = static_cast<MouseEvent*>(event);
+        Toplevel* top = static_cast<Toplevel*>(widget);
+
+        if(Application::getInstance()->widget_pick(e->where)->getPick_id()==top->getPick_id()){
+            if(top->inside_top_bar(e->where)==EI_TRUE){
+                top->set_top_bar_clicked(EI_TRUE);
+                top->setMouse_pos(e->where);
+                return EI_TRUE;
+            }
+        }
+        else if(Application::getInstance()->widget_pick(e->where)->getPick_id()
+                ==top->getResize_button()->getPick_id()){
+            top->set_resize_button_pressed(EI_TRUE);
+            return EI_TRUE;
+        }
+        else if(Application::getInstance()->widget_pick(e->where)->getPick_id()
+                ==top->getButton_close()->getPick_id()){
+            top->set_button_close_pressed(EI_TRUE);
+            return EI_TRUE;
+        }
+        return EI_FALSE;
+    }
+
+    bool_t click_down(Widget* widget, Event* event, void* user_param)
+    {
+        MouseEvent* e = static_cast<MouseEvent*>(event);
+        Toplevel* top = static_cast<Toplevel*>(widget);
+
+        if(Application::getInstance()->widget_pick(e->where)->getPick_id()==top->getPick_id()){
+            if(top->inside_top_bar(e->where)==EI_TRUE){
+                top->set_top_bar_clicked(EI_FALSE);
+                top->setMouse_pos(e->where);
+                return EI_TRUE;
+            }
+        }
+        else if(Application::getInstance()->widget_pick(e->where)->getPick_id()
+                ==top->getResize_button()->getPick_id()){
+            top->set_resize_button_pressed(EI_FALSE);
+            return EI_FALSE;
+        }
+        else if(Application::getInstance()->widget_pick(e->where)->getPick_id()
+                ==top->getButton_close()->getPick_id()){
+            if(top->closing()==EI_TRUE){
+                delete top;
+                return EI_TRUE;
+            }
+        }
+        return EI_FALSE;
+    }
+
+    bool_t move_toplevel(Widget* widget, Event* event, void* user_param)
+    {
+        MouseEvent* e = static_cast<MouseEvent*>(event);
+        Toplevel* top = static_cast<Toplevel*>(widget);
+
+        if(top->inside_top_bar(e->where)==EI_TRUE && top->moving()==EI_TRUE){
+            float move_x = (e->where.x())-(top->getMouse_pos().x());
+            float move_y = (e->where.y())-(top->getMouse_pos().y());
+
+//            Point* new_top_left = new Point(top->screen_location.top_left.x()+move_x,
+//                                            top->screen_location.top_left.y()+move_y);
+
+            top->getGeom_manager()->set_x(top->getScreenLocation()->top_left.x()+move_x);
+            top->getGeom_manager()->set_y(top->getScreenLocation()->top_left.y()+move_y);
+
+            return EI_TRUE;
+        }
+        return EI_FALSE;
+    }
+
     /**
      * \brief Runs the application: enters the main event loop. Exits when
      *    \ref app_quit_request is called.
@@ -52,6 +150,12 @@ namespace ei {
     double current_time ;
     Rect window_rect = hw_surface_get_rect(root_window);
     invalidate_rect(window_rect);
+
+    //Binding the default comportments of widgets
+    EventManager::getInstance().bind(ei_ev_mouse_buttonup, NULL, "Toplevel", click_up, NULL);
+    EventManager::getInstance().bind(ei_ev_mouse_buttondown, NULL, "Toplevel", click_down, NULL);
+    EventManager::getInstance().bind(ei_ev_mouse_move, NULL, "Toplevel", move_toplevel, NULL);
+    EventManager::getInstance().bind(ei_ev_mouse_move, NULL, "Toplevel", resize_toplevel, NULL);
 	
     while(running){
       std::list<Widget *> w_geo = widget_root->getChildren();

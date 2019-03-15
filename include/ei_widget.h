@@ -266,6 +266,16 @@ namespace ei {
         Button* getButton_close() const;
         Button* getResize_button() const;
         Frame* getIn_window() const;
+        Point getMouse_pos() const;
+        Size getMin_size() const;
+        void setMouse_pos(Point point);
+        bool_t inside_top_bar(Point where) const;
+        bool_t moving() const;
+        bool_t resizing() const;
+        bool_t closing() const;
+        void set_top_bar_clicked(bool_t clicking);
+        void set_resize_button_pressed(bool_t pressed);
+        void set_button_close_pressed(bool_t pressed);
 
         virtual void draw (surface_t surface,
                            surface_t pick_surface,
@@ -298,14 +308,18 @@ namespace ei {
                         Size*           min_size);
     private:
         int*            border_width;
-        double*         top_bar_height;//The width of the top bar
+        double*         top_bar_height;//The height of the top bar
         const char**    title;
-        bool_t*         closable;
+        bool_t          closable;
         axis_set_t*     resizable;
         Size*           min_size;
         Button*         button_close=NULL;//The button that close the window
         Button*         resize_button=NULL;//The button at the right bottom to resize the window
         Frame*          in_window=NULL;//The reachable zone of the window
+        bool_t          top_bar_clicked=EI_FALSE;
+        bool_t          resize_button_pressed=EI_FALSE;
+        bool_t          button_close_pressed=EI_FALSE;
+        Point           mouse_pos;
         /*Placer*         close_placer;
         Placer*         */
     };
