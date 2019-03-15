@@ -11,7 +11,6 @@
 #define EI_WIDGET_H
 
 #include "ei_draw.h"
-
 #include <functional>
 #include <sstream>
 #include <string>
@@ -28,7 +27,7 @@ namespace ei {
 
 
     class GeometryManager;
-
+    class Placer;
     /**
      * \brief   Abstract class representing a widget
      *          Every widget class specializes this base class by adding its own attributs.
@@ -310,17 +309,18 @@ namespace ei {
                         axis_set_t*     resizable,
                         Size*           min_size);
     private:
-        int*            border_width;
-        double*         top_bar_height;//The width of the top bar
-        const char**    title;
-        bool_t*         closable;
-        axis_set_t*     resizable;
-        Size*           min_size;
-        Button*         button_close=NULL;//The button that close the window
-        Button*         resize_button=NULL;//The button at the right bottom to resize the window
-        Frame*          in_window=NULL;//The reachable zone of the window
-        /*Placer*         close_placer;
-        Placer*         */
+        int            border_width;
+        double         top_bar_height;//The width of the top bar
+        const char*    title;
+        bool_t          closable;
+        axis_set_t     resizable;
+        Size           min_size;
+        Button*         button_close;//The button that close the window
+        Placer* p_button_close;
+        Button*         resize_button;//The button at the right bottom to resize the window
+        Placer* p_resize_button;
+        Frame*          in_window;//The reachable zone of the window
+        Placer* p_in_window;
     };
 
 }

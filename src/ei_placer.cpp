@@ -104,10 +104,11 @@ Placer::~Placer(){
 
     void Placer::run (Widget* widget){
         if (!widget ) return;
-        if (widget){
+        /*if (widget){
             if(!widget->getParent())
                 return;
         }
+        */
 
             // Creating the new rectangle and setting the right values into it
             Rect new_rect = Rect();
@@ -182,11 +183,11 @@ Placer::~Placer(){
         
         if (!widget->getChildren().empty())
         {   
-            /*
-            for (list<Widget*>::iterator it = widget->getChildren().begin();it!= widget->getChildren().end();++it){
-                //if ((*it)->getGeom_manager()) (*it)->getGeom_manager()->run(*it);
+            list<Widget *> w_child = widget->getChildren();
+            for (list<Widget *>::iterator it = w_child.begin();it!=w_child.end();it++){
+                if ((*it)->getGeom_manager()) (*it)->getGeom_manager()->run(*it);
             }
-            */
+
         }
         
         return;

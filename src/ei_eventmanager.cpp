@@ -2,6 +2,7 @@
 #include "ei_eventmanager.h"
 #include "ei_application.h"
 #include <iostream>
+#include <stdio.h>
 namespace ei {
     EventManager::EventManager(){}
     /**
@@ -23,7 +24,7 @@ namespace ei {
                void*          user_param){
 
         if ((widget && !tag.empty()) || (!widget && tag.empty())){
-            fprintf(stder,"Please check widget and tag\n");
+            fprintf(stderr,"Please check widget and tag\n");
             return;
         }
 
@@ -73,7 +74,6 @@ namespace ei {
                     // if exist delete where all the paramaters have the same value
                     if (!it->tag.compare(tag)
                             && it->user_param == user_param
-                            && it->eventtype == eventtype
                             && it->callback.target<bool_t(Widget *, Event *, void *)>() == callback.target<bool_t(Widget *, Event *, void *)>())
                     {
                         it=hashMap[eventtype].erase(it);
@@ -87,13 +87,12 @@ namespace ei {
 
         //unbind with widget
         if(widget!= nullptr && tag.empty()){
-            for (std::vector<param_callback>::iterator it = vec_callback.begin(); it != vec_callback.end();)
+            for (std::vector<param_callback>::iterator it = hashMap[eventtype].begin(); it != hashMap[eventtype].end();)
             {
                 if(it->widget->getPick_id()==widget->getPick_id()
                 && it->user_param==user_param
-                && it->eventtype== eventtype
                 && it->callback.target<bool_t(Widget *, Event *, void *)>() == callback.target<bool_t(Widget *, Event *, void *)>()){
-                    it = vec_callback.erase(it);
+                    it = hashMap[eventtype].erase(it);
                 }else{
                 ++it;
                 }
@@ -115,7 +114,7 @@ namespace ei {
             Widget * w = Application::getInstance()->widget_pick(M->where);
             //std::cout<< M->where.x()<<std::endl;
             if(w){
-                for(std::vector<param_callback>::iterator it =vec_callback.begin(); it !=vec_callback.end();++it){
+                for(std::vector<param_callback>::iterator it =hashMap[event->type].begin(); it !=hashMap[event->type].end();++it){
                     if(it->widget){
                         if (it->widget->getPick_id() == w->getPick_id())
                         {   if(event->type==ei_ev_mouse_buttondown){
@@ -136,7 +135,7 @@ namespace ei {
                 }
         }else{
             //other types of events
-            for(std::vector<param_callback>::iterator it =vec_callback.begin(); it !=vec_callback.end();++it){
+            for(std::vector<param_callback>::iterator it =hashMap[event->type].begin(); it !=hashMap[event->type].end();++it){
                 if(it->widget){
                     Application::getInstance()->invalidate_rect(it->widget->getContent_rect());
                     it->callback(it->widget,event,it->user_param);

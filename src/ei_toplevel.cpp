@@ -5,17 +5,19 @@
 #include "ei_geometrymanager.h"
 #include "hw_interface.h"
 #include <functional>
-
+#include <iostream>
+using namespace std;
 namespace ei {
 
 Toplevel::Toplevel(Widget *parent) : Widget("Toplevel", parent){
     color = default_background_color;
-    border_width = new int(4);
-    top_bar_height = new double(20);
-    title = new const char*("Toplevel");
-    closable = new bool_t(EI_TRUE);
-    resizable = new axis_set_t (ei_axis_both);
-    min_size = new Size(160,120);
+    border_width =4;
+    top_bar_height = 20;
+    title = "Toplevel";
+    closable = EI_TRUE;
+    resizable = ei_axis_both;
+    min_size.width() = 160;
+    min_size.height()=120;
 
     ///Button close
     button_close = new Button(this);
@@ -23,27 +25,27 @@ Toplevel::Toplevel(Widget *parent) : Widget("Toplevel", parent){
     color_t button_color = {255,0,0,255};
     button_close->configure(&button_size,&button_color,
                             NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
+    //TODO button_close placer according to toplevel requested size and toplevel bar
+    p_button_close=new Placer();
 
     ///Resize button
     resize_button = new Button(this);
     Size resize_button_window_size = Size(24.0,24.0);
     resize_button->configure(&resize_button_window_size,&color,
                              NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
+    //TODO resize_button placer according to toplevel requested
+    p_resize_button=new Placer();
 
     ///Frame zone
     in_window = new Frame(this);
-    color_t in_window_color = {255,255,255,255};
-    in_window->configure(&requested_size,&in_window_color,
-                         NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
+    //TODO button_close placer according to toplevel requested size
+    p_in_window=new Placer();
 }
 
     Toplevel::~Toplevel(){
-        delete border_width;
-        delete top_bar_height;
-        delete title;
-        delete closable;
-        delete resizable;
-        delete min_size;
+        delete p_button_close;
+        delete p_resize_button;
+        delete p_in_window;
         delete button_close;
         delete resize_button;
         delete in_window;
@@ -75,8 +77,8 @@ Toplevel::Toplevel(Widget *parent) : Widget("Toplevel", parent){
 
         ///Outside the window
 
-        float border = (float)*border_width;
-        float top_bar = (float)*top_bar_height;
+        float border = (float)border_width;
+        float top_bar = (float)top_bar_height;
 
         list_point.push_back(Point(screen_location.top_left.x()+border,
                                    screen_location.top_left.y()+top_bar));
@@ -104,10 +106,11 @@ Toplevel::Toplevel(Widget *parent) : Widget("Toplevel", parent){
 
         color_t color_white = {255,255,255,255};
 
-        Point where = Point(screen_location.top_left.x()+40,screen_location.top_left.y()+*top_bar_height*0.05);
-        draw_text(surface,&where,*title,hw_text_font_create(default_font_filename, *top_bar_height*0.8),&color_white);
+        Point where = Point(screen_location.top_left.x()+40,screen_location.top_left.y()+top_bar_height*0.05);
+        draw_text(surface,&where,title,hw_text_font_create(default_font_filename, top_bar_height*0.8),&color_white);
 
         for(std::list<Widget*>::iterator it = children.begin();it!= children.end();it++){
+            cout<< (*it)->getName()<<endl;
             (*it)->draw(surface,pick_surface,clipper);
         }
         return;
@@ -139,11 +142,11 @@ Toplevel::Toplevel(Widget *parent) : Widget("Toplevel", parent){
                               axis_set_t*     resizable,
                               Size*           min_size){
         Widget::configure(requested_size,color);
-        if(title) this->title = title;
-        if(border_width) this->border_width = border_width;
-        if(closable) this->closable = closable;
-        if(resizable) this->resizable = resizable;
-        if(min_size) this->min_size = min_size;
+        if(title) this->title = *title;
+        if(border_width) this->border_width = *border_width;
+        if(closable) this->closable = *closable;
+        if(resizable) this->resizable = *resizable;
+        if(min_size) this->min_size = *min_size;
 
         in_window->configure(&this->requested_size,NULL,
                              NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
