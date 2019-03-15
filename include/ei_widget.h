@@ -73,7 +73,7 @@ namespace ei {
         GeometryManager *getGeom_manager() const;
         Size getRequested_size();     //used to initialiser default value of requested width and height in geomanager
         Rect getScreen_location();
-        Rect getContent_rect();       //used to add to invalidate_rec in Application to update
+        Rect* getContent_rect();       //used to add to invalidate_rec in Application to update
         color_t getColor()const;
         int getBorder_width()const;
 
@@ -86,7 +86,9 @@ namespace ei {
         void setBorder_width(int border_width);
 
         //Methods
+        virtual void updateContent_rect();
         Point anchor_to_pos(Rect rect, anchor_t anchor) const;
+        Point text_anchor_to_pos(Rect rect, anchor_t anchor,Size text_size,int border_width)const;
         color_t convert_id_color(uint32_t id);
         uint32_t conver_color_id(color_t color);
         /**
@@ -282,7 +284,10 @@ namespace ei {
         virtual void draw (surface_t surface,
                            surface_t pick_surface,
                            Rect*     clipper);
-
+        virtual void updateContent_rect();
+        void drawBasic_toplevel(surface_t surface,
+                                surface_t pick_surface,
+                                Rect*     clipper);
         /**
          * @brief   Configures the attributes of widgets of the class "toplevel".
          *
@@ -315,12 +320,13 @@ namespace ei {
         bool_t          closable;
         axis_set_t      resizable;
         Size            min_size;
+        Size            button_size;
+        Size            resize_button_window_size;
         Button*         button_close;//The button that close the window
         Placer*         p_button_close;
         Button*         resize_button;//The button at the right bottom to resize the window
         Placer*         p_resize_button;
-        //Frame*          in_window;//The reachable zone of the window
-        Placer*         p_in_window;
+        Rect            container;
     };
 
 }

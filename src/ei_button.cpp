@@ -55,15 +55,17 @@ namespace ei
         //Draw button.
         if(clicked){//Case button is clicked by a mouse, draw clicked version of button.
             Application::getInstance()->invalidate_rect(*content_rect);
-            draw_button(surface,&button_rect,color,corner_radius,clipper,clicked);
+            draw_button(surface,&button_rect,color,corner_radius,border_width,clipper,clicked);
             clicked=EI_FALSE;
         }else{      //Draw normale static button.
-            draw_button(surface,&button_rect,color,corner_radius,clipper,clicked);
+            draw_button(surface,&button_rect,color,corner_radius,border_width,clipper,clicked);
         }
 
         if (text)
         {
-            Point where = anchor_to_pos(screen_location, text_anchor);
+            Size text_size=Size(0,0);
+            hw_text_compute_size(text,text_font,text_size);
+            Point where = text_anchor_to_pos(screen_location, text_anchor,text_size,border_width);
             draw_text(surface, &where, text, text_font, &text_color);
         }
         if(img){
@@ -86,26 +88,13 @@ namespace ei
                 Point pos = anchor_to_pos(screen_location,img_anchor);
                 ei_copy_surface(surface,img,&pos,EI_TRUE);
             }
-
-
-
         }
 
-
-
-        //Draw text on current button.
-        if (text)
-        {
-            //Use anchor_to_pos to get the positon where to start draw_text.
-            Point where = anchor_to_pos(screen_location, text_anchor);
-            draw_text(surface, &where, text, text_font, &text_color);
-        }
         //Recursive method that draw all children of current button.
         for(std::list<Widget*>::iterator it = children.begin();it!= children.end();it++){
             //Children should be display inside the content_rect of his parent.
             (*it)->draw(surface,pick_surface,content_rect);
         }
-        //OUBLIE DIMAGE TODO
     }
 
     /**

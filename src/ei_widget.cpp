@@ -114,8 +114,8 @@ namespace ei{
       return screen_location;
     }
 
-    Rect Widget::getContent_rect(){
-      return *content_rect;
+    Rect* Widget::getContent_rect(){
+      return content_rect;
     }
 
     color_t Widget::getColor()const{
@@ -152,6 +152,10 @@ namespace ei{
     }
 
     //Methods
+    void Widget::updateContent_rect(){
+        return;
+    }
+
     Point Widget::anchor_to_pos(Rect rect, anchor_t anchor) const{
         int x, y;
         if(anchor == ei_anc_center){
@@ -189,6 +193,47 @@ namespace ei{
         if(anchor == ei_anc_northwest){
             x = rect.top_left.x();
             y = rect.top_left.y();
+        }
+        return Point(x,y);
+    }
+
+    Point Widget::text_anchor_to_pos(Rect rect, anchor_t anchor,Size text_size,int border_width) const{
+        int x, y;
+        if(anchor == ei_anc_center){
+            x = rect.top_left.x()+(requested_size.width()-text_size.width())/2;
+            y = rect.top_left.y()+(requested_size.height()-text_size.height())/2;
+        }
+        if(anchor == ei_anc_north){
+            x = rect.top_left.x()+(requested_size.width()-text_size.width())/2;
+            y = rect.top_left.y()+border_width;
+        }
+        if(anchor == ei_anc_northeast){
+            x = rect.top_left.x()+(requested_size.width()-border_width-text_size.width());
+            y = rect.top_left.y()+border_width;
+        }
+        if(anchor == ei_anc_east){
+            x = rect.top_left.x()+(requested_size.width()-border_width-text_size.width());
+            y = rect.top_left.y()+(requested_size.height()-text_size.height())/2;
+        }
+        if(anchor == ei_anc_southeast){
+            x = rect.top_left.x()+(requested_size.width()-border_width-text_size.width());
+            y = rect.top_left.y()+(requested_size.height()-border_width-text_size.height());
+        }
+        if(anchor == ei_anc_south){
+            x = rect.top_left.x()+(requested_size.width()-text_size.width())/2;
+            y = rect.top_left.y()+(requested_size.height()-border_width-text_size.height());
+        }
+        if(anchor == ei_anc_southwest){
+            x = rect.top_left.x()+border_width;
+            y = rect.top_left.y()+(requested_size.height()-border_width-text_size.height());
+        }
+        if(anchor == ei_anc_west){
+            x = rect.top_left.x()+border_width;
+            y = rect.top_left.y()+(requested_size.height()-text_size.height())/2;
+        }
+        if(anchor == ei_anc_northwest){
+            x = rect.top_left.x()+border_width;
+            y = rect.top_left.y()+border_width;
         }
         return Point(x,y);
     }

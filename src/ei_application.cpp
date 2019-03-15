@@ -58,6 +58,10 @@ namespace ei {
             for(std::list<Widget *>::iterator it =w_geo.begin() ;it!=w_geo.end();++it){
                 if((*it)->getGeom_manager()){
                     (*it)->getGeom_manager()->run((*it));
+                    if(!(*it)->getName().compare("Toplevel")){
+                        //update content_rect
+                        (*it)->updateContent_rect();
+                    }
                     //std::cout<<"after run \n"<<std::endl;
                     //std::cout << (*it)->to_string()<<std::endl;
                 }
@@ -71,7 +75,7 @@ namespace ei {
             if(update_time<=current_time){
 
                 if(!to_clear_rectangle_list.empty()){
-                    widget_root->draw(root_window,offscreen,NULL);
+                    widget_root->draw(root_window,offscreen,widget_root->getContent_rect());
                     hw_surface_update_rects(to_clear_rectangle_list);
                 }
                 //next step is to clear the rectangle list.

@@ -12,43 +12,30 @@ namespace ei {
 Toplevel::Toplevel(Widget *parent) : Widget("Toplevel", parent){
     color = default_background_color;
     border_width =4;
-    top_bar_height = 20;
+    top_bar_height = 24;
     title = "Toplevel";
     closable = EI_TRUE;
     resizable = ei_axis_both;
     min_size.width() = 160;
     min_size.height()=120;
+    container=screen_location;
 
-    ///Button close
-    button_close = new Button(this);
-    Size button_size = Size(24.0,24.0);
-    color_t button_color = {255,0,0,255};
-    button_close->configure(&button_size,&button_color,
-                            NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
-    //TODO button_close placer according to toplevel requested size and toplevel bar
-    p_button_close=new Placer();
-
+    button_size = Size(15.0,15.0);
     ///Resize button
     resize_button = new Button(this);
-    Size resize_button_window_size = Size(24.0,24.0);
+    resize_button_window_size = Size(12.0,12.0);
+    int radius =0;
     resize_button->configure(&resize_button_window_size,&color,
-                             NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
-    //TODO resize_button placer according to toplevel requested
+                             NULL,&radius,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
     p_resize_button=new Placer();
 
-    ///Frame zone
-    //in_window = new Frame(this);
-    //TODO button_close placer according to toplevel requested size
-    //p_in_window=new Placer();
 }
 
     Toplevel::~Toplevel(){
         delete p_button_close;
         delete p_resize_button;
-        delete p_in_window;
-        delete button_close;
+        if(closable)delete button_close;
         delete resize_button;
-        //delete in_window;
 
     }
 
@@ -60,10 +47,7 @@ Toplevel::Toplevel(Widget *parent) : Widget("Toplevel", parent){
         return resize_button;
     }
 
-    Frame* Toplevel::getIn_window() const{
-        //return in_window;
-        return NULL;
-    }
+
 
     void Toplevel::draw (surface_t surface,
                         surface_t pick_surface,
@@ -73,11 +57,42 @@ Toplevel::Toplevel(Widget *parent) : Widget("Toplevel", parent){
             fprintf(stderr,"Error occured for Frame::draw - surface is not valid\n");
             exit(EXIT_FAILURE);
         }
+        //placer config for children,positon according to toplevel
+        if(closable){
+            int button_close_x = 3;int button_close_y = -top_bar_height+4;
+            p_button_close->configure(button_close,NULL,&button_close_x,&button_close_y,NULL,NULL,NULL,NULL,NULL,NULL);
+            p_button_close->run(button_close);
+        }
 
+
+        //positon according to toplevel
+        int resize_button_x = requested_size.width()-resize_button_window_size.width();int resize_button_y = requested_size.height()-top_bar_height/2;
+        p_resize_button->configure(resize_button,NULL,&resize_button_x,&resize_button_y,NULL,NULL,NULL,NULL,NULL,NULL);
+        p_resize_button->run(resize_button);
+
+        //draw outside the basic toplevel
+        drawBasic_toplevel(surface,pick_surface,clipper);
+        //recursive draw
+        for(std::list<Widget*>::iterator it = children.begin();it!= children.end();it++){
+            (*it)->draw(surface,pick_surface,clipper);
+        }
+        return;
+    }
+    void Toplevel::updateContent_rect(){
+        container.size=requested_size;
+        container.top_left.x()=screen_location.top_left.x()+border_width;
+        container.top_left.y()=screen_location.top_left.y()+top_bar_height;
+        setContent_rect(&container);
+    }
+
+    void Toplevel::drawBasic_toplevel(surface_t surface, surface_t pick_surface, Rect *clipper){
+        if(!surface || !pick_surface){
+            fprintf(stderr,"Error occured for Frame::draw - surface or pick_surface is not valid\n");
+            exit(EXIT_FAILURE);
+        }
         linked_point_t list_point;
 
-        ///Outside the window
-
+        //Outside the container
         float border = (float)border_width;
         float top_bar = (float)top_bar_height;
 
@@ -102,19 +117,36 @@ Toplevel::Toplevel(Widget *parent) : Widget("Toplevel", parent){
         list_point.push_back(Point(screen_location.top_left.x()+border,
                                    screen_location.top_left.y()+requested_size.height()+top_bar));
         draw_polygon(surface,list_point,color,clipper);
-
-        ///Title of the window
+        //draw pick_surface outside the container
+        hw_surface_lock(pick_surface);
+        pick_color.alpha=255;
+        draw_polygon(pick_surface,list_point,pick_color,clipper);
+        hw_surface_unlock(pick_surface);
 
         color_t color_white = {255,255,255,255};
+        //draw toplevel background
+        linked_point_t list_point_bgr;
+        list_point_bgr.push_back(content_rect->top_left);
+        list_point_bgr.push_back(Point(content_rect->top_left.x(),
+                                       content_rect->top_left.y()+content_rect->size.height()));
+        list_point_bgr.push_back(Point(content_rect->top_left.x()+content_rect->size.width(),
+                                       content_rect->top_left.y()+content_rect->size.height()));
+        list_point_bgr.push_back(Point(content_rect->top_left.x()+content_rect->size.width(),
+                                       content_rect->top_left.y()));
+        draw_polygon(surface,list_point_bgr,color_white,clipper);
+        //draw pick_surface outside the container
+        hw_surface_lock(pick_surface);
+        pick_color.alpha=255;
+        draw_polygon(pick_surface,list_point_bgr,pick_color,clipper);
+        hw_surface_unlock(pick_surface);
 
+
+        ///Title of the window
         Point where = Point(screen_location.top_left.x()+40,screen_location.top_left.y()+top_bar_height*0.05);
-        draw_text(surface,&where,title,hw_text_font_create(default_font_filename, top_bar_height*0.8),&color_white);
+        font_t title_font=hw_text_font_create(default_font_filename, top_bar_height*0.8);
+        draw_text(surface,&where,title,title_font,&color_white);
+        hw_text_font_free(title_font);
 
-        for(std::list<Widget*>::iterator it = children.begin();it!= children.end();it++){
-            cout<< (*it)->getName()<<endl;
-            (*it)->draw(surface,pick_surface,clipper);
-        }
-        return;
     }
 
     /**
@@ -146,10 +178,19 @@ Toplevel::Toplevel(Widget *parent) : Widget("Toplevel", parent){
         if(title) this->title = *title;
         if(border_width) this->border_width = *border_width;
         if(closable) this->closable = *closable;
+
         if(resizable) this->resizable = *resizable;
         if(min_size) this->min_size = *min_size;
+        //Button close
+        if(this->closable) {
+            cout<<"check"<<endl;
+            button_close = new Button(this);
+            color_t button_color = {255,0,0,255};
+            int button_close_radius =7;
+            button_close->configure(&button_size,&button_color,
+                                    NULL,&button_close_radius,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
+            p_button_close=new Placer();
+        }
 
-        //in_window->configure(&this->requested_size,NULL,
-        //                     NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
     }
 }
