@@ -205,6 +205,25 @@ namespace ei {
                         Rect**          img_rect,
                         anchor_t*       img_anchor);
         //private variables that belongs to frame class
+        //GETTER & SETTER
+        
+        relief_t get_relief();
+        void set_relief(relief_t relief);
+        const char * get_text();
+        void set_text(const char * text);
+        font_t get_text_font();
+        void set_text_font(font_t text_font);
+        color_t get_text_color();
+        void set_text_color(color_t text_color);
+        anchor_t get_text_anchor();
+        void set_text_anchor(anchor_t text_anchor);
+        surface_t get_img();
+        void get_img(surface_t img);
+        Rect * get_img_rect();
+        void set_img_rect(Rect * img_rect);
+        anchor_t get_img_anchor();
+        void set_img_anchor(anchor_t img_anchor);
+        //END GETTER & SETTER
         private:
             relief_t    relief;
             const char*      text;
@@ -254,6 +273,29 @@ namespace ei {
                         surface_t*       img,
                         Rect**           img_rect,
                         anchor_t*        img_anchor);
+    //GETTER & SETTER
+    int get_corner_radius();
+    void set_corner_radius(int corner_radius);
+    relief_t get_relief();
+    void set_relief(relief_t relief);
+    const char * get_text();
+    void set_text(const char * text);
+    font_t get_text_font();
+    void set_text_font(font_t text_font);
+    color_t get_text_color();
+    void set_text_color(color_t text_color);
+    anchor_t get_text_anchor();
+    void set_text_anchor(anchor_t text_anchor);
+    surface_t get_img();
+    void get_img(surface_t img);
+    Rect * get_img_rect();
+    void set_img_rect(Rect * img_rect);
+    anchor_t get_img_anchor();
+    void set_img_anchor(anchor_t img_anchor);
+
+
+
+
     private:
         int        corner_radius;
         relief_t    relief;
@@ -308,6 +350,30 @@ namespace ei {
                         bool_t*         closable,
                         axis_set_t*     resizable,
                         Size*           min_size);
+    //Getter & Setter
+    int get_border_width();
+    void set_border_width(int border_width);
+    double get_top_bar_height();
+    void set_top_bar_height( double top_bar_height);
+    const char * get_title();
+    void set_title(const char * title);
+    bool_t get_closable();
+    void set_closable(bool_t closable);
+    axis_set_t get_resizable();
+    void set_resizable(axis_set_t resizable);
+    Size get_min_size();
+    void set_min_size( Size min_size);
+    Button * get_button_close();
+    void set_button_close(Button * button_close);
+    Placer * get_p_button_close();
+    void set_p_button_close(Placer * p_button_close);
+    Button * get_resize_button();
+    void set_resize_button(Button * resize_button);
+    Placer * get_p_resize_button();
+    void set_p_resize_button(Placer * p_resize_button);
+    Placer * get_p_in_window();
+    void set_p_in_window(Placer * p_in_window);
+    //End Getter & Setter
     private:
         int             border_width;
         double          top_bar_height;//The width of the top bar

@@ -97,6 +97,21 @@ public:
     Application(Application const&)     = delete; // prevents  this  method  to be used
     void operator=(Application const&)  = delete; // prevents  this  method  to be used
 
+
+    // *** Getters & Setter ***
+    surface_t get_root_window();
+    void set_root_window(surface_t root_window);
+    surface_t get_offscreen();
+    void set_offscreen(surface_t offscreen);
+    Frame * get_widget_root();
+    void set_widget_root(Frame * root_widget);
+    linked_rect_t get_to_clear_rectangle_list();
+    void set_to_clear_rectangle_list(linked_rect_t to_clear_rectangle_list);
+    bool get_running();
+    void set_running(bool running);
+    double get_update_time();
+    void set_update_time(double update_time);
+    // *** End Getter & Setter ***
 private:
     static Application *instance;
     surface_t root_window;

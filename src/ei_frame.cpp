@@ -181,4 +181,56 @@ namespace ei {
         stream << "anchor_t* img_anchor : " << img_anchor << "\n";
         return stream.str();
     }
+        //GETTER & SETTER
+        
+        relief_t Frame::get_relief(){
+            return this->relief;
+        }
+        void Frame::set_relief(relief_t relief){
+            this->relief = relief;
+        }
+        const char * Frame::get_text(){
+            return this->text;
+        }
+        void Frame::set_text(const char * text){
+            this->text = text;
+        }
+        font_t Frame::get_text_font(){
+            return this->text_font;
+        }
+        void Frame::set_text_font(font_t text_font){
+            this->text_font = text_font;
+        }
+        color_t Frame::get_text_color(){
+            return this->text_color;
+        }
+        void Frame::set_text_color(color_t text_color){
+            this->text_color = text_color;
+        }
+        anchor_t Frame::get_text_anchor(){
+            return this->text_anchor;
+        }
+        void Frame::set_text_anchor(anchor_t text_anchor){
+            this->text_anchor=text_anchor;
+        }
+        surface_t Frame::get_img(){
+            return this->img;
+        }
+        void Frame::get_img(surface_t img){
+            this->img=img;
+        }
+        Rect * Frame::get_img_rect(){
+            return this->img_rect;
+        }
+        void Frame::set_img_rect(Rect * img_rect){
+            this->img_rect = img_rect;
+        
+        }
+        anchor_t Frame::get_img_anchor(){
+            return this->img_anchor;
+        }
+        void Frame::set_img_anchor(anchor_t img_anchor){
+            this->img_anchor=img_anchor;
+        }
+        //END GETTER & SETTER
 }

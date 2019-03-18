@@ -152,4 +152,72 @@ Toplevel::Toplevel(Widget *parent) : Widget("Toplevel", parent){
         //in_window->configure(&this->requested_size,NULL,
         //                     NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
     }
+    //Getter & Setter
+    int  Toplevel::get_border_width(){
+        return this->border_width;
+    }
+    void Toplevel::set_border_width(int border_width){
+        this->border_width = border_width;
+    }
+    double Toplevel::get_top_bar_height(){
+        return this->top_bar_height;
+    }
+    void   Toplevel::set_top_bar_height( double top_bar_height){
+        this->top_bar_height = top_bar_height;
+    }
+    const char * Toplevel::get_title(){
+        return this->title;
+    }
+    void Toplevel::set_title(const char * title){
+        this->title = title;
+    }
+    bool_t Toplevel::get_closable(){
+        return this->closable;
+    }
+    void Toplevel::set_closable(bool_t closable){
+        this->closable = closable;
+    }
+    axis_set_t Toplevel::get_resizable(){
+        return this->resizable;
+    }
+    void Toplevel::set_resizable(axis_set_t resizable){
+        this->resizable = resizable;
+    }
+    Size Toplevel::get_min_size(){
+        return this->min_size;
+    }
+    void Toplevel::set_min_size( Size min_size){
+        this->min_size = min_size;
+    }
+    Button * Toplevel::get_button_close(){
+        return this->button_close;
+    }
+    void Toplevel::set_button_close(Button * button_close){
+        this->button_close = button_close;
+    }
+    Placer * Toplevel::get_p_button_close(){
+        return this->p_button_close;
+    }
+    void Toplevel::set_p_button_close(Placer * p_button_close){
+        this->p_button_close = p_button_close;
+    }
+    Button * Toplevel::get_resize_button(){
+        return this->resize_button;
+    }
+    void Toplevel::set_resize_button(Button * resize_button){
+        this->resize_button = resize_button;
+    }
+    Placer * Toplevel::get_p_resize_button(){
+        return this->p_resize_button;
+    }
+    void Toplevel::set_p_resize_button(Placer * p_resize_button){
+        this->p_resize_button = p_resize_button;
+    }
+    Placer * Toplevel::get_p_in_window(){
+        return this->p_in_window;
+    }
+    void Toplevel::set_p_in_window(Placer * p_in_window){
+        this->p_in_window = p_in_window;
+    }
+    //End Getter & Setter
 }

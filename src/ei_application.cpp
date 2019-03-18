@@ -147,5 +147,43 @@ namespace ei {
       uint32_t ID = widget_root->conver_color_id(color);
       return widget_root->pick(ID);
     }
+      // *** Getters & Setter ***
+    surface_t Application::get_root_window(){
+        return this->root_window;
+    }
+    void Application::set_root_window(surface_t root_window){
+        this->root_window = root_window;
+    }
+    surface_t Application::get_offscreen(){
+        return this->offscreen;
+    }
+    void Application::set_offscreen(surface_t offscreen){
+        this->offscreen = offscreen;
+    }
+    Frame * Application::get_widget_root(){
+        return this->widget_root;
+    }
+    void Application::set_widget_root(Frame * root_widget){
+        this->widget_root = root_widget;
+    }
+    linked_rect_t Application::get_to_clear_rectangle_list(){
+        return this->to_clear_rectangle_list;
+    }
+    void Application::set_to_clear_rectangle_list(linked_rect_t to_clear_rectangle_list){
+        this->to_clear_rectangle_list = to_clear_rectangle_list;
+    }
+    bool Application::get_running(){
+        return this->running;
+    }
+    void Application::set_running(bool running){
+        this->running = running;
+    }
+    double Application::get_update_time(){
+        return this->update_time;
+    }
+    void Application::set_update_time(double update_time){
+        this->update_time =update_time;
+    }
+    // *** End Getter & Setter ***
 
 }
