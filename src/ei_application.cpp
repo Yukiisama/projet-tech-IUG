@@ -43,7 +43,31 @@ namespace ei {
       hw_quit();
     }
 
-    bool_t click_up(Widget* widget, Event* event, void* user_param)
+    bool_t button_click_down(Widget* widget, Event* event, void* user_param)
+    {
+        MouseEvent* e = static_cast<MouseEvent*>(event);
+        Button* button = static_cast<Button*>(widget);
+
+        if(Application::getInstance()->widget_pick(e->where)->getPick_id()==button->getPick_id()){
+            button->set_relief(ei_relief_sunken);
+            return EI_TRUE;
+        }
+        return EI_FALSE;
+    }
+
+    bool_t button_click_up(Widget* widget, Event* event, void* user_param)
+    {
+        MouseEvent* e = static_cast<MouseEvent*>(event);
+        Button* button = static_cast<Button*>(widget);
+
+        if(button->get_relief()==ei_relief_sunken){
+            button->set_relief(ei_relief_raised);
+            return EI_TRUE;
+        }
+        return EI_FALSE;
+    }
+
+    bool_t toplevel_click_up(Widget* widget, Event* event, void* user_param)
     {
         MouseEvent* e = static_cast<MouseEvent*>(event);
         Toplevel* top = static_cast<Toplevel*>(widget);
@@ -53,7 +77,7 @@ namespace ei {
             if(top->resizing()==EI_TRUE)top->set_resize_button_pressed(EI_FALSE);
             if(top->closing()==EI_TRUE){
                 if(Application::getInstance()->widget_pick(e->where)->getPick_id()==top->getButton_close()->getPick_id()){
-                    //delete top;
+                    delete top;
                 }
                 top->set_button_close_pressed(EI_FALSE);
             }
@@ -62,7 +86,7 @@ namespace ei {
         return EI_FALSE;
     }
 
-    bool_t click_down(Widget* widget, Event* event, void* user_param)
+    bool_t toplevel_click_down(Widget* widget, Event* event, void* user_param)
     {
         MouseEvent* e = static_cast<MouseEvent*>(event);
         Toplevel* top = static_cast<Toplevel*>(widget);
@@ -128,9 +152,11 @@ namespace ei {
      */
     void Application::run(){
         //Binding the default comportments of widgets
-        EventManager::getInstance().bind(ei_ev_mouse_buttonup, NULL, "Toplevel", click_up, NULL);
-        EventManager::getInstance().bind(ei_ev_mouse_buttondown, NULL, "Toplevel", click_down, NULL);
+        EventManager::getInstance().bind(ei_ev_mouse_buttonup, NULL, "Toplevel", toplevel_click_up, NULL);
+        EventManager::getInstance().bind(ei_ev_mouse_buttondown, NULL, "Toplevel", toplevel_click_down, NULL);
         EventManager::getInstance().bind(ei_ev_mouse_move, NULL, "Toplevel", default_toplevel, NULL);
+        EventManager::getInstance().bind(ei_ev_mouse_buttondown, NULL, "Button", button_click_down, NULL);
+        EventManager::getInstance().bind(ei_ev_mouse_buttonup, NULL, "Button", button_click_up, NULL);
 
         running = true;
         double current_time ;

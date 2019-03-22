@@ -114,7 +114,6 @@ void EventManager::unbind(ei_eventtype_t eventtype,
 
 void EventManager::eventHandler(Event *event)
 {
-
     //Event * event = hw_event_wait_next();
     //Handle with mouse type of event.
     if (event->type == ei_ev_mouse_buttondown || event->type == ei_ev_mouse_buttonup || event->type == ei_ev_mouse_move)
@@ -133,14 +132,14 @@ void EventManager::eventHandler(Event *event)
                     {
                         if (event->type == ei_ev_mouse_buttondown)
                         {
-                            static_cast<Button *>(it->widget)->clicked = EI_TRUE;
+                            static_cast<Button *>(it->widget)->set_relief(ei_relief_sunken);
                             Application::getInstance()->invalidate_rect((*it->widget->getContent_rect()));
                             it->callback(it->widget, event, it->user_param);
                             break;
                         }
                         if (event->type == ei_ev_mouse_buttonup)
                         {
-                            static_cast<Button *>(it->widget)->clicked = EI_FALSE;
+                            static_cast<Button *>(it->widget)->set_relief(ei_relief_raised);
                             Application::getInstance()->invalidate_rect((*it->widget->getContent_rect()));
                             it->callback(it->widget, event, it->user_param);
                             break;
@@ -156,14 +155,14 @@ void EventManager::eventHandler(Event *event)
                         {
                             if (event->type == ei_ev_mouse_buttondown)
                             {
-                                static_cast<Button *>(*it2)->clicked = EI_TRUE;
+                                static_cast<Button *>(*it2)->set_relief(ei_relief_sunken);
                                 Application::getInstance()->invalidate_rect((*(*it2)->getContent_rect()));
                                 it->callback((*it2), event, it->user_param);
                                 break;
                             }
                             if (event->type == ei_ev_mouse_buttonup)
                             {
-                                static_cast<Button *>(*it2)->clicked = EI_FALSE;
+                                static_cast<Button *>(*it2)->set_relief(ei_relief_sunken);
                                 Application::getInstance()->invalidate_rect((*(*it2)->getContent_rect()));
                                 it->callback((*it2), event, it->user_param);
                                 break;
@@ -189,7 +188,7 @@ void EventManager::eventHandler(Event *event)
                 std::list<Widget *> w_geo = Application::getInstance()->root_widget()->getChildren();
                 for (std::list<Widget *>::iterator it2 = w_geo.begin(); it2 != w_geo.end(); ++it2)
                 {
-                    if ((*it2)->getName() == (it->tag) || (it->tag) == "all")
+                    if ((*it2)->getName() == (it->tag) || (it->tag) == "all" && (*it2)==NULL)
                     {
                         Application::getInstance()->invalidate_rect((*(*it2)->getContent_rect()));
                         it->callback((*it2), event, it->user_param);

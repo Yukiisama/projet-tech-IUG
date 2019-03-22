@@ -243,7 +243,6 @@ namespace ei {
     class Button : public Widget
     {
     public:
-        bool_t clicked;
         Button(Widget* parent);
 
         virtual ~Button();

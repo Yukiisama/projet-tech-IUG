@@ -93,7 +93,7 @@ void draw_polygon(surface_t surface, const linked_point_t& point_list,
  * Tint (rt,gt,bt): rt = r + (0.25 * (255 - r)), gt = g + (0.25 * (255 - g)), bt = b + (0.25 * (255 - b))
  */
 void draw_button(surface_t surface, Rect *rect, const color_t color, int radius,int border_width,
-                    const Rect *clipper,bool_t clicked);
+                    const Rect *clipper,relief_t relief);
 
 /**
  * \brief Draws text by calling \ref hw_text_create_surface.
