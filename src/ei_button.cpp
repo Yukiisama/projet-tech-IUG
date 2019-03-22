@@ -133,6 +133,61 @@ namespace ei
         if(img_rect) this->img_rect = *img_rect;
         if(img_anchor)this->img_anchor = *img_anchor;
     }
-
-
+    //GETTER & SETTER
+        int Button::get_corner_radius(){
+            return this->corner_radius;
+        }
+        void Button::set_corner_radius(int corner_radius){
+            this->corner_radius = corner_radius;
+        }
+        relief_t Button::get_relief(){
+            return this->relief;
+        }
+        void Button::set_relief(relief_t relief){
+            this->relief = relief;
+        }
+        const char * Button::get_text(){
+            return this->text;
+        }
+        void Button::set_text(const char * text){
+            this->text = text;
+        }
+        font_t Button::get_text_font(){
+            return this->text_font;
+        }
+        void Button::set_text_font(font_t text_font){
+            this->text_font = text_font;
+        }
+        color_t Button::get_text_color(){
+            return this->text_color;
+        }
+        void Button::set_text_color(color_t text_color){
+            this->text_color = text_color;
+        }
+        anchor_t Button::get_text_anchor(){
+            return this->text_anchor;
+        }
+        void Button::set_text_anchor(anchor_t text_anchor){
+            this->text_anchor=text_anchor;
+        }
+        surface_t Button::get_img(){
+            return this->img;
+        }
+        void Button::get_img(surface_t img){
+            this->img=img;
+        }
+        Rect * Button::get_img_rect(){
+            return this->img_rect;
+        }
+        void Button::set_img_rect(Rect * img_rect){
+            this->img_rect = img_rect;
+        
+        }
+        anchor_t Button::get_img_anchor(){
+            return this->img_anchor;
+        }
+        void Button::set_img_anchor(anchor_t img_anchor){
+            this->img_anchor=img_anchor;
+        }
+    //END GETTER & SETTER
 }
