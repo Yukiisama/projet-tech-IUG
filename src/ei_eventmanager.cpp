@@ -134,14 +134,14 @@ void EventManager::eventHandler(Event *event)
                         if (event->type == ei_ev_mouse_buttondown)
                         {
                             static_cast<Button *>(it->widget)->clicked = EI_TRUE;
-                            Application::getInstance()->invalidate_rect(it->widget->getContent_rect());
+                            Application::getInstance()->invalidate_rect((*it->widget->getContent_rect()));
                             it->callback(it->widget, event, it->user_param);
                             break;
                         }
                         if (event->type == ei_ev_mouse_buttonup)
                         {
                             static_cast<Button *>(it->widget)->clicked = EI_FALSE;
-                            Application::getInstance()->invalidate_rect(it->widget->getContent_rect());
+                            Application::getInstance()->invalidate_rect((*it->widget->getContent_rect()));
                             it->callback(it->widget, event, it->user_param);
                             break;
                         }
@@ -157,14 +157,14 @@ void EventManager::eventHandler(Event *event)
                             if (event->type == ei_ev_mouse_buttondown)
                             {
                                 static_cast<Button *>(*it2)->clicked = EI_TRUE;
-                                Application::getInstance()->invalidate_rect((*it2)->getContent_rect());
+                                Application::getInstance()->invalidate_rect((*(*it2)->getContent_rect()));
                                 it->callback((*it2), event, it->user_param);
                                 break;
                             }
                             if (event->type == ei_ev_mouse_buttonup)
                             {
                                 static_cast<Button *>(*it2)->clicked = EI_FALSE;
-                                Application::getInstance()->invalidate_rect((*it2)->getContent_rect());
+                                Application::getInstance()->invalidate_rect((*(*it2)->getContent_rect()));
                                 it->callback((*it2), event, it->user_param);
                                 break;
                             }
@@ -181,7 +181,7 @@ void EventManager::eventHandler(Event *event)
         {
             if (it->widget)
             {
-                Application::getInstance()->invalidate_rect(it->widget->getContent_rect());
+                Application::getInstance()->invalidate_rect((*it->widget->getContent_rect()));
                 it->callback(it->widget, event, it->user_param);
             }
             else
@@ -191,7 +191,7 @@ void EventManager::eventHandler(Event *event)
                 {
                     if ((*it2)->getName() == (it->tag) || (it->tag) == "all")
                     {
-                        Application::getInstance()->invalidate_rect((*it2)->getContent_rect());
+                        Application::getInstance()->invalidate_rect((*(*it2)->getContent_rect()));
                         it->callback((*it2), event, it->user_param);
                     }
                 }

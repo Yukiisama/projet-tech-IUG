@@ -393,6 +393,7 @@ namespace ei {
         Button*         resize_button;//The button at the right bottom to resize the window
         Placer*         p_resize_button;
         Rect            container;
+        Placer*         p_in_window;
     };
 
 }
