@@ -11,7 +11,6 @@
 #define EI_WIDGET_H
 
 #include "ei_draw.h"
-
 #include <functional>
 #include <sstream>
 #include <string>
@@ -28,7 +27,7 @@ namespace ei {
 
 
     class GeometryManager;
-
+    class Placer;
     /**
      * \brief   Abstract class representing a widget
      *          Every widget class specializes this base class by adding its own attributs.
@@ -64,6 +63,34 @@ namespace ei {
          */
         virtual void draw (surface_t surface, surface_t pick_surface, Rect* clipper);
 
+
+        //Getter
+        widgetclass_name_t getName(); //used to test in eventmanager
+        uint32_t getPick_id() const;
+        color_t getPick_color()const;
+        Widget *getParent() const;
+        std::list<Widget*> getChildren();
+        GeometryManager *getGeom_manager() const;
+        Size getRequested_size();     //used to initialiser default value of requested width and height in geomanager
+        Rect getScreen_location();
+        Rect* getContent_rect();       //used to add to invalidate_rec in Application to update
+        color_t getColor()const;
+        int getBorder_width()const;
+
+        //Setter
+        void setGeom_manager(GeometryManager *geom_manager);
+        void setRequested_size(Size  requested_size);
+        void setScreen_location(Rect screen_location);
+        void setContent_rect(Rect * content_rect);
+        void setColor(color_t color);
+        void setBorder_width(int border_width);
+
+        //Methods
+        virtual void updateContent_rect();
+        Point anchor_to_pos(Rect rect, anchor_t anchor) const;
+        Point text_anchor_to_pos(Rect rect, anchor_t anchor,Size text_size,int border_width)const;
+        color_t convert_id_color(uint32_t id);
+        uint32_t conver_color_id(color_t color);
         /**
          * \brief   Method that is called to notify the widget that its geometry has been modified
          *      by its geometry manager.
@@ -74,21 +101,8 @@ namespace ei {
         virtual void geomnotify (Rect rect);
         //From the root find the widget that pick_id is equal to id.
         Widget* pick(uint32_t id);
-        uint32_t getPick_id() const;
-
-        Point getAnchorPosition(Rect rect, anchor_t anchor) const;
-        Widget *getParent() const;
-        std::list<Widget*> getChildren();
-        GeometryManager *getGeom_manager() const;
-        Rect *getScreenLocation();
-        color_t ConvertIdToColor(uint32_t id);
-        uint32_t ConvertColorToId(color_t color);
-        widgetclass_name_t getName(); //used to test in eventmanager
-        Rect getRect();               //used to add to invalidate_rec in Application to update
-        Size getRequested_size();     //used to initialiser default value of requested width and height in geomanager
-        void setGeom_manager(GeometryManager* geom_manager);
-        virtual string to_string();
         void configure(Size *requested_size, const color_t *color);
+        virtual string to_string();
 
       protected:
         widgetclass_name_t name; ///< The string name of this class of widget.
@@ -185,7 +199,7 @@ namespace ei {
                         const color_t*  color,
                         int*            border_width,
                         relief_t*       relief,
-                        char**          text,
+                        const char**          text,
                         font_t*         text_font,
                         color_t*        text_color,
                         anchor_t*       text_anchor,
@@ -193,15 +207,34 @@ namespace ei {
                         Rect**          img_rect,
                         anchor_t*       img_anchor);
         //private variables that belongs to frame class
+        //GETTER & SETTER
+        
+        relief_t get_relief();
+        void set_relief(relief_t relief);
+        const char * get_text();
+        void set_text(const char * text);
+        font_t get_text_font();
+        void set_text_font(font_t text_font);
+        color_t get_text_color();
+        void set_text_color(color_t text_color);
+        anchor_t get_text_anchor();
+        void set_text_anchor(anchor_t text_anchor);
+        surface_t get_img();
+        void get_img(surface_t img);
+        Rect * get_img_rect();
+        void set_img_rect(Rect * img_rect);
+        anchor_t get_img_anchor();
+        void set_img_anchor(anchor_t img_anchor);
+        //END GETTER & SETTER
         private:
             relief_t    relief;
-            char**      text;
+            const char*      text;
             font_t      text_font;
             color_t     text_color;
             anchor_t    text_anchor;
-            surface_t * img;
+            surface_t  img;
             Rect*       img_rect;
-            anchor_t *  img_anchor;
+            anchor_t  img_anchor;
     };
 
 
@@ -242,16 +275,39 @@ namespace ei {
                         surface_t*       img,
                         Rect**           img_rect,
                         anchor_t*        img_anchor);
+    //GETTER & SETTER
+    int get_corner_radius();
+    void set_corner_radius(int corner_radius);
+    relief_t get_relief();
+    void set_relief(relief_t relief);
+    const char * get_text();
+    void set_text(const char * text);
+    font_t get_text_font();
+    void set_text_font(font_t text_font);
+    color_t get_text_color();
+    void set_text_color(color_t text_color);
+    anchor_t get_text_anchor();
+    void set_text_anchor(anchor_t text_anchor);
+    surface_t get_img();
+    void get_img(surface_t img);
+    Rect * get_img_rect();
+    void set_img_rect(Rect * img_rect);
+    anchor_t get_img_anchor();
+    void set_img_anchor(anchor_t img_anchor);
+
+
+
+
     private:
-        int*        corner_radius;
+        int        corner_radius;
         relief_t    relief;
-        const char**      text;
+        const char*      text;
         font_t      text_font;
         color_t     text_color;
         anchor_t    text_anchor;
-        surface_t * img;
+        surface_t  img;
         Rect*       img_rect;
-        anchor_t *  img_anchor;
+        anchor_t   img_anchor;
     };
 
 
@@ -280,7 +336,10 @@ namespace ei {
         virtual void draw (surface_t surface,
                            surface_t pick_surface,
                            Rect*     clipper);
-
+        virtual void updateContent_rect();
+        void drawBasic_toplevel(surface_t surface,
+                                surface_t pick_surface,
+                                Rect*     clipper);
         /**
          * @brief   Configures the attributes of widgets of the class "toplevel".
          *
@@ -306,22 +365,49 @@ namespace ei {
                         bool_t*         closable,
                         axis_set_t*     resizable,
                         Size*           min_size);
+    //Getter & Setter
+    int get_border_width();
+    void set_border_width(int border_width);
+    double get_top_bar_height();
+    void set_top_bar_height( double top_bar_height);
+    const char * get_title();
+    void set_title(const char * title);
+    bool_t get_closable();
+    void set_closable(bool_t closable);
+    axis_set_t get_resizable();
+    void set_resizable(axis_set_t resizable);
+    Size get_min_size();
+    void set_min_size( Size min_size);
+    Button * get_button_close();
+    void set_button_close(Button * button_close);
+    Placer * get_p_button_close();
+    void set_p_button_close(Placer * p_button_close);
+    Button * get_resize_button();
+    void set_resize_button(Button * resize_button);
+    Placer * get_p_resize_button();
+    void set_p_resize_button(Placer * p_resize_button);
+    Placer * get_p_in_window();
+    void set_p_in_window(Placer * p_in_window);
+    //End Getter & Setter
     private:
-        int*            border_width;
-        double*         top_bar_height;//The height of the top bar
-        const char**    title;
+        int             border_width;
+        double          top_bar_height;//The width of the top bar
+        const char*     title;
         bool_t          closable;
-        axis_set_t*     resizable;
-        Size*           min_size;
-        Button*         button_close=NULL;//The button that close the window
-        Button*         resize_button=NULL;//The button at the right bottom to resize the window
-        Frame*          in_window=NULL;//The reachable zone of the window
+        axis_set_t      resizable;
+        Size            min_size;
+        Size            button_size;
+        Size            resize_button_window_size;
+        Button*         button_close;//The button that close the window
+        Placer*         p_button_close;
+        Button*         resize_button;//The button at the right bottom to resize the window
+        Placer*         p_resize_button;
+        Rect            container;
+        Placer*         p_in_window;
         bool_t          top_bar_clicked=EI_FALSE;
         bool_t          resize_button_pressed=EI_FALSE;
         bool_t          button_close_pressed=EI_FALSE;
         Point           mouse_pos;
-        /*Placer*         close_placer;
-        Placer*         */
     };
 
 }

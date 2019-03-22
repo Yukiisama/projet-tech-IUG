@@ -14,8 +14,8 @@ Placer::Placer():GeometryManager(){
     set_anchor(ei_anc_northwest);
     set_x(0);
     set_y(0);
-    set_width(0);
-    set_height(0);
+    set_width((0.0));
+    set_height((0.0));
     set_rel_x(0.0);
     set_rel_y(0.0);
     set_rel_width(0.0);
@@ -104,19 +104,21 @@ Placer::~Placer(){
 
     void Placer::run (Widget* widget){
         if (!widget ) return;
-        if (widget){
+        /*if (widget){
             if(!widget->getParent())
                 return;
         }
+        */
 
             // Creating the new rectangle and setting the right values into it
             Rect new_rect = Rect();
+            Rect contect_rect = *(widget->getParent()->getContent_rect());
 
         // Positioning
-        int temp_x = widget->getParent()->getScreenLocation()->top_left.x(), temp_y = widget->getParent()->getScreenLocation()->top_left.y();
+        int temp_x = contect_rect.top_left.x(), temp_y = contect_rect.top_left.y();
 
-        if (get_rel_x()) temp_x += widget->getParent()->getScreenLocation()->size.width() * get_rel_x();
-        if (get_rel_y()) temp_y += widget->getParent()->getScreenLocation()->size.height() * get_rel_y();
+        if (get_rel_x()) temp_x += contect_rect.size.width() * get_rel_x();
+        if (get_rel_y()) temp_y += contect_rect.size.height() * get_rel_y();
         if (get_x()) temp_x += get_x();
         if (get_y()) temp_y += get_y();
 
@@ -161,8 +163,8 @@ Placer::~Placer(){
         // Sizing
         int temp_width = 0, temp_height = 0;
 
-        if (get_rel_width()) temp_width += widget->getParent()->getScreenLocation()->size.width() * get_rel_width();
-        if (get_rel_height()) temp_height += widget->getParent()->getScreenLocation()->size.height() * get_rel_height();
+        if (get_rel_width()) temp_width += contect_rect.size.width() * get_rel_width();
+        if (get_rel_height()) temp_height += contect_rect.size.height() * get_rel_height();
         if (get_width()) temp_width += get_width();
         if (get_height()) temp_height += get_height();
 
@@ -178,15 +180,13 @@ Placer::~Placer(){
         widget->geomnotify(new_rect);
 
         // Calling run for the widget's children
-        int children_list_size = widget->getChildren().size();
-        
         if (!widget->getChildren().empty())
         {   
-            /*
-            for (list<Widget*>::iterator it = widget->getChildren().begin();it!= widget->getChildren().end();++it){
-                //if ((*it)->getGeom_manager()) (*it)->getGeom_manager()->run(*it);
+            list<Widget *> w_child = widget->getChildren();
+            for (list<Widget *>::iterator it = w_child.begin();it!=w_child.end();it++){
+                if ((*it)->getGeom_manager()) (*it)->getGeom_manager()->run(*it);
             }
-            */
+
         }
         
         return;

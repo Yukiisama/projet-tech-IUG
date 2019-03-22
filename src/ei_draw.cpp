@@ -391,7 +391,7 @@ void draw_polygon(surface_t surface, const linked_point_t &point_list,
     delete[] edge_table;
 }
 
-void draw_button(surface_t surface, Rect *rect, const color_t color, int radius, const Rect *clipper,bool_t clicked)
+void draw_button(surface_t surface, Rect *rect, const color_t color, int radius,int border_width, const Rect *clipper,bool_t clicked)
 {
     color_t tint;
     tint.red = color.red + (0.25 * (255-color.red));
@@ -414,10 +414,10 @@ void draw_button(surface_t surface, Rect *rect, const color_t color, int radius,
     
   
     Rect *inner_rect = rect;
-    inner_rect->top_left.x() = inner_rect->top_left.x() + radius / 2;
-    inner_rect->top_left.y() = inner_rect->top_left.y() + radius / 2;
-    inner_rect->size.width() = inner_rect->size.width() - radius;
-    inner_rect->size.height() = inner_rect->size.height() - radius;
+    inner_rect->top_left.x() = inner_rect->top_left.x() + border_width;
+    inner_rect->top_left.y() = inner_rect->top_left.y() + border_width;
+    inner_rect->size.width() = inner_rect->size.width() - border_width*2;
+    inner_rect->size.height() = inner_rect->size.height() - border_width*2;
     draw_polygon(surface, rounded_frame(*inner_rect, radius, BT_FULL), color,clipper);
 
     

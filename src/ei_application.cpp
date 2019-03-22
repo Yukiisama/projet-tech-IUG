@@ -53,7 +53,7 @@ namespace ei {
             if(top->resizing()==EI_TRUE)top->set_resize_button_pressed(EI_FALSE);
             if(top->closing()==EI_TRUE){
                 if(Application::getInstance()->widget_pick(e->where)->getPick_id()==top->getButton_close()->getPick_id()){
-                    delete top;
+                    //delete top;
                 }
                 top->set_button_close_pressed(EI_FALSE);
             }
@@ -87,26 +87,26 @@ namespace ei {
         return EI_FALSE;
     }
 
-    bool_t move_toplevel(Widget* widget, Event* event, void* user_param)
+    bool_t default_toplevel(Widget* widget, Event* event, void* user_param)
     {
         MouseEvent* e = static_cast<MouseEvent*>(event);
         Toplevel* top = static_cast<Toplevel*>(widget);
 
         if(top->moving()==EI_TRUE){
-            if(Application::inside_root(e->where)){
+            if(Application::getInstance()->inside_root(e->where)){
                 float move_x = (e->where.x())-(top->getMouse_pos().x());
                 float move_y = (e->where.y())-(top->getMouse_pos().y());
 
-                top->getGeom_manager()->set_x(top->getScreenLocation()->top_left.x()+move_x);
-                top->getGeom_manager()->set_y(top->getScreenLocation()->top_left.y()+move_y);
+                top->getGeom_manager()->set_x(top->getScreen_location().top_left.x()+move_x);
+                top->getGeom_manager()->set_y(top->getScreen_location().top_left.y()+move_y);
 
                 top->setMouse_pos(e->where);
             }
             return EI_TRUE;
         }
         if(top->resizing()==EI_TRUE){
-            float new_width = (e->where.x())-(top->getScreenLocation()->top_left.x());
-            float new_height = (e->where.y())-(top->getScreenLocation()->top_left.y());
+            float new_width = (e->where.x())-(top->getScreen_location().top_left.x());
+            float new_height = (e->where.y())-(top->getScreen_location().top_left.y());
 
             if(new_width < top->getMin_size().width()){
                 new_width = top->getRequested_size().width();
@@ -127,45 +127,46 @@ namespace ei {
      *    \ref app_quit_request is called.
      */
     void Application::run(){
-		running = true;
-    double current_time ;
-    Rect window_rect = hw_surface_get_rect(root_window);
-    invalidate_rect(window_rect);
+        //Binding the default comportments of widgets
+        EventManager::getInstance().bind(ei_ev_mouse_buttonup, NULL, "Toplevel", click_up, NULL);
+        EventManager::getInstance().bind(ei_ev_mouse_buttondown, NULL, "Toplevel", click_down, NULL);
+        EventManager::getInstance().bind(ei_ev_mouse_move, NULL, "Toplevel", default_toplevel, NULL);
 
-    //Binding the default comportments of widgets
-    EventManager::getInstance().bind(ei_ev_mouse_buttonup, NULL, "Toplevel", click_up, NULL);
-    EventManager::getInstance().bind(ei_ev_mouse_buttondown, NULL, "Toplevel", click_down, NULL);
-    EventManager::getInstance().bind(ei_ev_mouse_move, NULL, "Toplevel", move_toplevel, NULL);
-    EventManager::getInstance().bind(ei_ev_mouse_move, NULL, "Toplevel", resize_toplevel, NULL);
-	
-    while(running){
-      std::list<Widget *> w_geo = widget_root->getChildren();
-      for(std::list<Widget *>::iterator it =w_geo.begin() ;it!=w_geo.end();++it){
-        if((*it)->getGeom_manager()){
-          (*it)->getGeom_manager()->run((*it));
-          //std::cout<<"after run \n"<<std::endl;
-          //std::cout << (*it)->to_string()<<std::endl;
+        running = true;
+        double current_time ;
+        Rect window_rect = hw_surface_get_rect(root_window);
+        invalidate_rect(window_rect);
+
+        while(running){
+            std::list<Widget *> w_geo = widget_root->getChildren();
+            for(std::list<Widget *>::iterator it =w_geo.begin() ;it!=w_geo.end();++it){
+                if((*it)->getGeom_manager()){
+                    (*it)->getGeom_manager()->run((*it));
+                    if(!(*it)->getName().compare("Toplevel")){
+                        //update content_rect
+                        (*it)->updateContent_rect();
+                    }
+                    //std::cout<<"after run \n"<<std::endl;
+                    //std::cout << (*it)->to_string()<<std::endl;
+                }
+            }
+            Event *ev = hw_event_wait_next();
+            EventManager::getInstance().eventHandler(ev);
+            KeyEvent * ev_key = static_cast<KeyEvent*>  (ev);
+            if( ev->type == ei_ev_keydown && ev_key->key_sym == ALLEGRO_KEY_Q)  
+                quit_request();
+            current_time = hw_now();
+            if(update_time<=current_time){
+
+                if(!to_clear_rectangle_list.empty()){
+                    widget_root->draw(root_window,offscreen,widget_root->getContent_rect());
+                    hw_surface_update_rects(to_clear_rectangle_list);
+                }
+                //next step is to clear the rectangle list.
+                to_clear_rectangle_list.clear();
+                update_time  = current_time + (1/60);
+            }
         }
-      }
-      Event *ev = hw_event_wait_next();
-      EventManager::getInstance().eventHandler(ev);
-      KeyEvent * ev_key = static_cast<KeyEvent*>  (ev);
-      if( ev->type == ei_ev_keydown && ev_key->key_sym == ALLEGRO_KEY_ESCAPE)  // 59 == escape
-				quit_request();
-      current_time = hw_now();
-      
-      if(update_time<=current_time){
-        
-        if(!to_clear_rectangle_list.empty()){
-          widget_root->draw(root_window,offscreen,NULL);
-			    hw_surface_update_rects(to_clear_rectangle_list);
-        }
-			  //next step is to clear the rectangle list.
-				to_clear_rectangle_list.clear();
-        update_time  = current_time + (1/60);
-      }
-      
-		}
         return;
     }
 
@@ -229,9 +230,47 @@ namespace ei {
           exit(EXIT_FAILURE);
       }
       color_t color = hw_get_pixel(this->offscreen, where);
-      uint32_t ID = widget_root->ConvertColorToId(color);
+      uint32_t ID = widget_root->conver_color_id(color);
       return widget_root->pick(ID);
     }
+      // *** Getters & Setter ***
+    surface_t Application::get_root_window(){
+        return this->root_window;
+    }
+    void Application::set_root_window(surface_t root_window){
+        this->root_window = root_window;
+    }
+    surface_t Application::get_offscreen(){
+        return this->offscreen;
+    }
+    void Application::set_offscreen(surface_t offscreen){
+        this->offscreen = offscreen;
+    }
+    Frame * Application::get_widget_root(){
+        return this->widget_root;
+    }
+    void Application::set_widget_root(Frame * root_widget){
+        this->widget_root = root_widget;
+    }
+    linked_rect_t Application::get_to_clear_rectangle_list(){
+        return this->to_clear_rectangle_list;
+    }
+    void Application::set_to_clear_rectangle_list(linked_rect_t to_clear_rectangle_list){
+        this->to_clear_rectangle_list = to_clear_rectangle_list;
+    }
+    bool Application::get_running(){
+        return this->running;
+    }
+    void Application::set_running(bool running){
+        this->running = running;
+    }
+    double Application::get_update_time(){
+        return this->update_time;
+    }
+    void Application::set_update_time(double update_time){
+        this->update_time =update_time;
+    }
+    // *** End Getter & Setter ***
 
     bool_t Application::inside_root (const Point& where){
         if((where.x() < 0 || where.x() > hw_surface_get_size(this->root_window).width())

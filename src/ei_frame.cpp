@@ -3,22 +3,24 @@
 #include "ei_widget.h"
 #include "ei_geometrymanager.h"
 #include "hw_interface.h"
+#include <iostream>
+
 
 namespace ei {
 
     Frame::Frame(Widget *parent):Widget("frame",parent){
         relief=ei_relief_none;
         text=nullptr;
-        text_font=default_font;
+        text_font=hw_text_font_create(default_font_filename, font_default_size);
         text_color=font_default_color;
         text_anchor=ei_anc_center;
         img=nullptr;
         img_rect=nullptr;
-        img_anchor = new anchor_t{ei_anc_center};
+        img_anchor = ei_anc_center;
     }
 
     Frame::~Frame(){
-        //delete this->img_anchor;
+        hw_text_font_free(text_font);
     }
     /**
      * \brief   Method that draws the widget.
@@ -34,7 +36,7 @@ namespace ei {
                     Rect *clipper)
     {
 
-
+        
         if(!surface){
           fprintf(stderr,"Error occured for Frame::draw - surface is not valid\n");
           exit(EXIT_FAILURE);
@@ -52,20 +54,53 @@ namespace ei {
                                    screen_location.top_left.y()+requested_size.height()));
         list_frame.push_back(Point(screen_location.top_left.x(),
                                    screen_location.top_left.y()+requested_size.height()));
-
+        
         hw_surface_lock(pick_surface);
         pick_color.alpha=255;
         draw_polygon(pick_surface,list_frame,pick_color,clipper);
-        draw_polygon(surface,list_frame,color,clipper);
         hw_surface_unlock(pick_surface);
-        if(!children.empty()){
-            for (std::list<Widget *>::iterator it = children.begin(); it != children.end(); it++)
-            {
-                (*it)->draw(surface, pick_surface, clipper);
+        draw_polygon(surface,list_frame,color,clipper);
+        if (text)
+        {
+            Point where = anchor_to_pos(screen_location, text_anchor);
+            draw_text(surface, &where, text, text_font, &text_color);
+        }
+        if(img){
+            cout<<img<<endl;
+
+
+            if(img_rect){ //case where only subpart of img should be display.
+                hw_surface_lock(img);
+                hw_surface_lock(surface);
+                for (int i =img_rect->top_left.x();i<img_rect->top_left.x()+img_rect->size.width();i++) {
+                    for (int j = img_rect->top_left.y();j<img_rect->top_left.y()+img_rect->size.height();j++) {
+                        Point pos = Point(i,j);
+                        color_t img_c = hw_get_pixel(img,pos);
+                        hw_put_pixel(surface,pos,img_c);
+                    }
+                }
+                hw_surface_unlock(surface);
+                hw_surface_unlock(img);
+
+            }else {       //default case, display img according to img_anchor.
+                cout<<"img detected"<<endl;
+                Point pos = anchor_to_pos(screen_location,img_anchor);
+                ei_copy_surface(surface,img,&pos,EI_TRUE);
             }
+            
 
 
         }
+        //recursive method that draw all the children.
+        if(!children.empty()){
+            for (std::list<Widget *>::iterator it = children.begin(); it != children.end(); it++)
+            {
+                //Children should be display inside the content_rect of his parent.
+                (*it)->draw(surface, pick_surface, content_rect);
+            }
+        }
+        
+
     }
 
     /**
@@ -110,7 +145,7 @@ namespace ei {
                            const color_t*  color,
                            int*            border_width,
                            relief_t*       relief,
-                           char**          text,
+                           const char**          text,
                            font_t*         text_font,
                            color_t*        text_color,
                            anchor_t*       text_anchor,
@@ -120,12 +155,13 @@ namespace ei {
         if(img && text) fprintf(stderr,"Only one of the parameter \"text\" and \"img\" should be used (i.e. non-NULL).");
         Widget::configure(requested_size,color);
         if(relief) this->relief = *relief;
-        if(text) this->text = text;
+        if(text && !img) this->text = *text;
         if(text_font) this->text_font = *text_font;
         if(text_color) this->text_color = *text_color;
-        if(img) this->img = img;
+        if(img && !text) {this->img = *img;}
+        //if(img) {this->img = hw_image_load(DATA_DIR"img.jpg");}
         if(img_rect) this->img_rect = *img_rect;
-        if(img_anchor)this->img_anchor = img_anchor;
+        if(img_anchor)this->img_anchor = *img_anchor;
     }
 
     string Frame::to_string()
@@ -145,4 +181,56 @@ namespace ei {
         stream << "anchor_t* img_anchor : " << img_anchor << "\n";
         return stream.str();
     }
+        //GETTER & SETTER
+        
+        relief_t Frame::get_relief(){
+            return this->relief;
+        }
+        void Frame::set_relief(relief_t relief){
+            this->relief = relief;
+        }
+        const char * Frame::get_text(){
+            return this->text;
+        }
+        void Frame::set_text(const char * text){
+            this->text = text;
+        }
+        font_t Frame::get_text_font(){
+            return this->text_font;
+        }
+        void Frame::set_text_font(font_t text_font){
+            this->text_font = text_font;
+        }
+        color_t Frame::get_text_color(){
+            return this->text_color;
+        }
+        void Frame::set_text_color(color_t text_color){
+            this->text_color = text_color;
+        }
+        anchor_t Frame::get_text_anchor(){
+            return this->text_anchor;
+        }
+        void Frame::set_text_anchor(anchor_t text_anchor){
+            this->text_anchor=text_anchor;
+        }
+        surface_t Frame::get_img(){
+            return this->img;
+        }
+        void Frame::get_img(surface_t img){
+            this->img=img;
+        }
+        Rect * Frame::get_img_rect(){
+            return this->img_rect;
+        }
+        void Frame::set_img_rect(Rect * img_rect){
+            this->img_rect = img_rect;
+        
+        }
+        anchor_t Frame::get_img_anchor(){
+            return this->img_anchor;
+        }
+        void Frame::set_img_anchor(anchor_t img_anchor){
+            this->img_anchor=img_anchor;
+        }
+        //END GETTER & SETTER
 }

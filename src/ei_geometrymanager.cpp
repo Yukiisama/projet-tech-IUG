@@ -14,21 +14,21 @@ namespace ei
 GeometryManager::GeometryManager()
 {
    placer = false;
-   widget = new Widget;
-   anchor = new anchor_t;
-   x = new int;
-   y = new int;
-   width = new float;
-   height = new float;
-   rel_x = new float;
-   rel_y = new float;
-   rel_width = new float;
-   rel_height = new float;
+   widget = nullptr;
+   anchor = new anchor_t(ei_anc_center);
+   x = new int(0);
+   y = new int(0);
+   width = new float(0.0);
+   height = new float(0.0);
+   rel_x = new float(0.0);
+   rel_y = new float(0.0);
+   rel_width = new float(0.0);
+   rel_height = new float(0.0);
 }
 ///modif///
 GeometryManager::~GeometryManager()
 {
-   delete widget;
+   //delete widget;
    delete anchor;
    delete x;
    delete y;

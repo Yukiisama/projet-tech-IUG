@@ -53,8 +53,8 @@ TEST_CASE("fill_window", "[unit]")
 
     SECTION ("conver_id_color"){
         Widget w;
-        color_t c = w.ConvertIdToColor(7631988);
-        uint32_t id = w.ConvertColorToId(c);
+        color_t c = w.convert_id_color(7631988);
+        uint32_t id = w.conver_color_id(c);
         REQUIRE(id == 7631988);
     }
 

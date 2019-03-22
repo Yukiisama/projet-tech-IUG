@@ -92,7 +92,7 @@ void draw_polygon(surface_t surface, const linked_point_t& point_list,
  * Shade (rs,gs,bs): rs = r * 0.25, gs = g * 0.25, bs = b * 0.25 (that is a pretty dark shade); 
  * Tint (rt,gt,bt): rt = r + (0.25 * (255 - r)), gt = g + (0.25 * (255 - g)), bt = b + (0.25 * (255 - b))
  */
-void draw_button(surface_t surface, Rect *rect, const color_t color, int radius, 
+void draw_button(surface_t surface, Rect *rect, const color_t color, int radius,int border_width,
                     const Rect *clipper,bool_t clicked);
 
 /**

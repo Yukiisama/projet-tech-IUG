@@ -12,7 +12,7 @@
 #define EI_EVENTMANAGER_H
 
 #include "ei_event.h"
-
+#include <unordered_map>
 namespace ei {
 
 /**
@@ -35,14 +35,15 @@ public:
     typedef struct param_callback
     {
         /* data */
-        ei_eventtype_t eventtype;
         Widget *widget;
         tag_t tag;
         ei_callback_t callback;
         void *user_param;
     } param_callback;
-
-    std::vector<param_callback> vec_callback;
+    // Declaring umap to be of <ei_eventtype_t,std::vector<param_callback> type
+    // key will be of ei_eventtype_t type and mapped value will
+    // be of std::vector<param_callback type
+    std::unordered_map<ei_eventtype_t,std::vector<param_callback>> hashMap;
    
 
 public:
