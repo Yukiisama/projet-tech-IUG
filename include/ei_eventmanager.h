@@ -36,7 +36,6 @@ public:
     {
         /* data */
         Widget *widget;
-        tag_t tag;
         ei_callback_t callback;
         void *user_param;
     } param_callback;

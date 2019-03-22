@@ -117,7 +117,9 @@ namespace ei{
     Rect* Widget::getContent_rect(){
       return content_rect;
     }
-
+    linked_tag_t Widget::getTag_list()const{
+        return tag_list;
+    }
     color_t Widget::getColor()const{
         return color;
     }

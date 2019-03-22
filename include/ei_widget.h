@@ -74,6 +74,7 @@ namespace ei {
         Size getRequested_size();     //used to initialiser default value of requested width and height in geomanager
         Rect getScreen_location();
         Rect* getContent_rect();       //used to add to invalidate_rec in Application to update
+        linked_tag_t getTag_list()const;
         color_t getColor()const;
         int getBorder_width()const;
 
@@ -121,6 +122,7 @@ namespace ei {
         Size  requested_size;  ///< Size requested by the widget (big enough for its label, for example), or by the programmer. This can be different than its screen size defined by the placer.
         Rect  screen_location; ///< Position and size of the widget expressed in the root window reference.
         Rect* content_rect;    ///< Where to place children, when this widget is used as a container. By defaults, points to the screen_location.
+        linked_tag_t tag_list;  ///<list of tags that belongs to this widget
         // common variables for sub class
         color_t color;
         int border_width;

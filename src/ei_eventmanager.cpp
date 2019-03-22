@@ -3,6 +3,7 @@
 #include "ei_application.h"
 #include <iostream>
 #include <stdio.h>
+#include <stack>
 namespace ei
 {
 EventManager::EventManager() {}
@@ -18,7 +19,15 @@ EventManager::EventManager() {}
      * @param	callback	The callback (i.e. the function to call).
      * @param	user_param	A user parameter that will be passed to the callback when it is called.
      */
-
+/*
+ *
+ * Bind tags :
+ * if tag = all, then push root and all it's children to hashmap[eventtype]
+ * if tag != all then checkthe tag_list of all the widget with the param tag
+ *  if tag belong to tag_list then bind that widget to hashmap.
+ *
+ *
+ */
 void EventManager::bind(ei_eventtype_t eventtype,
                         Widget *widget,
                         tag_t tag,
@@ -37,26 +46,49 @@ void EventManager::bind(ei_eventtype_t eventtype,
     if (widget && tag.empty())
     {
         _callback.widget = widget;
+        _callback.callback = callback;
+        _callback.user_param = user_param;
+        //Add eventtype as key, if it's not in hashMap.
+        if (hashMap.find(eventtype) == hashMap.end()) hashMap[eventtype] = std::vector<param_callback>();
+        hashMap[eventtype].push_back(_callback); //add _callback to the vecot where it's key is eventtype.
+
     }
+
     //Bind with tag
     else if (!widget && !tag.empty())
     {
-        _callback.tag = tag;
-        _callback.widget = NULL;
-    }
-    _callback.callback = callback;
-    _callback.user_param = user_param;
+       std::stack<Widget *> w_stack;//use to store all widgets
+       w_stack.push(Application::getInstance()->root_widget()); //push root to the head of the stack
+       while (!w_stack.empty()) {
+           Widget* widget1=w_stack.top();//store the head of the stack to widget
+           w_stack.pop();//remove the head of the stack
+           if(!tag.compare("all")){//case all
+               if(hashMap.find(eventtype)==hashMap.end()) hashMap[eventtype]=std::vector<param_callback>();
+               _callback.widget=widget1;
+               _callback.callback = callback;
+               _callback.user_param = user_param;
+               hashMap[eventtype].push_back(_callback);
+           }else{//Bind the tag that is type of class(Frame,Button and Toplevel) or custom tags.
+                for(std::list<tag_t>::iterator it = widget1->getTag_list().begin(); it!=widget1->getTag_list().end();++it){
+                    if(!tag.compare(*it)){
+                        if(hashMap.find(eventtype)==hashMap.end()) hashMap[eventtype]=std::vector<param_callback>();
+                        _callback.widget=widget1;
+                        _callback.callback = callback;
+                        _callback.user_param = user_param;
+                        hashMap[eventtype].push_back(_callback);
+                    }
+                }
+           }
+           //add children to stack
+           list<Widget *> w_child = widget1->getChildren();
+           for (list<Widget *>::iterator it = w_child.begin();it!=w_child.end();++it){
+               w_stack.push(*it);
+           }
 
-    //Add eventtype as key, if it's not in hashMap.
-    if (hashMap.find(eventtype) == hashMap.end())
-    {
-        hashMap[eventtype] = std::vector<param_callback>();
-        hashMap[eventtype].push_back(_callback); //add _callback to the vecot where it's key is eventtype.
+       }
+
     }
-    else
-    {                                            //evettype already existe as key in hashMap.
-        hashMap[eventtype].push_back(_callback); //add _callback to the vecot where it's key is eventtype.
-    }
+
 }
 
 /**
@@ -66,6 +98,13 @@ void EventManager::bind(ei_eventtype_t eventtype,
      *			All parameters must have the same value as when
      *          \ref ei::EventManager::bind was called to create the binding.
      */
+
+/*
+ * Unbind tag :
+ * if tag = all then unbind the whole hashmap
+ * else compare tag with tag_list of the the widget in the hashmap and compare other params,
+ *       if equal then unbind
+ */
 void EventManager::unbind(ei_eventtype_t eventtype,
                           Widget *widget,
                           tag_t tag,
@@ -78,36 +117,44 @@ void EventManager::unbind(ei_eventtype_t eventtype,
     {
         if (hashMap.find(eventtype) != hashMap.end())
         {
-            for (std::vector<param_callback>::iterator it = hashMap[eventtype].begin(); it != hashMap[eventtype].end();)
-            {
-                // if exist delete where all the paramaters have the same value
-                if (!it->tag.compare(tag) && it->user_param == user_param 
-                && it->callback.target<bool_t(Widget *, Event *, void *)>() == callback.target<bool_t(Widget *, Event *, void *)>())
+            //case tag equals to all, then unbind all widget
+            if(!tag.compare("all")){
+                for (std::vector<param_callback>::iterator it = hashMap[eventtype].begin(); it != hashMap[eventtype].end();)
                 {
-                    it = hashMap[eventtype].erase(it);
+                    if ( it->user_param == user_param
+                    && it->callback.target<bool_t(Widget *, Event *, void *)>() == callback.target<bool_t(Widget *, Event *, void *)>())
+                        it = hashMap[eventtype].erase(it);
+                    else ++it;
                 }
-                else
+            }else{//unbind the param_callback that has the parameters as in unbind fonction.
+                for (std::vector<param_callback>::iterator it = hashMap[eventtype].begin(); it != hashMap[eventtype].end();)
                 {
-                    ++it;
+                    if ( it->user_param == user_param
+                    && it->callback.target<bool_t(Widget *, Event *, void *)>() == callback.target<bool_t(Widget *, Event *, void *)>())
+                    {
+                        linked_tag_t tag_list = it->widget->getTag_list();
+                        for(linked_tag_t::iterator it_tag = tag_list.begin(); it_tag!=tag_list.end();++it_tag){
+                            if(!tag.compare(*it_tag))
+                                it = hashMap[eventtype].erase(it);
+                            else ++it;
+                        }
+
+                    }
+
                 }
+
             }
         }
     }
 
     //unbind with widget
-    if (widget != nullptr && tag.empty())
+    if (widget && tag.empty())
     {
-        for (std::vector<param_callback>::iterator it = hashMap[eventtype].begin(); it != hashMap[eventtype].end();)
+        for (std::vector<param_callback>::iterator it = hashMap[eventtype].begin(); it != hashMap[eventtype].end();++it)
         {
             if (it->widget->getPick_id() == widget->getPick_id() && it->user_param == user_param 
             && it->callback.target<bool_t(Widget *, Event *, void *)>() == callback.target<bool_t(Widget *, Event *, void *)>())
-            {
                 it = hashMap[eventtype].erase(it);
-            }
-            else
-            {
-                ++it;
-            }
         }
     }
 }
@@ -123,6 +170,7 @@ void EventManager::eventHandler(Event *event)
         MouseEvent *M = static_cast<MouseEvent *>(event);
         Widget *w = Application::getInstance()->widget_pick(M->where);
         //std::cout<< M->where.x()<<std::endl;
+        //Condition wherz widget is valid.
         if (w)
         {
             for (std::vector<param_callback>::iterator it = hashMap[event->type].begin(); it != hashMap[event->type].end(); ++it)
@@ -147,30 +195,8 @@ void EventManager::eventHandler(Event *event)
                         }
                     }
                 }
-                else
-                {
-                    std::list<Widget *> w_geo = Application::getInstance()->root_widget()->getChildren();
-                    for (std::list<Widget *>::iterator it2 = w_geo.begin(); it2 != w_geo.end(); ++it2)
-                    {
-                        if ((*it2)->getName() == (it->tag) || (it->tag) == "all")
-                        {
-                            if (event->type == ei_ev_mouse_buttondown)
-                            {
-                                static_cast<Button *>(*it2)->clicked = EI_TRUE;
-                                Application::getInstance()->invalidate_rect((*(*it2)->getContent_rect()));
-                                it->callback((*it2), event, it->user_param);
-                                break;
-                            }
-                            if (event->type == ei_ev_mouse_buttonup)
-                            {
-                                static_cast<Button *>(*it2)->clicked = EI_FALSE;
-                                Application::getInstance()->invalidate_rect((*(*it2)->getContent_rect()));
-                                it->callback((*it2), event, it->user_param);
-                                break;
-                            }
-                        }
-                    }
-                }
+
+
             }
         }
     }
@@ -184,18 +210,7 @@ void EventManager::eventHandler(Event *event)
                 Application::getInstance()->invalidate_rect((*it->widget->getContent_rect()));
                 it->callback(it->widget, event, it->user_param);
             }
-            else
-            {
-                std::list<Widget *> w_geo = Application::getInstance()->root_widget()->getChildren();
-                for (std::list<Widget *>::iterator it2 = w_geo.begin(); it2 != w_geo.end(); ++it2)
-                {
-                    if ((*it2)->getName() == (it->tag) || (it->tag) == "all")
-                    {
-                        Application::getInstance()->invalidate_rect((*(*it2)->getContent_rect()));
-                        it->callback((*it2), event, it->user_param);
-                    }
-                }
-            }
+
         }
     }
 }

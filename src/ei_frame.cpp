@@ -8,7 +8,7 @@
 
 namespace ei {
 
-    Frame::Frame(Widget *parent):Widget("frame",parent){
+    Frame::Frame(Widget *parent):Widget("Frame",parent){
         relief=ei_relief_none;
         text=nullptr;
         text_font=hw_text_font_create(default_font_filename, font_default_size);
