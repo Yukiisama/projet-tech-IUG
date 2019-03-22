@@ -94,6 +94,15 @@ public:
      */
     Widget* widget_pick (const Point& where);
 
+    /**
+     * @brief inside_root
+     *
+     * @param where     The point to check.
+     *
+     * @return      true if the point is inside the root window, else false.
+     */
+    bool_t inside_root (const Point& where);
+
     Application(Application const&)     = delete; // prevents  this  method  to be used
     void operator=(Application const&)  = delete; // prevents  this  method  to be used
 
