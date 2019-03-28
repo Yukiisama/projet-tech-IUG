@@ -52,12 +52,12 @@ namespace ei {
         double current_time ;
         Rect window_rect = hw_surface_get_rect(root_window);
         invalidate_rect(window_rect);
-
+        bool geo_done=true;
         while(running){
             std::list<Widget *> w_geo = widget_root->getChildren();
             for(std::list<Widget *>::iterator it =w_geo.begin() ;it!=w_geo.end();++it){
                 if((*it)->getGeom_manager()){
-                    (*it)->getGeom_manager()->run((*it));
+                    if(geo_done)(*it)->getGeom_manager()->run((*it));
                     if(!(*it)->getName().compare("Toplevel")){
                         //update content_rect
                         (*it)->updateContent_rect();
@@ -66,8 +66,10 @@ namespace ei {
                     //std::cout << (*it)->to_string()<<std::endl;
                 }
             }
+            geo_done = false;
             Event *ev = hw_event_wait_next();
             EventManager::getInstance().eventHandler(ev);
+            //Peut être probleme plus tard car cast KEYEVENT sur un event dont on ne connait pas le type
             KeyEvent * ev_key = static_cast<KeyEvent*>  (ev);
             if( ev->type == ei_ev_keydown && ev_key->key_sym == ALLEGRO_KEY_Q)  
                 quit_request();

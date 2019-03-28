@@ -167,37 +167,58 @@ void EventManager::eventHandler(Event *event)
     if (event->type == ei_ev_mouse_buttondown || event->type == ei_ev_mouse_buttonup || event->type == ei_ev_mouse_move)
     {
         //Casting Event to MouseEvent
-        MouseEvent *M = static_cast<MouseEvent *>(event);
-        Widget *w = Application::getInstance()->widget_pick(M->where);
+        //MouseEvent *M = static_cast<MouseEvent *>(event);
+        //Widget *w = Application::getInstance()->widget_pick(M->where);
         //std::cout<< M->where.x()<<std::endl;
-        //Condition wherz widget is valid.
-        if (w)
-        {
+        //if (w)
+        //{
             for (std::vector<param_callback>::iterator it = hashMap[event->type].begin(); it != hashMap[event->type].end(); ++it)
             {
                 if (it->widget)
                 {
-                    if (it->widget->getPick_id() == w->getPick_id())
-                    {
+                    //if (it->widget->getPick_id() == w->getPick_id())
+                    //{
                         if (event->type == ei_ev_mouse_buttondown)
                         {
-                            static_cast<Button *>(it->widget)->clicked = EI_TRUE;
+                            //static_cast<Button *>(it->widget)->clicked = EI_TRUE;
                             Application::getInstance()->invalidate_rect((*it->widget->getContent_rect()));
                             it->callback(it->widget, event, it->user_param);
                             break;
                         }
                         if (event->type == ei_ev_mouse_buttonup)
                         {
-                            static_cast<Button *>(it->widget)->clicked = EI_FALSE;
+                            //static_cast<Button *>(it->widget)->clicked = EI_FALSE;
                             Application::getInstance()->invalidate_rect((*it->widget->getContent_rect()));
                             it->callback(it->widget, event, it->user_param);
                             break;
                         }
+                    //}
+                }
+                else
+                {
+                    std::list<Widget *> w_geo = Application::getInstance()->root_widget()->getChildren();
+                    for (std::list<Widget *>::iterator it2 = w_geo.begin(); it2 != w_geo.end(); ++it2)
+                    {
+                        if ((*it2)->getName() == (it->tag) || (it->tag) == "all")
+                        {
+                            if (event->type == ei_ev_mouse_buttondown)
+                            {
+                                //static_cast<Button *>(*it2)->clicked = EI_TRUE;
+                                Application::getInstance()->invalidate_rect((*(*it2)->getContent_rect()));
+                                it->callback((*it2), event, it->user_param);
+                                break;
+                            }
+                            if (event->type == ei_ev_mouse_buttonup)
+                            {
+                                //static_cast<Button *>(*it2)->clicked = EI_FALSE;
+                                Application::getInstance()->invalidate_rect((*(*it2)->getContent_rect()));
+                                it->callback((*it2), event, it->user_param);
+                                break;
+                            }
+                        }
                     }
                 }
-
-
-            }
+            //}
         }
     }
     else
