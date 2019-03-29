@@ -92,6 +92,7 @@ namespace ei {
         Point text_anchor_to_pos(Rect rect, anchor_t anchor,Size text_size,int border_width)const;
         color_t convert_id_color(uint32_t id);
         uint32_t conver_color_id(color_t color);
+        void addTag(string newTag);
         /**
          * \brief   Method that is called to notify the widget that its geometry has been modified
          *      by its geometry manager.

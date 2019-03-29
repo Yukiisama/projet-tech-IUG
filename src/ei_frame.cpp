@@ -17,6 +17,7 @@ namespace ei {
         img=nullptr;
         img_rect=nullptr;
         img_anchor = ei_anc_center;
+        addTag("Frame");
     }
 
     Frame::~Frame(){

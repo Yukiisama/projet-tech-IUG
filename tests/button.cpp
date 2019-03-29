@@ -22,6 +22,7 @@ bool_t button_press(Widget* widget, Event* event, void* user_param)
     return EI_TRUE;
 }
 
+
 /*
  * process_key --
  *

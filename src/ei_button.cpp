@@ -5,6 +5,7 @@
 #include "hw_interface.h"
 #include <iostream>
 #include "ei_application.h"
+#include "ei_eventmanager.h"
 namespace ei
 {
 
@@ -19,6 +20,7 @@ namespace ei
         img=nullptr;
         img_rect=nullptr;
         img_anchor =ei_anc_center;
+        addTag("Button");
     }
 
 
@@ -55,7 +57,7 @@ namespace ei
         if(relief == ei_relief_sunken){//Case button is clicked by a mouse, draw clicked version of button.
             Application::getInstance()->invalidate_rect(*content_rect);
             draw_button(surface,&button_rect,color,corner_radius,border_width,clipper,relief);
-            relief = ei_relief_raised;
+
         }else{      //Draw normale static button.
             draw_button(surface,&button_rect,color,corner_radius,border_width,clipper,relief);
         }

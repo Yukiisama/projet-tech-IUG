@@ -30,6 +30,7 @@ Toplevel::Toplevel(Widget *parent) : Widget("Toplevel", parent){
     resize_button->configure(&resize_button_window_size,&color,
                              NULL,&radius,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
     p_resize_button=new Placer();
+    addTag("Toplevel");
 
 }
 

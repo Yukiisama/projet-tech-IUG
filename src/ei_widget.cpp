@@ -256,6 +256,10 @@ namespace ei{
 
     }
 
+    void Widget::addTag(string newTag){
+        tag_list.push_back(newTag);
+    }
+
     /**
      * \brief   Method that is called to notify the widget that its geometry has been modified
      *      by its geometry manager.

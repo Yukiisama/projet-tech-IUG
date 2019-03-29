@@ -70,7 +70,8 @@ void EventManager::bind(ei_eventtype_t eventtype,
                _callback.user_param = user_param;
                hashMap[eventtype].push_back(_callback);
            }else{//Bind the tag that is type of class(Frame,Button and Toplevel) or custom tags.
-                for(std::list<tag_t>::iterator it = widget1->getTag_list().begin(); it!=widget1->getTag_list().end();++it){
+                std::list<tag_t>tag_list = widget1->getTag_list();
+                for(std::list<tag_t>::iterator it = tag_list.begin(); it!=tag_list.end();++it){
                     if(!tag.compare(*it)){
                         if(hashMap.find(eventtype)==hashMap.end()) hashMap[eventtype]=std::vector<param_callback>();
                         _callback.widget=widget1;
@@ -162,59 +163,19 @@ void EventManager::unbind(ei_eventtype_t eventtype,
 
 void EventManager::eventHandler(Event *event)
 {
-    //Event * event = hw_event_wait_next();
-    //Handle with mouse type of event.
-    if (event->type == ei_ev_mouse_buttondown || event->type == ei_ev_mouse_buttonup || event->type == ei_ev_mouse_move)
-    {
-        //Casting Event to MouseEvent
-        MouseEvent *M = static_cast<MouseEvent *>(event);
-        Widget *w = Application::getInstance()->widget_pick(M->where);
-        //std::cout<< M->where.x()<<std::endl;
-        if (w)
-        {
-            for (std::vector<param_callback>::iterator it = hashMap[event->type].begin(); it != hashMap[event->type].end(); ++it)
-            {
-                if (it->widget)
-                {
-                    if (it->widget->getPick_id() == w->getPick_id())
-                    {
-                        if (event->type == ei_ev_mouse_buttondown)
-                        {
-                            if(!(it->widget)->getName().compare("Button")){
-                                static_cast<Button *>(it->widget)->set_relief(ei_relief_sunken);
-                            }
 
-                            Application::getInstance()->invalidate_rect((*it->widget->getContent_rect()));
-                            it->callback(it->widget, event, it->user_param);
-                            break;
-                        }
-                        if (event->type == ei_ev_mouse_buttonup)
-                        {
-                            if(!(it->widget)->getName().compare("Button")){
-                                static_cast<Button *>(it->widget)->set_relief(ei_relief_raised);
-                            }
+    for (std::vector<param_callback>::iterator it = hashMap[event->type].begin(); it != hashMap[event->type].end(); ++it)
+           {
+               if (it->widget)
+               {
+                   //Application::getInstance()->invalidate_rect((*it->widget->getContent_rect()));
+                   if(it->callback(it->widget, event, it->user_param)==EI_TRUE){
+                       Application::getInstance()->invalidate_rect((*it->widget->getContent_rect()));
+                       break;
+                   }
+               }
+           }
 
-                            Application::getInstance()->invalidate_rect((*it->widget->getContent_rect()));
-                            it->callback(it->widget, event, it->user_param);
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-    }//other types of events
-    else
-    {
-
-        for (std::vector<param_callback>::iterator it = hashMap[event->type].begin(); it != hashMap[event->type].end(); ++it)
-        {
-            if (it->widget)
-            {
-                Application::getInstance()->invalidate_rect((*it->widget->getContent_rect()));
-                it->callback(it->widget, event, it->user_param);
-            }
-        }
-    }
 }
 
 } // namespace ei
