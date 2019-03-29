@@ -18,7 +18,7 @@ Toplevel::Toplevel(Widget *parent) : Widget("Toplevel", parent){
     resizable = ei_axis_both;
     min_size.width() = 160;
     min_size.height()=120;
-    container=screen_location;
+
 
     ///Button close
     button_size = Size(15.0,15.0);
@@ -68,7 +68,7 @@ Toplevel::Toplevel(Widget *parent) : Widget("Toplevel", parent){
         if(where.x()>=screen_location.top_left.x()
                 && where.x()<=screen_location.top_left.x()+requested_size.width()
                 && where.y()>=screen_location.top_left.y()
-                /*&& where.y()<=screen_location.top_left.y()+top_bar_height*/){
+                && where.y()<=screen_location.top_left.y()+top_bar_height){
             return EI_TRUE;
         }
         else{
@@ -108,16 +108,14 @@ Toplevel::Toplevel(Widget *parent) : Widget("Toplevel", parent){
             fprintf(stderr,"Error occured for Frame::draw - surface is not valid\n");
             exit(EXIT_FAILURE);
         }
-        //placer config for children,positon according to toplevel
+        //placer config for button close,positon according to toplevel content rect
         if(closable){
-            int button_close_x = 3;int button_close_y = -top_bar_height+4;
+            int button_close_x = 3;int button_close_y =-top_bar_height+4;
             p_button_close->configure(button_close,NULL,&button_close_x,&button_close_y,NULL,NULL,NULL,NULL,NULL,NULL);
             p_button_close->run(button_close);
         }
-
-
-        //positon according to toplevel
-        int resize_button_x = requested_size.width()-resize_button_window_size.width();int resize_button_y = requested_size.height()-top_bar_height/2;
+        //placer config for button resize, positon according to toplevel
+        int resize_button_x = container.size.width()-resize_button_window_size.width();int resize_button_y = container.size.height()-top_bar_height/2;
         p_resize_button->configure(resize_button,NULL,&resize_button_x,&resize_button_y,NULL,NULL,NULL,NULL,NULL,NULL);
         p_resize_button->run(resize_button);
 
@@ -125,15 +123,20 @@ Toplevel::Toplevel(Widget *parent) : Widget("Toplevel", parent){
         drawBasic_toplevel(surface,pick_surface,clipper);
         //recursive draw
         for(std::list<Widget*>::iterator it = children.begin();it!= children.end();it++){
-            (*it)->draw(surface,pick_surface,clipper);
+            //donc apply content rect to button close because it display on the top bar which is not belong to content rect
+            if((*it)->getPick_id()==button_close->getPick_id()){
+                (*it)->draw(surface,pick_surface,clipper);
+            }else{
+                 (*it)->draw(surface,pick_surface,content_rect);
+            }
         }
         return;
     }
     void Toplevel::updateContent_rect(){
-        container.size=requested_size;
-        container.top_left.x()=screen_location.top_left.x()+border_width;
-        container.top_left.y()=screen_location.top_left.y()+top_bar_height;
-        setContent_rect(&container);
+//        container.size=requested_size;
+//        container.top_left.x()=screen_location.top_left.x()+border_width;
+//        container.top_left.y()=screen_location.top_left.y()+top_bar_height;
+//        setContent_rect(&container);
     }
 
     void Toplevel::drawBasic_toplevel(surface_t surface, surface_t pick_surface, Rect *clipper){
@@ -149,24 +152,31 @@ Toplevel::Toplevel(Widget *parent) : Widget("Toplevel", parent){
 
         list_point.push_back(Point(screen_location.top_left.x()+border,
                                    screen_location.top_left.y()+top_bar));
+
         list_point.push_back(Point(screen_location.top_left.x(),
                                    screen_location.top_left.y()+top_bar));
+
         list_point.push_back(Point(screen_location.top_left.x(),
-                                   screen_location.top_left.y()+requested_size.height()+top_bar+border));
-        list_point.push_back(Point(screen_location.top_left.x()+requested_size.width()+2*border,
-                                   screen_location.top_left.y()+requested_size.height()+top_bar+border));
-        list_point.push_back(Point(screen_location.top_left.x()+requested_size.width()+2*border,
+                                   screen_location.top_left.y()+requested_size.height()));
+
+        list_point.push_back(Point(screen_location.top_left.x()+requested_size.width(),
+                                   screen_location.top_left.y()+requested_size.height()));
+
+        list_point.push_back(Point(screen_location.top_left.x()+requested_size.width(),
                                    screen_location.top_left.y()));
+
         list_point.push_back(screen_location.top_left);
 
         list_point.push_back(Point(screen_location.top_left.x(),
                                    screen_location.top_left.y()+top_bar));
-        list_point.push_back(Point(screen_location.top_left.x()+requested_size.width()+border,
+
+        list_point.push_back(Point(screen_location.top_left.x()+requested_size.width()-border,
                                    screen_location.top_left.y()+top_bar));
-        list_point.push_back(Point(screen_location.top_left.x()+requested_size.width()+border,
-                                   screen_location.top_left.y()+requested_size.height()+top_bar));
+
+        list_point.push_back(Point(screen_location.top_left.x()+requested_size.width()-border,
+                                   screen_location.top_left.y()+requested_size.height()-border));
         list_point.push_back(Point(screen_location.top_left.x()+border,
-                                   screen_location.top_left.y()+requested_size.height()+top_bar));
+                                   screen_location.top_left.y()+requested_size.height()-border));
         draw_polygon(surface,list_point,color,clipper);
         //draw pick_surface outside the container
         hw_surface_lock(pick_surface);
@@ -225,7 +235,18 @@ Toplevel::Toplevel(Widget *parent) : Widget("Toplevel", parent){
                               bool_t*         closable,
                               axis_set_t*     resizable,
                               Size*           min_size){
-        Widget::configure(requested_size,color);
+        //Widget::configure(requested_size,color);
+        if(requested_size ){
+            container.size=*requested_size; //assigne requested size to container
+            //create and update requested size for the widget Toplevel including border and top bar height.
+            Size TopSL;
+            TopSL.width()=requested_size->width()+*border_width*2;
+            TopSL.height()=requested_size->height()+*border_width+top_bar_height;
+            cout<<TopSL.width()<<";"<<TopSL.height()<<endl;
+            setRequested_size(TopSL);
+
+        }
+        if(color)setColor(*color);
         if(title) this->title = *title;
         if(border_width) this->border_width = *border_width;
         if(closable) this->closable = *closable;
@@ -243,6 +264,8 @@ Toplevel::Toplevel(Widget *parent) : Widget("Toplevel", parent){
             p_button_close=new Placer();
         }
 
+        //update Toplevel's own content rect which is now depending on container
+        setContent_rect(&container);
     }
     //Getter & Setter
     int  Toplevel::get_border_width(){
@@ -251,8 +274,9 @@ Toplevel::Toplevel(Widget *parent) : Widget("Toplevel", parent){
     void Toplevel::set_border_width(int border_width){
         this->border_width = border_width;
     }
-    double Toplevel::get_top_bar_height(){
-        return this->top_bar_height;
+    double Toplevel::getTop_bar_height() const
+    {
+        return top_bar_height;
     }
     void   Toplevel::set_top_bar_height( double top_bar_height){
         this->top_bar_height = top_bar_height;
@@ -312,4 +336,7 @@ Toplevel::Toplevel(Widget *parent) : Widget("Toplevel", parent){
         this->p_in_window = p_in_window;
     }
     //End Getter & Setter
+    void Toplevel::setContainer_topleft(Point contopleft){
+        container.top_left=contopleft;
+    }
 }

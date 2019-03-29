@@ -29,8 +29,6 @@ namespace ei {
       this->offscreen = hw_surface_create(this->root_window, main_window_size);
       this->widget_root = new Frame(NULL);
       this->instance = this;
-      //color_t white = {225, 225, 225, 225};
-      //this->widget_root->configure(main_window_size,&white,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
     }
 
     /**
@@ -86,23 +84,35 @@ namespace ei {
         return EI_FALSE;
     }
 
+    /**
+     * @brief toplevel_click_down
+     * @param widget
+     * @param event
+     * @param user_param
+     * @return
+     */
     bool_t toplevel_click_down(Widget* widget, Event* event, void* user_param)
     {
         MouseEvent* e = static_cast<MouseEvent*>(event);
         Toplevel* top = static_cast<Toplevel*>(widget);
 
+        //The case when the user is clicking on the toplevel
         if(Application::getInstance()->widget_pick(e->where)->getPick_id()==top->getPick_id()){
+            //The case when the user is clicking on the top_bar
             if(top->inside_top_bar(e->where)==EI_TRUE){
+                //Tells the toplevel that its top_bar is clicked
                 top->set_top_bar_clicked(EI_TRUE);
                 top->setMouse_pos(e->where);
                 return EI_TRUE;
             }
         }
+        //The case when clicking on the resize button
         else if(Application::getInstance()->widget_pick(e->where)->getPick_id()
                 ==top->getResize_button()->getPick_id()){
             top->set_resize_button_pressed(EI_TRUE);
             return EI_TRUE;
         }
+        //The case when clicking on the button close
         else if(Application::getInstance()->widget_pick(e->where)->getPick_id()
                 ==top->getButton_close()->getPick_id()){
             top->set_button_close_pressed(EI_TRUE);
@@ -111,13 +121,21 @@ namespace ei {
         return EI_FALSE;
     }
 
+    /**
+     * @brief The function that manages mouse event movement on toplevel
+     * @param widget
+     * @param event
+     * @param user_param
+     * @return
+     */
     bool_t default_toplevel(Widget* widget, Event* event, void* user_param)
     {
         MouseEvent* e = static_cast<MouseEvent*>(event);
         Toplevel* top = static_cast<Toplevel*>(widget);
 
+        //The case when the top_bar is still pressed and the mouse is moving
         if(top->moving()==EI_TRUE){
-            if(Application::getInstance()->inside_root(e->where)){
+            if(Application::getInstance()->inside_root(e->where)){//check if the mouse position is valid
                 float move_x = (e->where.x())-(top->getMouse_pos().x());
                 float move_y = (e->where.y())-(top->getMouse_pos().y());
 
@@ -128,6 +146,7 @@ namespace ei {
             }
             return EI_TRUE;
         }
+        //The case when the user is clicking on the resize button and moving the mouse
         if(top->resizing()==EI_TRUE){
             float new_width = (e->where.x())-(top->getScreen_location().top_left.x());
             float new_height = (e->where.y())-(top->getScreen_location().top_left.y());
@@ -152,11 +171,57 @@ namespace ei {
      */
     void Application::run(){
         //Binding the default comportments of widgets
-//        EventManager::getInstance().bind(ei_ev_mouse_buttonup, NULL, "Toplevel", toplevel_click_up, NULL);
-//        EventManager::getInstance().bind(ei_ev_mouse_buttondown, NULL, "Toplevel", toplevel_click_down, NULL);
-//        EventManager::getInstance().bind(ei_ev_mouse_move, NULL, "Toplevel", default_toplevel, NULL);
+        EventManager::getInstance().bind(ei_ev_mouse_buttonup, NULL, "Toplevel", toplevel_click_up, NULL);
+        EventManager::getInstance().bind(ei_ev_mouse_buttondown, NULL, "Toplevel", toplevel_click_down, NULL);
+        EventManager::getInstance().bind(ei_ev_mouse_move, NULL, "Toplevel", default_toplevel, NULL);
         EventManager::getInstance().bind(ei_ev_mouse_buttondown, NULL, "Button", button_click_down, NULL);
         EventManager::getInstance().bind(ei_ev_mouse_buttonup, NULL, "Button", button_click_up, NULL);
+
+        /*running = true;
+        double current_time ;
+        Rect window_rect = hw_surface_get_rect(root_window);
+        invalidate_rect(window_rect);
+        bool geo_done=true;
+        do{
+            std::list<Widget *> w_geo = widget_root->getChildren();
+            for(std::list<Widget *>::iterator it =w_geo.begin() ;it!=w_geo.end();++it){
+                if((*it)->getGeom_manager()){
+                    if(geo_done){
+                        (*it)->getGeom_manager()->run((*it));
+                        if(!(*it)->getName().compare("Toplevel")){
+                            //update content_rect
+                            (*it)->updateContent_rect();
+                        }
+                        std::cout<<"after run \n"<<std::endl;
+                    }
+                    //std::cout << (*it)->to_string()<<std::endl;
+                }
+            }
+        }
+        while(running){
+            geo_done = true;
+            Event *ev = hw_event_wait_next();
+            //Peut être probleme plus tard car cast KEYEVENT sur un event dont on ne connait pas le type
+
+            if( ev->type == ei_ev_keydown ){
+                 KeyEvent * ev_key = static_cast<KeyEvent*>  (ev);
+                 if(ev_key->key_sym == ALLEGRO_KEY_Q) quit_request();
+            }else{
+                EventManager::getInstance().eventHandler(ev);
+            }
+
+            current_time = hw_now();
+            if(update_time<=current_time){
+
+                if(!to_clear_rectangle_list.empty()){
+                    widget_root->draw(root_window,offscreen,widget_root->getContent_rect());
+                    hw_surface_update_rects(to_clear_rectangle_list);
+                }
+                //next step is to clear the rectangle list.
+                to_clear_rectangle_list.clear();
+                update_time  = current_time + (1/60);
+            }
+        }*/
 
         running = true;
         double current_time ;
@@ -167,22 +232,27 @@ namespace ei {
             std::list<Widget *> w_geo = widget_root->getChildren();
             for(std::list<Widget *>::iterator it =w_geo.begin() ;it!=w_geo.end();++it){
                 if((*it)->getGeom_manager()){
-                    if(geo_done)(*it)->getGeom_manager()->run((*it));
-                    if(!(*it)->getName().compare("Toplevel")){
-                        //update content_rect
-                        (*it)->updateContent_rect();
+                    if(geo_done){
+                        (*it)->getGeom_manager()->run((*it));/*
+                        if(!(*it)->getName().compare("Toplevel")){
+                            //update content_rect
+                            (*it)->updateContent_rect();
+                        }*/
+                        std::cout<<"after run \n"<<std::endl;
                     }
-                    //std::cout<<"after run \n"<<std::endl;
+
+
                     //std::cout << (*it)->to_string()<<std::endl;
                 }
             }
-            geo_done = false;
+            geo_done = true;
             Event *ev = hw_event_wait_next();
-            EventManager::getInstance().eventHandler(ev);
-            //Peut être probleme plus tard car cast KEYEVENT sur un event dont on ne connait pas le type
-            KeyEvent * ev_key = static_cast<KeyEvent*>  (ev);
-            if( ev->type == ei_ev_keydown && ev_key->key_sym == ALLEGRO_KEY_Q)  
-                quit_request();
+            if( ev->type == ei_ev_keydown ){
+                 KeyEvent * ev_key = static_cast<KeyEvent*>  (ev);
+                 if(ev_key->key_sym == ALLEGRO_KEY_Q) quit_request();
+            }else{
+                EventManager::getInstance().eventHandler(ev);
+            }
             current_time = hw_now();
             if(update_time<=current_time){
 
@@ -195,6 +265,7 @@ namespace ei {
                 update_time  = current_time + (1/60);
             }
         }
+
         return;
     }
 

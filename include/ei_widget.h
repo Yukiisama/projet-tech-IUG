@@ -370,7 +370,7 @@ namespace ei {
     //Getter & Setter
     int get_border_width();
     void set_border_width(int border_width);
-    double get_top_bar_height();
+    double getTop_bar_height() const;
     void set_top_bar_height( double top_bar_height);
     const char * get_title();
     void set_title(const char * title);
@@ -391,8 +391,16 @@ namespace ei {
     Placer * get_p_in_window();
     void set_p_in_window(Placer * p_in_window);
     //End Getter & Setter
+    int getBorder_width() const;
+    void setContainer_topleft(Point contopleft);
+
+
+
+
+    Rect getContainer() const;
+
     private:
-        int             border_width;
+    int             border_width;
         double          top_bar_height;//The width of the top bar
         const char*     title;
         bool_t          closable;
@@ -404,7 +412,7 @@ namespace ei {
         Placer*         p_button_close;
         Button*         resize_button;//The button at the right bottom to resize the window
         Placer*         p_resize_button;
-        Rect            container;
+        Rect            container;      //use to store toplevel's own content rec.
         Placer*         p_in_window;
         bool_t          top_bar_clicked=EI_FALSE;
         bool_t          resize_button_pressed=EI_FALSE;

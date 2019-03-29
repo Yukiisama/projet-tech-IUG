@@ -268,10 +268,15 @@ namespace ei{
      *                      (i.e., = widget->screen_location).
      */
     void Widget::geomnotify (Rect rect){
-      this->screen_location.size.width() = rect.size.width();
-      this->screen_location.size.height() = rect.size.height();
-      this->screen_location.top_left.x() = rect.top_left.x();
-      this->screen_location.top_left.y() = rect.top_left.y();
+        //      this->content_rect->size.width() = rect.size.width();
+        //      this->content_rect->size.height() = rect.size.height();
+        //      this->content_rect->top_left.x() = rect.top_left.x();
+        //      this->content_rect->top_left.y() = rect.top_left.y();
+
+        this->screen_location.size.width() = rect.size.width();
+        this->screen_location.size.height() = rect.size.height();
+        this->screen_location.top_left.x() = rect.top_left.x();
+        this->screen_location.top_left.y() = rect.top_left.y();
     }
 
     Widget* Widget::pick(uint32_t id){
@@ -321,5 +326,21 @@ namespace ei{
       stream << "int border_width : " << border_width << "\n";
       return stream.str();
     }
+
+    int Toplevel::getBorder_width() const
+    {
+        return border_width;
+    }
+
+    Rect Toplevel::getContainer() const
+    {
+        return container;
+    }
+
+
+
+
+
+
     
 }

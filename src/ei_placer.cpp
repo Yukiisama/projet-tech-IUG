@@ -8,7 +8,7 @@ namespace ei {
 
 ///modif///
 Placer::Placer():GeometryManager(){
-    
+
     set_widget(nullptr);
     set_placer(true);
     set_anchor(ei_anc_northwest);
@@ -20,7 +20,7 @@ Placer::Placer():GeometryManager(){
     set_rel_y(0.0);
     set_rel_width(0.0);
     set_rel_height(0.0);
-    
+
 }
 
 Placer::~Placer(){
@@ -77,7 +77,7 @@ Placer::~Placer(){
                             set_anchor(ei_anc_northwest);
                         }
 
-                        if (x != nullptr) set_x(*x);
+                        if (x != nullptr)set_x(*x);
                         else set_x(0);
 
                         if (y != nullptr) set_y(*y);
@@ -110,10 +110,9 @@ Placer::~Placer(){
         }
         */
 
-            // Creating the new rectangle and setting the right values into it
-            Rect new_rect = Rect();
-            Rect contect_rect = *(widget->getParent()->getContent_rect());
-
+        // Creating the new rectangle and setting the right values into it
+        Rect new_rect = Rect();
+        Rect contect_rect = *(widget->getParent()->getContent_rect());
         // Positioning
         int temp_x = contect_rect.top_left.x(), temp_y = contect_rect.top_left.y();
 
@@ -159,7 +158,13 @@ Placer::~Placer(){
 
         new_rect.top_left.x() = temp_x;
         new_rect.top_left.y() = temp_y;
-
+        //update container of Toplevel
+        if(!widget->getName().compare("Toplevel")){
+            Toplevel* top = static_cast<Toplevel*>(widget);
+            Point topsl(temp_x+top->getBorder_width(),temp_y+top->getTop_bar_height());
+            //cout<<top->getContainer().size.width()<<";"<<top->getContainer().size.height()<<endl;
+            top->setContainer_topleft(topsl);
+        }
         // Sizing
         int temp_width = 0, temp_height = 0;
 
@@ -172,23 +177,22 @@ Placer::~Placer(){
             fprintf(stderr, "We won't be able to draw something with a negative width/height!\n");
             return;
         }
-        
+
         new_rect.size.width() = temp_width;
         new_rect.size.height() = temp_height;
-        
         // Setting new positioning and sizing rectangle to the widget
         widget->geomnotify(new_rect);
 
         // Calling run for the widget's children
         if (!widget->getChildren().empty())
-        {   
+        {
             list<Widget *> w_child = widget->getChildren();
             for (list<Widget *>::iterator it = w_child.begin();it!=w_child.end();it++){
                 if ((*it)->getGeom_manager()) (*it)->getGeom_manager()->run(*it);
             }
 
         }
-        
+
         return;
     }
 
