@@ -162,7 +162,6 @@ void EventManager::unbind(ei_eventtype_t eventtype,
 
 void EventManager::eventHandler(Event *event)
 {
-
     //Event * event = hw_event_wait_next();
     //Handle with mouse type of event.
     if (event->type == ei_ev_mouse_buttondown || event->type == ei_ev_mouse_buttonup || event->type == ei_ev_mouse_move)
@@ -182,7 +181,7 @@ void EventManager::eventHandler(Event *event)
                         if (event->type == ei_ev_mouse_buttondown)
                         {
                             if(!(it->widget)->getName().compare("Button")){
-                                static_cast<Button *>(it->widget)->clicked = EI_TRUE;
+                                static_cast<Button *>(it->widget)->set_relief(ei_relief_sunken);
                             }
 
                             Application::getInstance()->invalidate_rect((*it->widget->getContent_rect()));
@@ -192,7 +191,7 @@ void EventManager::eventHandler(Event *event)
                         if (event->type == ei_ev_mouse_buttonup)
                         {
                             if(!(it->widget)->getName().compare("Button")){
-                                static_cast<Button *>(it->widget)->clicked = EI_FALSE;
+                                static_cast<Button *>(it->widget)->set_relief(ei_relief_raised);
                             }
 
                             Application::getInstance()->invalidate_rect((*it->widget->getContent_rect()));
@@ -201,7 +200,6 @@ void EventManager::eventHandler(Event *event)
                         }
                     }
                 }
-
             }
         }
     }//other types of events
@@ -215,7 +213,6 @@ void EventManager::eventHandler(Event *event)
                 Application::getInstance()->invalidate_rect((*it->widget->getContent_rect()));
                 it->callback(it->widget, event, it->user_param);
             }
-
         }
     }
 }

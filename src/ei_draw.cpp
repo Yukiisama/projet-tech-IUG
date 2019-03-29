@@ -391,7 +391,7 @@ void draw_polygon(surface_t surface, const linked_point_t &point_list,
     delete[] edge_table;
 }
 
-void draw_button(surface_t surface, Rect *rect, const color_t color, int radius,int border_width, const Rect *clipper,bool_t clicked)
+void draw_button(surface_t surface, Rect *rect, const color_t color, int radius,int border_width, const Rect *clipper,relief_t relief)
 {
     color_t tint;
     tint.red = color.red + (0.25 * (255-color.red));
@@ -403,7 +403,7 @@ void draw_button(surface_t surface, Rect *rect, const color_t color, int radius,
     shade.green = color.green * 0.25;
     shade.blue = color.blue * 0.25;
     shade.alpha = 255;
-    if(clicked){
+    if(relief == ei_relief_sunken){
         draw_polygon(surface, rounded_frame(*rect, radius, BT_BOTTOM), tint, clipper);
         draw_polygon(surface, rounded_frame(*rect, radius, BT_TOP), shade, clipper);
     }else

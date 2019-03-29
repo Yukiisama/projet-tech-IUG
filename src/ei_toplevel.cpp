@@ -20,7 +20,9 @@ Toplevel::Toplevel(Widget *parent) : Widget("Toplevel", parent){
     min_size.height()=120;
     container=screen_location;
 
+    ///Button close
     button_size = Size(15.0,15.0);
+
     ///Resize button
     resize_button = new Button(this);
     resize_button_window_size = Size(12.0,12.0);
@@ -48,6 +50,54 @@ Toplevel::Toplevel(Widget *parent) : Widget("Toplevel", parent){
     }
 
 
+
+    Point Toplevel::getMouse_pos() const{
+        return mouse_pos;
+    }
+
+    Size Toplevel::getMin_size() const{
+        return min_size;
+    }
+
+    void Toplevel::setMouse_pos(Point point){
+        mouse_pos = point;
+    }
+
+    bool_t Toplevel::inside_top_bar(Point where) const{
+        if(where.x()>=screen_location.top_left.x()
+                && where.x()<=screen_location.top_left.x()+requested_size.width()
+                && where.y()>=screen_location.top_left.y()
+                /*&& where.y()<=screen_location.top_left.y()+top_bar_height*/){
+            return EI_TRUE;
+        }
+        else{
+            return EI_FALSE;
+        }
+    }
+
+    bool_t Toplevel::moving() const{
+        return top_bar_clicked;
+    }
+
+    bool_t Toplevel::resizing() const{
+        return resize_button_pressed;
+    }
+
+    bool_t Toplevel::closing() const{
+        return button_close_pressed;
+    }
+
+    void Toplevel::set_top_bar_clicked(bool_t clicking){
+        top_bar_clicked = clicking;
+    }
+
+    void Toplevel::set_resize_button_pressed(bool_t pressed){
+        resize_button_pressed = pressed;
+    }
+
+    void Toplevel::set_button_close_pressed(bool_t pressed){
+        button_close_pressed = pressed;
+    }
 
     void Toplevel::draw (surface_t surface,
                         surface_t pick_surface,

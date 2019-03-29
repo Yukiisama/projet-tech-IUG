@@ -43,11 +43,121 @@ namespace ei {
       hw_quit();
     }
 
+    bool_t button_click_down(Widget* widget, Event* event, void* user_param)
+    {
+        MouseEvent* e = static_cast<MouseEvent*>(event);
+        Button* button = static_cast<Button*>(widget);
+
+        if(Application::getInstance()->widget_pick(e->where)->getPick_id()==button->getPick_id()){
+            button->set_relief(ei_relief_sunken);
+            return EI_TRUE;
+        }
+        return EI_FALSE;
+    }
+
+    bool_t button_click_up(Widget* widget, Event* event, void* user_param)
+    {
+        MouseEvent* e = static_cast<MouseEvent*>(event);
+        Button* button = static_cast<Button*>(widget);
+
+        if(button->get_relief()==ei_relief_sunken){
+            button->set_relief(ei_relief_raised);
+            return EI_TRUE;
+        }
+        return EI_FALSE;
+    }
+
+    bool_t toplevel_click_up(Widget* widget, Event* event, void* user_param)
+    {
+        MouseEvent* e = static_cast<MouseEvent*>(event);
+        Toplevel* top = static_cast<Toplevel*>(widget);
+
+        if(top->moving()==EI_TRUE || top->resizing()==EI_TRUE || top->closing()==EI_TRUE){
+            if(top->moving()==EI_TRUE)top->set_top_bar_clicked(EI_FALSE);
+            if(top->resizing()==EI_TRUE)top->set_resize_button_pressed(EI_FALSE);
+            if(top->closing()==EI_TRUE){
+                if(Application::getInstance()->widget_pick(e->where)->getPick_id()==top->getButton_close()->getPick_id()){
+                    delete top;
+                }
+                top->set_button_close_pressed(EI_FALSE);
+            }
+            return EI_TRUE;
+        }
+        return EI_FALSE;
+    }
+
+    bool_t toplevel_click_down(Widget* widget, Event* event, void* user_param)
+    {
+        MouseEvent* e = static_cast<MouseEvent*>(event);
+        Toplevel* top = static_cast<Toplevel*>(widget);
+
+        if(Application::getInstance()->widget_pick(e->where)->getPick_id()==top->getPick_id()){
+            if(top->inside_top_bar(e->where)==EI_TRUE){
+                top->set_top_bar_clicked(EI_TRUE);
+                top->setMouse_pos(e->where);
+                return EI_TRUE;
+            }
+        }
+        else if(Application::getInstance()->widget_pick(e->where)->getPick_id()
+                ==top->getResize_button()->getPick_id()){
+            top->set_resize_button_pressed(EI_TRUE);
+            return EI_TRUE;
+        }
+        else if(Application::getInstance()->widget_pick(e->where)->getPick_id()
+                ==top->getButton_close()->getPick_id()){
+            top->set_button_close_pressed(EI_TRUE);
+            return EI_TRUE;
+        }
+        return EI_FALSE;
+    }
+
+    bool_t default_toplevel(Widget* widget, Event* event, void* user_param)
+    {
+        MouseEvent* e = static_cast<MouseEvent*>(event);
+        Toplevel* top = static_cast<Toplevel*>(widget);
+
+        if(top->moving()==EI_TRUE){
+            if(Application::getInstance()->inside_root(e->where)){
+                float move_x = (e->where.x())-(top->getMouse_pos().x());
+                float move_y = (e->where.y())-(top->getMouse_pos().y());
+
+                top->getGeom_manager()->set_x(top->getScreen_location().top_left.x()+move_x);
+                top->getGeom_manager()->set_y(top->getScreen_location().top_left.y()+move_y);
+
+                top->setMouse_pos(e->where);
+            }
+            return EI_TRUE;
+        }
+        if(top->resizing()==EI_TRUE){
+            float new_width = (e->where.x())-(top->getScreen_location().top_left.x());
+            float new_height = (e->where.y())-(top->getScreen_location().top_left.y());
+
+            if(new_width < top->getMin_size().width()){
+                new_width = top->getRequested_size().width();
+            }
+            if(new_height < top->getMin_size().height()){
+                new_height = top->getRequested_size().height();
+            }
+
+            top->configure(new Size(new_width,new_height),NULL,NULL,NULL,NULL,NULL,NULL);
+
+            return EI_TRUE;
+        }
+        return EI_FALSE;
+    }
+
     /**
      * \brief Runs the application: enters the main event loop. Exits when
      *    \ref app_quit_request is called.
      */
     void Application::run(){
+        //Binding the default comportments of widgets
+        //EventManager::getInstance().bind(ei_ev_mouse_buttonup, NULL, "Toplevel", toplevel_click_up, NULL);
+        //EventManager::getInstance().bind(ei_ev_mouse_buttondown, NULL, "Toplevel", toplevel_click_down, NULL);
+        //EventManager::getInstance().bind(ei_ev_mouse_move, NULL, "Toplevel", default_toplevel, NULL);
+        //EventManager::getInstance().bind(ei_ev_mouse_buttondown, NULL, "Button", button_click_down, NULL);
+        //EventManager::getInstance().bind(ei_ev_mouse_buttonup, NULL, "Button", button_click_up, NULL);
+
         running = true;
         double current_time ;
         Rect window_rect = hw_surface_get_rect(root_window);
@@ -84,7 +194,6 @@ namespace ei {
                 to_clear_rectangle_list.clear();
                 update_time  = current_time + (1/60);
             }
-
         }
         return;
     }
@@ -144,8 +253,7 @@ namespace ei {
      *              at this location (except for the root widget).
      */
     Widget* Application::widget_pick (const Point& where){
-      if((where.x() < 0 || where.x() > hw_surface_get_size(this->root_window).width())
-      || (where.y() < 0 || where.y() > hw_surface_get_size(this->root_window).height())){
+      if(inside_root(where)==EI_FALSE){
           fprintf(stderr,"Error occured for Application::widget_pick - param where is out the root_window\n");
           exit(EXIT_FAILURE);
       }
@@ -191,5 +299,13 @@ namespace ei {
         this->update_time =update_time;
     }
     // *** End Getter & Setter ***
+
+    bool_t Application::inside_root (const Point& where){
+        if((where.x() < 0 || where.x() > hw_surface_get_size(this->root_window).width())
+        || (where.y() < 0 || where.y() > hw_surface_get_size(this->root_window).height())){
+            return EI_FALSE;
+        }
+        return EI_TRUE;
+    }
 
 }

@@ -19,7 +19,6 @@ namespace ei
         img=nullptr;
         img_rect=nullptr;
         img_anchor =ei_anc_center;
-        clicked=EI_FALSE;
     }
 
 
@@ -53,12 +52,12 @@ namespace ei
         hw_surface_unlock(pick_surface);
 
         //Draw button.
-        if(clicked){//Case button is clicked by a mouse, draw clicked version of button.
+        if(relief == ei_relief_sunken){//Case button is clicked by a mouse, draw clicked version of button.
             Application::getInstance()->invalidate_rect(*content_rect);
-            draw_button(surface,&button_rect,color,corner_radius,border_width,clipper,clicked);
-            clicked=EI_FALSE;
+            draw_button(surface,&button_rect,color,corner_radius,border_width,clipper,relief);
+            relief = ei_relief_raised;
         }else{      //Draw normale static button.
-            draw_button(surface,&button_rect,color,corner_radius,border_width,clipper,clicked);
+            draw_button(surface,&button_rect,color,corner_radius,border_width,clipper,relief);
         }
 
         if (text)

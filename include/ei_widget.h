@@ -245,7 +245,6 @@ namespace ei {
     class Button : public Widget
     {
     public:
-        bool_t clicked;
         Button(Widget* parent);
 
         virtual ~Button();
@@ -324,6 +323,16 @@ namespace ei {
         Button* getButton_close() const;
         Button* getResize_button() const;
         Frame* getIn_window() const;
+        Point getMouse_pos() const;
+        Size getMin_size() const;
+        void setMouse_pos(Point point);
+        bool_t inside_top_bar(Point where) const;
+        bool_t moving() const;
+        bool_t resizing() const;
+        bool_t closing() const;
+        void set_top_bar_clicked(bool_t clicking);
+        void set_resize_button_pressed(bool_t pressed);
+        void set_button_close_pressed(bool_t pressed);
 
         virtual void draw (surface_t surface,
                            surface_t pick_surface,
@@ -396,6 +405,10 @@ namespace ei {
         Placer*         p_resize_button;
         Rect            container;
         Placer*         p_in_window;
+        bool_t          top_bar_clicked=EI_FALSE;
+        bool_t          resize_button_pressed=EI_FALSE;
+        bool_t          button_close_pressed=EI_FALSE;
+        Point           mouse_pos;
     };
 
 }
