@@ -131,7 +131,7 @@ Toplevel::Toplevel(Widget *parent) : Widget("Toplevel", parent){
                     ||(*it)->getPick_id()==resize_button->getPick_id()){
                 (*it)->draw(surface,pick_surface,clipper);
             }else{
-                 cout<<(*it)->to_string()<<endl;
+                 //cout<<(*it)->to_string()<<endl;
                  (*it)->draw(surface,pick_surface,content_rect);
             }
         }
@@ -249,10 +249,11 @@ Toplevel::Toplevel(Widget *parent) : Widget("Toplevel", parent){
             //create and update requested size for the widget Toplevel including border and top bar height.
             Size TopSL;
             TopSL.width()=requested_size->width()+this->border_width*2;
-            cout<<"res_size"<<requested_size->width()<<";"<<requested_size->height()<<endl;
+            //cout<<"res_size"<<requested_size->width()<<";"<<requested_size->height()<<endl;
             TopSL.height()=requested_size->height()+this->border_width+top_bar_height;
-            cout<<TopSL.width()<<";"<<TopSL.height()<<endl;
+            //cout<<TopSL.width()<<";"<<TopSL.height()<<endl;
             setRequested_size(TopSL);
+            if(!color && !border_width && !title && !closable && !resizable && !min_size)return;
 
         }
         if(color)setColor(*color);
@@ -262,7 +263,7 @@ Toplevel::Toplevel(Widget *parent) : Widget("Toplevel", parent){
         if(min_size) this->min_size = *min_size;
         //Button close
         if(this->closable) {
-            cout<<"check"<<endl;
+            //cout<<"check"<<endl;
             button_close = new Button(this);
             color_t button_color = {255,0,0,255};
             int button_close_radius =7;
