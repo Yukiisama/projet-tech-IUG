@@ -48,10 +48,10 @@ int ei_main(int argc, char* argv[])
     float   button_rel_x    = 1.0;
     float   button_rel_y    = 1.0;
     float   button_rel_x2    = 0.0;
-    int     button_x    = 200;
-    int     button_y    = 250;
-    int     button_x2   = 50;
-    int     button_y2   = 300; //3ème
+    int     button_x    = -10;
+    int     button_y    = -10;
+    int     button_x2   = 10;
+    int     button_y2   = -62;
     float   button_rel_size_x = 0.45;
 
     Size         window_size(400,400);
@@ -79,7 +79,6 @@ int ei_main(int argc, char* argv[])
 
     Placer* p1 = new Placer();
     p1->configure(toplevel, NULL, &(window_position.x()), &(window_position.y()), NULL, NULL, NULL, NULL, NULL, NULL);
-
     Placer* p2 = new Placer();
     p2->configure(button_ok, &button_anchor, &button_x, &button_y, NULL,NULL, &button_rel_x, &button_rel_y, &button_rel_size_x, NULL);
     Placer* p3 = new Placer();

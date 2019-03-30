@@ -315,6 +315,7 @@ namespace ei{
              << "Red : " << (int)pick_color.red << " Green : " << (int)pick_color.green << " Blue : " << (int)pick_color.blue << " Alpha : " << (int)pick_color.alpha << "\n";
       stream << "Widget* parent : " << parent << "\n";
       stream << "GeometryManager* geom_manager : " << geom_manager << "\n";
+      stream << "screen location :" <<screen_location.top_left.x()<<" ; "<<screen_location.top_left.y()<< "\n";
       stream << "Size requested_size : "
              << "Width : " << requested_size.width() << " Height : " << requested_size.height() << "\n";
       stream << "Rect screen_location : "
