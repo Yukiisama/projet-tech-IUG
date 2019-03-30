@@ -32,6 +32,9 @@ Toplevel::Toplevel(Widget *parent) : Widget("Toplevel", parent){
     p_resize_button=new Placer();
     addTag("Toplevel");
 
+    //update Toplevel's own content rect which is now depending on container
+    setContent_rect(&container);
+
 }
 
     Toplevel::~Toplevel(){
@@ -124,7 +127,8 @@ Toplevel::Toplevel(Widget *parent) : Widget("Toplevel", parent){
         //recursive draw
         for(std::list<Widget*>::iterator it = children.begin();it!= children.end();it++){
             //donc apply content rect to button close because it display on the top bar which is not belong to content rect
-            if((*it)->getPick_id()==button_close->getPick_id()){
+            if((*it)->getPick_id()==button_close->getPick_id()
+                    ||(*it)->getPick_id()==resize_button->getPick_id()){
                 (*it)->draw(surface,pick_surface,clipper);
             }else{
                  (*it)->draw(surface,pick_surface,content_rect);
@@ -235,22 +239,24 @@ Toplevel::Toplevel(Widget *parent) : Widget("Toplevel", parent){
                               bool_t*         closable,
                               axis_set_t*     resizable,
                               Size*           min_size){
+        if(border_width) this->border_width = *border_width;
         //Widget::configure(requested_size,color);
         if(requested_size ){
+
             container.size=*requested_size; //assigne requested size to container
+
             //create and update requested size for the widget Toplevel including border and top bar height.
             Size TopSL;
-            TopSL.width()=requested_size->width()+*border_width*2;
-            TopSL.height()=requested_size->height()+*border_width+top_bar_height;
+            TopSL.width()=requested_size->width()+this->border_width*2;
+            cout<<"res_size"<<requested_size->width()<<";"<<requested_size->height()<<endl;
+            TopSL.height()=requested_size->height()+this->border_width+top_bar_height;
             cout<<TopSL.width()<<";"<<TopSL.height()<<endl;
             setRequested_size(TopSL);
 
         }
         if(color)setColor(*color);
         if(title) this->title = *title;
-        if(border_width) this->border_width = *border_width;
         if(closable) this->closable = *closable;
-
         if(resizable) this->resizable = *resizable;
         if(min_size) this->min_size = *min_size;
         //Button close
@@ -264,8 +270,7 @@ Toplevel::Toplevel(Widget *parent) : Widget("Toplevel", parent){
             p_button_close=new Placer();
         }
 
-        //update Toplevel's own content rect which is now depending on container
-        setContent_rect(&container);
+
     }
     //Getter & Setter
     int  Toplevel::get_border_width(){

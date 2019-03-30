@@ -233,12 +233,7 @@ namespace ei {
             for(std::list<Widget *>::iterator it =w_geo.begin() ;it!=w_geo.end();++it){
                 if((*it)->getGeom_manager()){
                     if(geo_done){
-                        (*it)->getGeom_manager()->run((*it));/*
-                        if(!(*it)->getName().compare("Toplevel")){
-                            //update content_rect
-                            (*it)->updateContent_rect();
-                        }*/
-                        std::cout<<"after run \n"<<std::endl;
+                        (*it)->getGeom_manager()->run((*it));
                     }
 
 
