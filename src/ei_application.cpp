@@ -77,6 +77,7 @@ namespace ei {
                 if(Application::getInstance()->widget_pick(e->where)->getPick_id()==top->getButton_close()->getPick_id()){
                     delete top;
                 }
+                
                 top->set_button_close_pressed(EI_FALSE);
             }
             return EI_TRUE;
@@ -103,6 +104,7 @@ namespace ei {
                 //Tells the toplevel that its top_bar is clicked
                 top->set_top_bar_clicked(EI_TRUE);
                 top->setMouse_pos(e->where);
+                
                 return EI_TRUE;
             }
         }
@@ -150,16 +152,17 @@ namespace ei {
         if(top->resizing()==EI_TRUE){
             float new_width = (e->where.x())-(top->getScreen_location().top_left.x());
             float new_height = (e->where.y())-(top->getScreen_location().top_left.y());
-
+            
             if(new_width < top->getMin_size().width()){
-                new_width = top->getRequested_size().width();
+                new_width = top->getMin_size().width();
             }
             if(new_height < top->getMin_size().height()){
-                new_height = top->getRequested_size().height();
+                new_height = top->getMin_size().height();
             }
 
             top->configure(new Size(new_width,new_height),NULL,NULL,NULL,NULL,NULL,NULL);
-
+            
+            
             return EI_TRUE;
         }
         return EI_FALSE;
