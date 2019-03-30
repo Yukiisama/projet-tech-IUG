@@ -173,6 +173,7 @@ void EventManager::eventHandler(Event *event)
                        Application::getInstance()->invalidate_rect((*it->widget->getContent_rect()));
                        break;
                    }
+                   if(!it->widget->getName().compare("Button")) Application::getInstance()->invalidate_rect((*it->widget->getContent_rect()));
                }
            }
 

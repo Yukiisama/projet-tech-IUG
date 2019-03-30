@@ -6,8 +6,34 @@
 #include <iostream>
 #include "ei_application.h"
 #include "ei_eventmanager.h"
+
+
 namespace ei
 {
+
+
+bool_t button_click_down(Widget* widget, Event* event, void* user_param)
+{
+    MouseEvent* e = static_cast<MouseEvent*>(event);
+    Button* button = static_cast<Button*>(widget);
+    if(Application::getInstance()->widget_pick(e->where)->getPick_id()==button->getPick_id()){
+        button->set_relief(ei_relief_sunken);
+        //return EI_TRUE;
+    }
+    return EI_FALSE;
+}
+
+bool_t button_click_up(Widget* widget, Event* event, void* user_param)
+{
+
+    MouseEvent* e = static_cast<MouseEvent*>(event);
+    Button* button = static_cast<Button*>(widget);
+    if(button->get_relief()==ei_relief_sunken){
+        button->set_relief(ei_relief_raised);
+        //return EI_TRUE;
+    }
+    return EI_FALSE;
+}
 
     Button::Button(Widget *parent) : Widget("Button", parent){
         border_width = default_button_border_width;
@@ -21,6 +47,8 @@ namespace ei
         img_rect=nullptr;
         img_anchor =ei_anc_center;
         addTag("Button");
+        EventManager::getInstance().bind(ei_ev_mouse_buttondown, this, "", button_click_down, NULL);
+        EventManager::getInstance().bind(ei_ev_mouse_buttonup, this, "", button_click_up, NULL);
     }
 
 
@@ -53,13 +81,7 @@ namespace ei
         draw_polygon(pick_surface, list_frame, pick_color, clipper);
         hw_surface_unlock(pick_surface);
 
-        //Draw button.
-        if(relief == ei_relief_sunken){//Case button is clicked by a mouse, draw clicked version of button.
-            Application::getInstance()->invalidate_rect(*content_rect);
-            draw_button(surface,&button_rect,color,corner_radius,border_width,clipper,relief);
-        }else{      //Draw normale static button.
-            draw_button(surface,&button_rect,color,corner_radius,border_width,clipper,relief);
-        }
+        draw_button(surface,&button_rect,color,corner_radius,border_width,clipper,relief);
 
         if (text)
         {

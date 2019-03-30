@@ -41,29 +41,7 @@ namespace ei {
       hw_quit();
     }
 
-    bool_t button_click_down(Widget* widget, Event* event, void* user_param)
-    {
-        MouseEvent* e = static_cast<MouseEvent*>(event);
-        Button* button = static_cast<Button*>(widget);
 
-        if(Application::getInstance()->widget_pick(e->where)->getPick_id()==button->getPick_id()){
-            button->set_relief(ei_relief_sunken);
-            //return EI_TRUE;
-        }
-        return EI_FALSE;
-    }
-
-    bool_t button_click_up(Widget* widget, Event* event, void* user_param)
-    {
-
-        MouseEvent* e = static_cast<MouseEvent*>(event);
-        Button* button = static_cast<Button*>(widget);
-        if(button->get_relief()==ei_relief_sunken){
-            button->set_relief(ei_relief_raised);
-            //return EI_TRUE;
-        }
-        return EI_FALSE;
-    }
 
     bool_t toplevel_click_up(Widget* widget, Event* event, void* user_param)
     {
@@ -143,7 +121,7 @@ namespace ei {
 
                 top->getGeom_manager()->setX(top->getScreen_location().top_left.x()+move_x);
                 top->getGeom_manager()->setY(top->getScreen_location().top_left.y()+move_y);
-
+                top->getGeom_manager()->run(top);
                 top->setMouse_pos(e->where);
             }
             return EI_TRUE;
@@ -176,8 +154,6 @@ namespace ei {
      */
     void Application::run(){
         //Binding the default comportments of widgets
-        EventManager::getInstance().bind(ei_ev_mouse_buttondown, NULL, "Button", button_click_down, NULL);
-        EventManager::getInstance().bind(ei_ev_mouse_buttonup, NULL, "Button", button_click_up, NULL);
         EventManager::getInstance().bind(ei_ev_mouse_buttonup, NULL, "Toplevel", toplevel_click_up, NULL);
         EventManager::getInstance().bind(ei_ev_mouse_buttondown, NULL, "Toplevel", toplevel_click_down, NULL);
         EventManager::getInstance().bind(ei_ev_mouse_move, NULL, "Toplevel", default_toplevel, NULL);

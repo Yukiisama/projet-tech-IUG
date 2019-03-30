@@ -42,7 +42,8 @@ Toplevel::Toplevel(Widget *parent) : Widget("Toplevel", parent){
         delete p_resize_button;
         if(closable)delete button_close;
         delete resize_button;
-        //TODO delete children
+        //TODO delete children from parent's children list.
+        //TODO clean in eventmanager hashmap the param_callback that contains this widget.
 
     }
 
