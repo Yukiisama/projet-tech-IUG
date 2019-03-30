@@ -24,6 +24,7 @@ typedef enum {
     ei_ev_none = 0,  ///< No event, used on an un-initialized structure.
     ei_ev_app,       ///< An application event, created by \ref hw_event_post_app.
     ei_ev_display,   ///< A display / window event.
+    ei_ev_timer,     ///< A timer event.
     ei_ev_keydown,   ///< A keyboard key has been pressed.
     ei_ev_keyup,     ///< A keyboard key has been released.
     ei_ev_keychar,   ///< A character was typed on the keyboard.
@@ -46,6 +47,7 @@ typedef enum {
  */
 struct Event {
     ei_eventtype_t type;       ///< The type of the event.
+    virtual ~Event() {}
 };
 
 /**
@@ -89,7 +91,7 @@ struct KeyEvent : public Event {
      * @param mask      The bitfield.
      * @param modifier  The modifier key that is tested.
      *
-     * @return      EI_TRUE is this modifier key is currently pressed, EI_FALSE otherwise.
+     * @return  EI_TRUE is this modifier key is currently pressed, EI_FALSE otherwise.
      */
     static inline bool_t ei_has_modifier(ei_modifier_mask_t mask,
                                             ei_modifier_key_t modifier)
