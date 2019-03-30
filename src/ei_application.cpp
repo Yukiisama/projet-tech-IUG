@@ -139,8 +139,8 @@ namespace ei {
                 float move_x = (e->where.x())-(top->getMouse_pos().x());
                 float move_y = (e->where.y())-(top->getMouse_pos().y());
 
-                top->getGeom_manager()->set_x(top->getScreen_location().top_left.x()+move_x);
-                top->getGeom_manager()->set_y(top->getScreen_location().top_left.y()+move_y);
+                top->getGeom_manager()->setX(top->getScreen_location().top_left.x()+move_x);
+                top->getGeom_manager()->setY(top->getScreen_location().top_left.y()+move_y);
 
                 top->setMouse_pos(e->where);
             }

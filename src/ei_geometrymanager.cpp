@@ -15,29 +15,21 @@ GeometryManager::GeometryManager()
 {
    placer = false;
    widget = nullptr;
-   anchor = new anchor_t(ei_anc_center);
-   x = new int(0);
-   y = new int(0);
-   width = new float(0.0);
-   height = new float(0.0);
-   rel_x = new float(0.0);
-   rel_y = new float(0.0);
-   rel_width = new float(0.0);
-   rel_height = new float(0.0);
+   anchor = ei_anc_center;
+   x =0;
+   y = 0;
+   width = 0.0;
+   height = 0.0;
+   rel_x = 0.0;
+   rel_y = 0.0;
+   rel_width = 0.0;
+   rel_height = 0.0;
 }
 ///modif///
 GeometryManager::~GeometryManager()
 {
-   //delete widget;
-   delete anchor;
-   delete x;
-   delete y;
-   delete width;
-   delete height;
-   delete rel_x;
-   delete rel_y;
-   delete rel_width;
-   delete rel_height;
+
+
 }
 
 string GeometryManager::to_string()
@@ -45,115 +37,129 @@ string GeometryManager::to_string()
    stringstream stream;
    stream << "bool placer : " << placer << "\n";
    stream << "Widget* widget : " << widget << "\n";
-   stream << "anchor_t* anchor : " << *(anchor) << "\n";
-   stream << "int* x : " << *(x) << "\n";
-   stream << "int* y : " << *(y) << "\n";
-   stream << "float* width : " << *(width) << "\n";
-   stream << "float* height : " << *(height) << "\n";
-   stream << "float* rel_x : " << *(rel_x) << "\n";
-   stream << "float* rel_y : " << *(rel_y) << "\n";
-   stream << "float* rel_width : " << *(rel_width) << "\n";
-   stream << "float* rel_height : " << *(rel_height) << "\n";
+   stream << "anchor_t* anchor : " << anchor << "\n";
+   stream << "int* x : " << x << "\n";
+   stream << "int* y : " << y << "\n";
+   stream << "float* width : " << width << "\n";
+   stream << "float* height : " << height << "\n";
+   stream << "float* rel_x : " << rel_x << "\n";
+   stream << "float* rel_y : " << rel_y << "\n";
+   stream << "float* rel_width : " << rel_width << "\n";
+   stream << "float* rel_height : " << rel_height << "\n";
    return stream.str();
 }
 
-bool GeometryManager::is_placer()
+bool GeometryManager::getPlacer() const
 {
-   return placer;
+    return placer;
 }
 
-void GeometryManager::set_placer(bool state)
+void GeometryManager::setPlacer(bool value)
 {
-   placer = state;
+    placer = value;
 }
 
-Widget *GeometryManager::get_widget()
+Widget *GeometryManager::getWidget() const
 {
-   return widget;
-}
-void GeometryManager::set_widget(Widget *new_widget)
-{
-   widget = new_widget;
+    return widget;
 }
 
-anchor_t GeometryManager::get_anchor()
+void GeometryManager::setWidget(Widget *value)
 {
-   return *anchor;
-}
-void GeometryManager::set_anchor(anchor_t new_anchor)
-{
-   *anchor = new_anchor;
+    widget = value;
 }
 
-int GeometryManager::get_x()
+anchor_t GeometryManager::getAnchor() const
 {
-   return *x;
-}
-void GeometryManager::set_x(int new_x)
-{
-   *x = new_x;
+    return anchor;
 }
 
-int GeometryManager::get_y()
+void GeometryManager::setAnchor(const anchor_t &value)
 {
-   return *y;
-}
-void GeometryManager::set_y(int new_y)
-{
-   *y = new_y;
+    anchor = value;
 }
 
-float GeometryManager::get_width()
+int GeometryManager::getX() const
 {
-   return *width;
-}
-void GeometryManager::set_width(float new_width)
-{
-   *width = new_width;
+    return x;
 }
 
-float GeometryManager::get_height()
+void GeometryManager::setX(int value)
 {
-   return *height;
-}
-void GeometryManager::set_height(float new_height)
-{
-   *height = new_height;
+    x = value;
 }
 
-float GeometryManager::get_rel_x()
+int GeometryManager::getY() const
 {
-   return *rel_x;
-}
-void GeometryManager::set_rel_x(float new_rel_x)
-{
-   *rel_x = new_rel_x;
+    return y;
 }
 
-float GeometryManager::get_rel_y()
+void GeometryManager::setY(int value)
 {
-   return *rel_y;
-}
-void GeometryManager::set_rel_y(float new_rel_y)
-{
-   *rel_y = new_rel_y;
+    y = value;
 }
 
-float GeometryManager::get_rel_width()
+float GeometryManager::getWidth() const
 {
-   return *rel_width;
-}
-void GeometryManager::set_rel_width(float new_rel_width)
-{
-   *rel_width = new_rel_width;
+    return width;
 }
 
-float GeometryManager::get_rel_height()
+void GeometryManager::setWidth(float value)
 {
-   return *rel_height;
+    width = value;
 }
-void GeometryManager::set_rel_height(float new_rel_height)
+
+float GeometryManager::getHeight() const
 {
-   *rel_height = new_rel_height;
+    return height;
 }
+
+void GeometryManager::setHeight(float value)
+{
+    height = value;
+}
+
+float GeometryManager::getRel_x() const
+{
+    return rel_x;
+}
+
+void GeometryManager::setRel_x(float value)
+{
+    rel_x = value;
+}
+
+float GeometryManager::getRel_y() const
+{
+    return rel_y;
+}
+
+void GeometryManager::setRel_y(float value)
+{
+    rel_y = value;
+}
+
+float GeometryManager::getRel_width() const
+{
+    return rel_width;
+}
+
+void GeometryManager::setRel_width(float value)
+{
+    rel_width = value;
+}
+
+float GeometryManager::getRel_height() const
+{
+    return rel_height;
+}
+
+void GeometryManager::setRel_height(float value)
+{
+    rel_height = value;
+}
+
+
+
+
 } // namespace ei

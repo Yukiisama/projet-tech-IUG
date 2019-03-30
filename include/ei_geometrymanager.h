@@ -54,56 +54,66 @@ public:
     virtual string to_string();
     
 
-	//GETTERS AND SETTERS
-	
-     bool is_placer();
-	 void set_placer(bool state);
+    //GETTERS AND SETTERS
 
-     Widget* get_widget();
-	 void set_widget(Widget* new_widget);
+    bool getPlacer() const;
 
-     anchor_t get_anchor();
-	 void set_anchor(anchor_t new_anchor);
+    void setPlacer(bool value);
 
-     int get_x();
-	 void set_x(int new_x);
+    Widget *getWidget() const;
 
-     int get_y();
-	 void set_y(int new_y);
+    void setWidget(Widget *value);
 
-     float get_width();
-	 void set_width(float new_width);
+    anchor_t getAnchor() const;
 
-     float get_height();
-	 void set_height(float new_height);
+    void setAnchor(const anchor_t &value);
 
-     float get_rel_x();
-	 void set_rel_x(float new_rel_x);
+    int getX() const;
 
-     float get_rel_y();
-	 void set_rel_y(float new_rel_y);
+    void setX(int value);
 
-     float get_rel_width();
-	 void set_rel_width(float new_rel_width);
+    int getY() const;
 
-     float get_rel_height();
-	 void set_rel_height(float new_rel_height);
+    void setY(int value);
+
+    float getWidth() const;
+
+    void setWidth(float value);
+
+    float getHeight() const;
+
+    void setHeight(float value);
+
+    float getRel_x() const;
+
+    void setRel_x(float value);
+
+    float getRel_y() const;
+
+    void setRel_y(float value);
+
+    float getRel_width() const;
+
+    void setRel_width(float value);
+
+    float getRel_height() const;
+
+    void setRel_height(float value);
 
 
-	
-	 
+
 private:
-	 bool placer = false;
-	 Widget*    widget;
-     anchor_t*  anchor;
-     int*       x;
-     int*       y;
-     float*     width;
-     float*     height;
-     float*     rel_x;
-     float*     rel_y;
-     float*     rel_width;
-     float*     rel_height;
+     bool placer = false;
+     Widget*    widget;
+     anchor_t  anchor;
+     int       x;
+     int       y;
+     float     width;
+     float     height;
+     float     rel_x;
+     float     rel_y;
+     float     rel_width;
+     float     rel_height;
 };
 
 

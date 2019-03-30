@@ -9,17 +9,17 @@ namespace ei {
 ///modif///
 Placer::Placer():GeometryManager(){
 
-    set_widget(nullptr);
-    set_placer(true);
-    set_anchor(ei_anc_northwest);
-    set_x(0);
-    set_y(0);
-    set_width((0.0));
-    set_height((0.0));
-    set_rel_x(0.0);
-    set_rel_y(0.0);
-    set_rel_width(0.0);
-    set_rel_height(0.0);
+    setWidget(nullptr);
+    setPlacer(true);
+    setAnchor(ei_anc_northwest);
+    setX(0);
+    setY(0);
+    setWidth((0.0));
+    setHeight((0.0));
+    setRel_x(0.0);
+    setRel_y(0.0);
+    setRel_width(0.0);
+    setRel_height(0.0);
 
 }
 
@@ -70,36 +70,36 @@ Placer::~Placer(){
                     float*     rel_height)
                     {
                         if (widget == nullptr) return;
-                        set_widget(widget);
+                        setWidget(widget);
                         widget->setGeom_manager(this);
-                        if (anchor != nullptr) set_anchor(*anchor);
+                        if (anchor != nullptr) setAnchor(*anchor);
                         else{
-                            set_anchor(ei_anc_northwest);
+                            setAnchor(ei_anc_northwest);
                         }
 
-                        if (x != nullptr)set_x(*x);
-                        else set_x(0);
+                        if (x != nullptr)setX(*x);
+                        else setX(0);
 
-                        if (y != nullptr) set_y(*y);
-                        else set_y(0);
+                        if (y != nullptr) setY(*y);
+                        else setY(0);
 
-                        if (width != nullptr) set_width(*width);
-                        else set_width(0);
+                        if (width != nullptr) setWidth(*width);
+                        else setWidth(0);
 
-                        if (height != nullptr) set_height(*height);
-                        else set_height(0);
+                        if (height != nullptr) setHeight(*height);
+                        else setHeight(0);
 
-                        if (rel_x != nullptr) set_rel_x(*rel_x);
-                        else set_rel_x(0.0);
+                        if (rel_x != nullptr) setRel_x(*rel_x);
+                        else setRel_x(0.0);
 
-                        if (rel_y != nullptr) set_rel_y(*rel_y);
-                        else set_rel_y(0.0);
+                        if (rel_y != nullptr) setRel_y(*rel_y);
+                        else setRel_y(0.0);
 
-                        if (rel_width != nullptr) set_rel_width(*rel_width);
-                        else set_rel_width(0.0);
+                        if (rel_width != nullptr) setRel_width(*rel_width);
+                        else setRel_width(0.0);
 
-                        if (rel_height != nullptr) set_rel_height(*rel_height);
-                        else set_rel_height(0.0);
+                        if (rel_height != nullptr) setRel_height(*rel_height);
+                        else setRel_height(0.0);
                     }
 
     void Placer::run (Widget* widget){
@@ -116,39 +116,37 @@ Placer::~Placer(){
         // Positioning
         int temp_x = contect_rect.top_left.x(), temp_y = contect_rect.top_left.y();
 
-        if (get_rel_x()) temp_x += contect_rect.size.width() * get_rel_x();
-        if (get_rel_y()) temp_y += contect_rect.size.height() * get_rel_y();
-        if (get_x()) temp_x += get_x();
-        if (get_y()) temp_y += get_y();
+        temp_x += getX()+ contect_rect.size.width() * getRel_x();
+        temp_y += getY()+ contect_rect.size.height() * getRel_y();
 
-        switch (get_anchor()){
+        switch (getAnchor()){
             case ei_anc_center:
-                if (get_width()) temp_x -= get_width()/2;
-                if (get_height()) temp_y -= get_height()/2;
+                temp_x -= getWidth()/2;
+                temp_y -= getHeight()/2;
                 break;
             case ei_anc_north:
-                if (get_width()) temp_x -= get_width()/2;
+                temp_x -= getWidth()/2;
                 break;
             case ei_anc_northeast:
-                if (get_width()) temp_x -= get_width();
+                temp_x -= getWidth();
                 break;
             case ei_anc_east:
-                if (get_width()) temp_x -= get_width();
-                if (get_height()) temp_y -= get_height()/2;
+                temp_x -= getWidth();
+                temp_y -= getHeight()/2;
                 break;
             case ei_anc_southeast:
-                if (get_width()) temp_x -= get_width();
-                if (get_height()) temp_y -= get_height();
+                temp_x -= getWidth();
+                temp_y -= getHeight();
                 break;
             case ei_anc_south:
-                if (get_width()) temp_x -= get_width()/2;
-                if (get_height()) temp_y -= get_height();
+                temp_x -= getWidth()/2;
+                temp_y -= getHeight();
                 break;
             case ei_anc_southwest:
-                if (get_height()) temp_y -= get_height();
+                temp_y -= getHeight();
                 break;
             case ei_anc_west:
-                if (get_height()) temp_y -= get_height()/2;
+                temp_y -= getHeight()/2;
                 break;
             case ei_anc_northwest:
                 break;
@@ -168,10 +166,10 @@ Placer::~Placer(){
         // Sizing
         int temp_width = 0, temp_height = 0;
 
-        if (get_rel_width()) temp_width += contect_rect.size.width() * get_rel_width();
-        if (get_rel_height()) temp_height += contect_rect.size.height() * get_rel_height();
-        if (get_width()) temp_width += get_width();
-        if (get_height()) temp_height += get_height();
+        temp_width += contect_rect.size.width() * getRel_width();
+        temp_height += contect_rect.size.height() * getRel_height();
+        temp_width += getWidth();
+        temp_height += getHeight();
 
         if (temp_width < 0 || temp_height < 0){
             fprintf(stderr, "We won't be able to draw something with a negative width/height!\n");
@@ -197,13 +195,13 @@ Placer::~Placer(){
     }
 
     void Placer::release (Widget* widget){
-        if (get_widget() != widget) {
+        if (getWidget() != widget) {
             return;
         }
         else {
-            set_widget(nullptr);
-            set_x(0);
-            set_y(0);
+            setWidget(nullptr);
+            setX(0);
+            setY(0);
         }
     }
 
