@@ -132,7 +132,7 @@ Toplevel::Toplevel(Widget *parent) : Widget("Toplevel", parent){
                     ||(*it)->getPick_id()==resize_button->getPick_id()){
                 (*it)->draw(surface,pick_surface,clipper);
             }else{
-                 (*it)->draw(surface,pick_surface,content_rect);
+                (*it)->draw(surface,pick_surface,content_rect);
             }
         }
         return;
@@ -249,13 +249,11 @@ Toplevel::Toplevel(Widget *parent) : Widget("Toplevel", parent){
                 cout<<"new res_size"<<endl;
             }
             container.size=*requested_size; //assigne requested size to container
-
             //create and update requested size for the widget Toplevel including border and top bar height.
             Size TopSL;
             TopSL.width()=requested_size->width()+this->border_width*2;
             TopSL.height()=requested_size->height()+this->border_width+top_bar_height;
             setRequested_size(TopSL);
-
         }
         if(color)setColor(*color);
         if(title) this->title = *title;

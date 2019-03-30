@@ -77,6 +77,7 @@ namespace ei {
                 if(Application::getInstance()->widget_pick(e->where)->getPick_id()==top->getButton_close()->getPick_id()){
                     delete top;
                 }
+                
                 top->set_button_close_pressed(EI_FALSE);
             }
             return EI_TRUE;
@@ -103,6 +104,7 @@ namespace ei {
                 //Tells the toplevel that its top_bar is clicked
                 top->set_top_bar_clicked(EI_TRUE);
                 top->setMouse_pos(e->where);
+                
                 return EI_TRUE;
             }
         }
@@ -136,8 +138,8 @@ namespace ei {
         //The case when the top_bar is still pressed and the mouse is moving
         if(top->moving()==EI_TRUE){
             if(Application::getInstance()->inside_root(e->where)){//check if the mouse position is valid
-                float move_x = (e->where.x())-(top->getMouse_pos().x());
-                float move_y = (e->where.y())-(top->getMouse_pos().y());
+                double move_x = (e->where.x())-(top->getMouse_pos().x());
+                double move_y = (e->where.y())-(top->getMouse_pos().y());
 
                 top->getGeom_manager()->setX(top->getScreen_location().top_left.x()+move_x);
                 top->getGeom_manager()->setY(top->getScreen_location().top_left.y()+move_y);
