@@ -57,7 +57,6 @@ namespace ei
         if(relief == ei_relief_sunken){//Case button is clicked by a mouse, draw clicked version of button.
             Application::getInstance()->invalidate_rect(*content_rect);
             draw_button(surface,&button_rect,color,corner_radius,border_width,clipper,relief);
-
         }else{      //Draw normale static button.
             draw_button(surface,&button_rect,color,corner_radius,border_width,clipper,relief);
         }

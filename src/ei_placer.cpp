@@ -84,10 +84,10 @@ Placer::~Placer(){
                         else setY(0);
 
                         if (width != nullptr) setWidth(*width);
-                        else setWidth(0);
+                        else setWidth(widget->getRequested_size().width());
 
                         if (height != nullptr) setHeight(*height);
-                        else setHeight(0);
+                        else setHeight(widget->getRequested_size().height());
 
                         if (rel_x != nullptr) setRel_x(*rel_x);
                         else setRel_x(0.0);

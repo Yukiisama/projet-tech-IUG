@@ -131,6 +131,7 @@ Toplevel::Toplevel(Widget *parent) : Widget("Toplevel", parent){
                     ||(*it)->getPick_id()==resize_button->getPick_id()){
                 (*it)->draw(surface,pick_surface,clipper);
             }else{
+                 cout<<(*it)->to_string()<<endl;
                  (*it)->draw(surface,pick_surface,content_rect);
             }
         }

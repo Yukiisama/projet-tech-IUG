@@ -48,7 +48,7 @@ namespace ei {
 
         if(Application::getInstance()->widget_pick(e->where)->getPick_id()==button->getPick_id()){
             button->set_relief(ei_relief_sunken);
-            return EI_TRUE;
+            //return EI_TRUE;
         }
         return EI_FALSE;
     }
@@ -60,7 +60,7 @@ namespace ei {
         Button* button = static_cast<Button*>(widget);
         if(button->get_relief()==ei_relief_sunken){
             button->set_relief(ei_relief_raised);
-            return EI_TRUE;
+            //return EI_TRUE;
         }
         return EI_FALSE;
     }
@@ -171,11 +171,11 @@ namespace ei {
      */
     void Application::run(){
         //Binding the default comportments of widgets
+        EventManager::getInstance().bind(ei_ev_mouse_buttondown, NULL, "Button", button_click_down, NULL);
+        EventManager::getInstance().bind(ei_ev_mouse_buttonup, NULL, "Button", button_click_up, NULL);
         EventManager::getInstance().bind(ei_ev_mouse_buttonup, NULL, "Toplevel", toplevel_click_up, NULL);
         EventManager::getInstance().bind(ei_ev_mouse_buttondown, NULL, "Toplevel", toplevel_click_down, NULL);
         EventManager::getInstance().bind(ei_ev_mouse_move, NULL, "Toplevel", default_toplevel, NULL);
-        EventManager::getInstance().bind(ei_ev_mouse_buttondown, NULL, "Button", button_click_down, NULL);
-        EventManager::getInstance().bind(ei_ev_mouse_buttonup, NULL, "Button", button_click_up, NULL);
 
         /*running = true;
         double current_time ;
@@ -257,7 +257,7 @@ namespace ei {
                 }
                 //next step is to clear the rectangle list.
                 to_clear_rectangle_list.clear();
-                update_time  = current_time + (1/60);
+                update_time  = current_time + (1.0/60.0);
             }
         }
 
