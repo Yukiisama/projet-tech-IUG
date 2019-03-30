@@ -42,6 +42,7 @@ Toplevel::Toplevel(Widget *parent) : Widget("Toplevel", parent){
         delete p_resize_button;
         if(closable)delete button_close;
         delete resize_button;
+        //TODO delete children
 
     }
 
@@ -131,7 +132,6 @@ Toplevel::Toplevel(Widget *parent) : Widget("Toplevel", parent){
                     ||(*it)->getPick_id()==resize_button->getPick_id()){
                 (*it)->draw(surface,pick_surface,clipper);
             }else{
-                 cout<<(*it)->to_string()<<endl;
                  (*it)->draw(surface,pick_surface,content_rect);
             }
         }
@@ -240,18 +240,20 @@ Toplevel::Toplevel(Widget *parent) : Widget("Toplevel", parent){
                               bool_t*         closable,
                               axis_set_t*     resizable,
                               Size*           min_size){
+
         if(border_width) this->border_width = *border_width;
         //Widget::configure(requested_size,color);
         if(requested_size ){
-
+            if(requested_size->width()<this->min_size.width() || requested_size->height()<this->min_size.height()){
+                //this is print
+                cout<<"new res_size"<<endl;
+            }
             container.size=*requested_size; //assigne requested size to container
 
             //create and update requested size for the widget Toplevel including border and top bar height.
             Size TopSL;
             TopSL.width()=requested_size->width()+this->border_width*2;
-            cout<<"res_size"<<requested_size->width()<<";"<<requested_size->height()<<endl;
             TopSL.height()=requested_size->height()+this->border_width+top_bar_height;
-            cout<<TopSL.width()<<";"<<TopSL.height()<<endl;
             setRequested_size(TopSL);
 
         }
@@ -262,7 +264,6 @@ Toplevel::Toplevel(Widget *parent) : Widget("Toplevel", parent){
         if(min_size) this->min_size = *min_size;
         //Button close
         if(this->closable) {
-            cout<<"check"<<endl;
             button_close = new Button(this);
             color_t button_color = {255,0,0,255};
             int button_close_radius =7;
@@ -270,6 +271,7 @@ Toplevel::Toplevel(Widget *parent) : Widget("Toplevel", parent){
                                     NULL,&button_close_radius,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
             p_button_close=new Placer();
         }
+        if(geom_manager)geom_manager->run(this);
 
 
     }

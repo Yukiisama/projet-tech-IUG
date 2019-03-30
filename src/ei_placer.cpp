@@ -73,15 +73,13 @@ Placer::~Placer(){
                         setWidget(widget);
                         widget->setGeom_manager(this);
                         if (anchor != nullptr) setAnchor(*anchor);
-                        else{
-                            setAnchor(ei_anc_northwest);
-                        }
+
 
                         if (x != nullptr)setX(*x);
-                        else setX(0);
+
 
                         if (y != nullptr) setY(*y);
-                        else setY(0);
+
 
                         if (width != nullptr) setWidth(*width);
                         else setWidth(widget->getRequested_size().width());
@@ -100,6 +98,7 @@ Placer::~Placer(){
 
                         if (rel_height != nullptr) setRel_height(*rel_height);
                         else setRel_height(0.0);
+                        run(widget);
                     }
 
     void Placer::run (Widget* widget){

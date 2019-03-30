@@ -401,23 +401,23 @@ namespace ei {
 
     private:
     int             border_width;
-        double          top_bar_height;//The width of the top bar
-        const char*     title;
-        bool_t          closable;
-        axis_set_t      resizable;
-        Size            min_size;
-        Size            button_size;
-        Size            resize_button_window_size;
-        Button*         button_close;//The button that close the window
-        Placer*         p_button_close;
-        Button*         resize_button;//The button at the right bottom to resize the window
-        Placer*         p_resize_button;
-        Rect            container;      //use to store toplevel's own content rec.
-        Placer*         p_in_window;
-        bool_t          top_bar_clicked=EI_FALSE;
-        bool_t          resize_button_pressed=EI_FALSE;
-        bool_t          button_close_pressed=EI_FALSE;
-        Point           mouse_pos;
+    double          top_bar_height;//The width of the top bar
+    const char*     title;
+    bool_t          closable;
+    axis_set_t      resizable;
+    Size            min_size;
+    Size            button_size;
+    Size            resize_button_window_size;
+    Button*         button_close;//The button that close the window
+    Placer*         p_button_close;
+    Button*         resize_button;//The button at the right bottom to resize the window
+    Placer*         p_resize_button;
+    Rect            container;      //use to store toplevel's own content rec.
+    Placer*         p_in_window;
+    bool_t          top_bar_clicked=EI_FALSE;
+    bool_t          resize_button_pressed=EI_FALSE;
+    bool_t          button_close_pressed=EI_FALSE;
+    Point           mouse_pos;
     };
 
 }

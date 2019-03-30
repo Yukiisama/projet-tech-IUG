@@ -132,6 +132,7 @@ namespace ei
         if(img && !text) this->img = img;
         if(img_rect) this->img_rect = *img_rect;
         if(img_anchor)this->img_anchor = *img_anchor;
+        if(geom_manager)geom_manager->run(this);
     }
     //GETTER & SETTER
         int Button::get_corner_radius(){
