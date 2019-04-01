@@ -6,11 +6,14 @@
 using namespace std;
 namespace ei {
 
-///modif///
+/**
+ * @brief Placer Constructor
+ */
 Placer::Placer():GeometryManager(){
-
+    //No widget at initialization
     setWidget(nullptr);
     setPlacer(true);
+    //Set default values
     setAnchor(ei_anc_northwest);
     setX(0);
     setY(0);
@@ -22,14 +25,16 @@ Placer::Placer():GeometryManager(){
     setRel_height(0.0);
 
 }
-
+/**
+ * @brief Placer Destructor
+ */
 Placer::~Placer(){
 }
 
 /**
  * @brief The Placer class
  */
-    /**
+/**
      * \brief Configures the geometry of a widget using the "placer" geometry manager.
      *    If the widget was already managed by another geometry manager, then it is first
      *    removed from the previous geometry manager.
@@ -58,150 +63,135 @@ Placer::~Placer(){
      * @param rel_height  The relative height of the widget: 0.0 corresponds to a height of 0,
      *        1.0 to the height of the master (defaults to 0.0).
      */
-    void Placer::configure (Widget*    widget,
-                    anchor_t*  anchor,
-                    int*       x,
-                    int*       y,
-                    float*     width,
-                    float*     height,
-                    float*     rel_x,
-                    float*     rel_y,
-                    float*     rel_width,
-                    float*     rel_height)
-                    {
-                        if (widget == nullptr) return;
-                        setWidget(widget);
-                        widget->setGeom_manager(this);
-                        if (anchor != nullptr) setAnchor(*anchor);
+void Placer::configure (Widget*    widget,
+                        anchor_t*  anchor,
+                        int*       x,
+                        int*       y,
+                        float*     width,
+                        float*     height,
+                        float*     rel_x,
+                        float*     rel_y,
+                        float*     rel_width,
+                        float*     rel_height)
+{
+    //Placer already configure
+    if (!widget) return;
+    //Let the widget and the placer know each other
+    setWidget(widget);
+    widget->setGeom_manager(this);
+    //Assign values
+    if (anchor) setAnchor(*anchor);
+    if (x) setX(*x);
+    if (y) setY(*y);
+    (width) ? setWidth(*width) : setWidth(widget->getRequested_size().width());
+    (height) ? setHeight(*height) : setHeight(widget->getRequested_size().height());
+    (rel_x) ? setRel_x(*rel_x) : setRel_x(0.0);
+    (rel_y) ? setRel_y(*rel_y) : setRel_y(0.0);
+    (rel_width) ? setRel_width(*rel_width) : setRel_width(0.0);
+    (rel_height) ? setRel_height(*rel_height) : setRel_height(0.0);
+    //run the placer on the widget
+    run(widget);
+}
+/**
+ * @brief Placer::run
+ * @param widget the widget we want to place
+ */
+void Placer::run (Widget* widget){
+    if (!widget ) return;
 
+    // Creating the new rectangle and setting the right values into it
+    Rect new_rect = Rect();
+    Rect contect_rect = *(widget->getParent()->getContent_rect());
+    // Positioning
+    int temp_x = contect_rect.top_left.x(), temp_y = contect_rect.top_left.y();
 
-                        if (x != nullptr)setX(*x);
+    temp_x += getX()+ contect_rect.size.width() * getRel_x();
+    temp_y += getY()+ contect_rect.size.height() * getRel_y();
 
+    //Ajust temp_x and temp_y according to the anchor
+    switch (getAnchor()){
+    case ei_anc_center:
+        temp_x -= getWidth()/2;
+        temp_y -= getHeight()/2;
+        break;
+    case ei_anc_north:
+        temp_x -= getWidth()/2;
+        break;
+    case ei_anc_northeast:
+        temp_x -= getWidth();
+        break;
+    case ei_anc_east:
+        temp_x -= getWidth();
+        temp_y -= getHeight()/2;
+        break;
+    case ei_anc_southeast:
+        temp_x -= getWidth();
+        temp_y -= getHeight();
+        break;
+    case ei_anc_south:
+        temp_x -= getWidth()/2;
+        temp_y -= getHeight();
+        break;
+    case ei_anc_southwest:
+        temp_y -= getHeight();
+        break;
+    case ei_anc_west:
+        temp_y -= getHeight()/2;
+        break;
+    case ei_anc_northwest:
+        break;
+    case ei_anc_none:
+        break;
+    }
 
-                        if (y != nullptr) setY(*y);
+    new_rect.top_left.x() = temp_x;
+    new_rect.top_left.y() = temp_y;
+    //update container of Toplevel
+    if(!widget->getName().compare("Toplevel")){
+        Toplevel* top = static_cast<Toplevel*>(widget);
+        Point topsl(temp_x+top->getBorder_width(),temp_y+top->getTop_bar_height());
+        top->setContainer_topleft(topsl);
+    }
+    // Sizing
+    int temp_width = 0, temp_height = 0;
 
+    temp_width += contect_rect.size.width() * getRel_width();
+    temp_height += contect_rect.size.height() * getRel_height();
+    temp_width += getWidth();
+    temp_height += getHeight();
 
-                        if (width != nullptr) setWidth(*width);
-                        else setWidth(widget->getRequested_size().width());
-
-                        if (height != nullptr) setHeight(*height);
-                        else setHeight(widget->getRequested_size().height());
-
-                        if (rel_x != nullptr) setRel_x(*rel_x);
-                        else setRel_x(0.0);
-
-                        if (rel_y != nullptr) setRel_y(*rel_y);
-                        else setRel_y(0.0);
-
-                        if (rel_width != nullptr) setRel_width(*rel_width);
-                        else setRel_width(0.0);
-
-                        if (rel_height != nullptr) setRel_height(*rel_height);
-                        else setRel_height(0.0);
-                        run(widget);
-                    }
-
-    void Placer::run (Widget* widget){
-        if (!widget ) return;
-        /*if (widget){
-            if(!widget->getParent())
-                return;
-        }
-        */
-
-        // Creating the new rectangle and setting the right values into it
-        Rect new_rect = Rect();
-        Rect contect_rect = *(widget->getParent()->getContent_rect());
-        // Positioning
-        int temp_x = contect_rect.top_left.x(), temp_y = contect_rect.top_left.y();
-
-        temp_x += getX()+ contect_rect.size.width() * getRel_x();
-        temp_y += getY()+ contect_rect.size.height() * getRel_y();
-
-        switch (getAnchor()){
-            case ei_anc_center:
-                temp_x -= getWidth()/2;
-                temp_y -= getHeight()/2;
-                break;
-            case ei_anc_north:
-                temp_x -= getWidth()/2;
-                break;
-            case ei_anc_northeast:
-                temp_x -= getWidth();
-                break;
-            case ei_anc_east:
-                temp_x -= getWidth();
-                temp_y -= getHeight()/2;
-                break;
-            case ei_anc_southeast:
-                temp_x -= getWidth();
-                temp_y -= getHeight();
-                break;
-            case ei_anc_south:
-                temp_x -= getWidth()/2;
-                temp_y -= getHeight();
-                break;
-            case ei_anc_southwest:
-                temp_y -= getHeight();
-                break;
-            case ei_anc_west:
-                temp_y -= getHeight()/2;
-                break;
-            case ei_anc_northwest:
-                break;
-            case ei_anc_none:
-                break;
-        }
-
-        new_rect.top_left.x() = temp_x;
-        new_rect.top_left.y() = temp_y;
-        //update container of Toplevel
-        if(!widget->getName().compare("Toplevel")){
-            Toplevel* top = static_cast<Toplevel*>(widget);
-            Point topsl(temp_x+top->getBorder_width(),temp_y+top->getTop_bar_height());
-            //cout<<top->getContainer().size.width()<<";"<<top->getContainer().size.height()<<endl;
-            top->setContainer_topleft(topsl);
-        }
-        // Sizing
-        int temp_width = 0, temp_height = 0;
-
-        temp_width += contect_rect.size.width() * getRel_width();
-        temp_height += contect_rect.size.height() * getRel_height();
-        temp_width += getWidth();
-        temp_height += getHeight();
-
-        if (temp_width < 0 || temp_height < 0){
-            fprintf(stderr, "We won't be able to draw something with a negative width/height!\n");
-            return;
-        }
-
-        new_rect.size.width() = temp_width;
-        new_rect.size.height() = temp_height;
-        // Setting new positioning and sizing rectangle to the widget
-        widget->geomnotify(new_rect);
-
-        // Calling run for the widget's children
-        if (!widget->getChildren().empty())
-        {
-            list<Widget *> w_child = widget->getChildren();
-            for (list<Widget *>::iterator it = w_child.begin();it!=w_child.end();it++){
-                if ((*it)->getGeom_manager()) (*it)->getGeom_manager()->run(*it);
-            }
-
-        }
-
+    if (temp_width < 0 || temp_height < 0){
+        fprintf(stderr, "We won't be able to draw something with a negative width/height!\n");
         return;
     }
 
-    void Placer::release (Widget* widget){
-        if (getWidget() != widget) {
-            return;
+    new_rect.size.width() = temp_width;
+    new_rect.size.height() = temp_height;
+    // Setting new positioning and sizing rectangle to the widget
+    widget->geomnotify(new_rect);
+
+    // Calling run for the widget's children
+    if (!widget->getChildren().empty())
+    {
+        list<Widget *> w_child = widget->getChildren();
+        for (list<Widget *>::iterator it = w_child.begin();it!=w_child.end();it++){
+            if ((*it)->getGeom_manager()) (*it)->getGeom_manager()->run(*it);
         }
-        else {
-            setWidget(nullptr);
-            setX(0);
-            setY(0);
-        }
+
     }
+
+    return;
+}
+//[TODO] fonction fausse.
+void Placer::release (Widget* widget){
+    if (getWidget() != widget) {
+        return;
+    }
+    else {
+        setWidget(nullptr);
+        setX(0);
+        setY(0);
+    }
+}
 
 }
