@@ -10,13 +10,17 @@ using namespace std;
 namespace ei
 {
 
-///modif///
+/**
+ * @brief GeometryManager Constructor
+ */
 GeometryManager::GeometryManager()
 {
+   // No placer and no widget at initialize
    placer = false;
    widget = nullptr;
+   //Assign defaults value
    anchor = ei_anc_center;
-   x =0;
+   x = 0;
    y = 0;
    width = 0.0;
    height = 0.0;
@@ -25,13 +29,18 @@ GeometryManager::GeometryManager()
    rel_width = 0.0;
    rel_height = 0.0;
 }
-///modif///
+/**
+ * @brief Destructor of GeometryManager
+ */
 GeometryManager::~GeometryManager()
 {
 
 
 }
-
+/**
+ * @brief GeometryManager::to_string ( string with all informations you need for debugging)
+ * @return return the stream string
+ */
 string GeometryManager::to_string()
 {
    stringstream stream;
@@ -158,8 +167,5 @@ void GeometryManager::setRel_height(float value)
 {
     rel_height = value;
 }
-
-
-
 
 } // namespace ei
