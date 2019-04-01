@@ -6,6 +6,7 @@
 #include "ei_eventmanager.h"
 #include "hw_interface.h"
 #include <iostream>
+#define FPS_MAX 1.0/60.0
 namespace ei {
   Application *Application::instance = nullptr;
 
@@ -191,7 +192,7 @@ namespace ei {
                 }
                 //next step is to clear the rectangle list.
                 to_clear_rectangle_list.clear();
-                update_time  = current_time + (1.0/60.0);
+                update_time  = current_time + FPS_MAX;
             }
         }
 
@@ -246,7 +247,7 @@ namespace ei {
      *              at this location (except for the root widget).
      */
     Widget* Application::widget_pick (const Point& where){
-      if(inside_root(where)==EI_FALSE){
+      if(!inside_root(where)){
           fprintf(stderr,"Error occured for Application::widget_pick - param where is out the root_window\n");
           exit(EXIT_FAILURE);
       }
