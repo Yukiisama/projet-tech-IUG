@@ -82,7 +82,8 @@ bool_t Toplevel::inside_top_bar(Point where) const{
  * @brief Draw the toplevel into the main window
  * @param surface : the main window
  * @param pick_surface : pick surface to identify widgets
- * @param clipper : the clipper to limit the draw to a given area
+ * @param clipper If not NULL, the drawing is restricted within this rectangle
+ *                      (expressed in the surface reference frame).
 */
 void Toplevel::draw (surface_t surface,
                      surface_t pick_surface,
@@ -125,7 +126,8 @@ void Toplevel::updateContent_rect(){
  * @brief Draw the basic top_level without buttons
  * @param surface : the main window
  * @param pick_surface : pick surface to identify widgets
- * @param clipper : the clipper to limit the draw to a given area
+ * @param clipper If not NULL, the drawing is restricted within this rectangle
+ *                      (expressed in the surface reference frame).
  */
 void Toplevel::drawBasic_toplevel(surface_t surface, surface_t pick_surface, Rect *clipper){
     if(!surface || !pick_surface){
