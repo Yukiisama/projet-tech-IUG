@@ -418,6 +418,7 @@ namespace ei {
     bool_t          resize_button_pressed=EI_FALSE;
     bool_t          button_close_pressed=EI_FALSE;
     Point           mouse_pos;
+    bool_t closable_done = EI_FALSE;
     };
 
 }

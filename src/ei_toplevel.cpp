@@ -255,6 +255,7 @@ Toplevel::Toplevel(Widget *parent) : Widget("Toplevel", parent){
             TopSL.width()=requested_size->width()+this->border_width*2;
             TopSL.height()=requested_size->height()+this->border_width+top_bar_height;
             setRequested_size(TopSL);
+
         }
         if(color)setColor(*color);
         if(title) this->title = *title;
@@ -262,13 +263,14 @@ Toplevel::Toplevel(Widget *parent) : Widget("Toplevel", parent){
         if(resizable) this->resizable = *resizable;
         if(min_size) this->min_size = *min_size;
         //Button close
-        if(this->closable) {
+        if(this->closable && !closable_done) {
             button_close = new Button(this);
             color_t button_color = {255,0,0,255};
             int button_close_radius =7;
             button_close->configure(&button_size,&button_color,
                                     NULL,&button_close_radius,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
             p_button_close=new Placer();
+            closable_done=EI_TRUE;
         }
         if(geom_manager)geom_manager->run(this);
 
