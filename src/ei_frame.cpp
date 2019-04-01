@@ -5,13 +5,14 @@
 #include "hw_interface.h"
 #include <iostream>
 #define ALPHA_MAX 255
+#define FRAME_NAME "Frame"
 
 namespace ei {
 /**
      * \brief   Frame constructor.
      * @param   Parent of the frame widget
 **/
-Frame::Frame(Widget *parent):Widget("Frame",parent){
+Frame::Frame(Widget *parent):Widget(FRAME_NAME,parent){
     //Initialiaze defaults value
     relief=ei_relief_none;
     //Initialiaze defaults text value and text is nullptr by default (no text)
@@ -24,7 +25,7 @@ Frame::Frame(Widget *parent):Widget("Frame",parent){
     img_rect=nullptr;
     img_anchor = ei_anc_center;
     //Tag for later used if event called with tag Frame
-    addTag("Frame");
+    addTag(FRAME_NAME);
 }
 /**
      * \brief   Frame deconstructor.

@@ -8,7 +8,7 @@
 #include "ei_eventmanager.h"
 
 #define ALPHA_MAX 255
-
+#define BUTTON_NAME "Button"
 namespace ei
 {
 
@@ -54,7 +54,7 @@ bool_t button_click_up(Widget* widget, Event* event, void* user_param)
      *
      * @param   parent the father of this widget.
      */
-Button::Button(Widget *parent) : Widget("Button", parent){
+Button::Button(Widget *parent) : Widget(BUTTON_NAME, parent){
     //Initialiaze defaults value
     border_width = default_button_border_width;
     corner_radius = default_button_corner_radius;
@@ -69,7 +69,7 @@ Button::Button(Widget *parent) : Widget("Button", parent){
     img_rect=nullptr;
     img_anchor =ei_anc_center;
     //Tag for later used if event called with tag Button
-    addTag("Button");
+    addTag(BUTTON_NAME);
     //Bind relief button function
     EventManager::getInstance().bind(ei_ev_mouse_buttondown, this, "", button_click_down, NULL);
     EventManager::getInstance().bind(ei_ev_mouse_buttonup, this, "", button_click_up, NULL);
