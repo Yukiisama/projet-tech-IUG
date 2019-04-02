@@ -60,12 +60,12 @@ void Frame::draw(surface_t surface,
     //Initialize frame position in list_frame
     linked_point_t list_frame;
     list_frame.push_back(screen_location.top_left);
-    list_frame.push_back(Point(screen_location.top_left.x()+requested_size.width(),
+    list_frame.push_back(Point(screen_location.top_left.x()+int(requested_size.width()),
                                screen_location.top_left.y()));
-    list_frame.push_back(Point(screen_location.top_left.x()+requested_size.width(),
-                               screen_location.top_left.y()+requested_size.height()));
+    list_frame.push_back(Point(screen_location.top_left.x()+int(requested_size.width()),
+                               screen_location.top_left.y()+int(requested_size.height())));
     list_frame.push_back(Point(screen_location.top_left.x(),
-                               screen_location.top_left.y()+requested_size.height()));
+                               screen_location.top_left.y()+int(requested_size.height())));
     //Draw on pick_surface the rectangle  with frame's pick_color.
     hw_surface_lock(pick_surface);
     pick_color.alpha=ALPHA_MAX;
@@ -165,10 +165,12 @@ void Frame::configure (Size*           requested_size,
     //Call the configure function of herited class widget
     Widget::configure(requested_size,color);
     //Assign values and run the geometry manager
+    if(border_width) this->border_width = *border_width;
     if(relief) this->relief = *relief;
     if(text && !img) this->text = *text;
     if(text_font) this->text_font = *text_font;
     if(text_color) this->text_color = *text_color;
+    if(text_anchor)this->text_anchor=*text_anchor;
     if(img && !text) this->img = *img;
     if(img_rect) this->img_rect = *img_rect;
     if(img_anchor) this->img_anchor = *img_anchor;
@@ -186,7 +188,7 @@ string Frame::to_string()
     stream << "char** text : " << text << "\n";
     stream << "font_t text_font : " << text_font << "\n";
     stream << "color_t text_color : "
-           << "Red : " << (int)text_color.red << " Green : " << (int)text_color.green << " Blue : " << (int)text_color.blue << " Alpha : " << (int)text_color.alpha << "\n";
+           << "Red : " << int(text_color.red) << " Green : " << int(text_color.green) << " Blue : " << int(text_color.blue) << " Alpha : " << int(text_color.alpha) << "\n";
     stream << "anchor_t text_anchor : " << text_anchor << "\n";
     stream << "surface_t* img : " << img << "\n";
     if (img_rect)

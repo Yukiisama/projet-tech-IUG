@@ -169,7 +169,7 @@ void EventManager::unbind(ei_eventtype_t eventtype,
 }
 /**
      * \brief	Handle the events and add invalid rects into the singleton Application
-     * @param   event the event that we need to handle
+     * @param   event the event that we need to handle : call the callback associated to the event
      *
 **/
 void EventManager::eventHandler(Event *event)

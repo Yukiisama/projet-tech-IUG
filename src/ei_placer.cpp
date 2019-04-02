@@ -149,7 +149,7 @@ void Placer::run (Widget* widget){
     //update container of Toplevel
     if(!widget->getName().compare("Toplevel")){
         Toplevel* top = static_cast<Toplevel*>(widget);
-        Point topsl(temp_x+top->getBorder_width(),temp_y+top->getTop_bar_height());
+        Point topsl(temp_x+top->getBorder_width(),temp_y+int(top->getTop_bar_height()));
         top->setContainer_topleft(topsl);
     }
     // Sizing

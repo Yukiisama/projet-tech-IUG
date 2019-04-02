@@ -41,7 +41,7 @@ Toplevel::Toplevel(Widget *parent) : Widget(TOPLEVEL_NAME, parent){
     resize_button = new Button(this);
     resize_button_window_size = Size(RESIZE_DIM,RESIZE_DIM);
     resize_button->configure(&resize_button_window_size,&color,
-                             NULL,&radius,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
+                             nullptr,&radius,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr);
     p_resize_button= new Placer();
     addTag(TOPLEVEL_NAME);
 
@@ -96,13 +96,13 @@ void Toplevel::draw (surface_t surface,
     //Placer config for button close,positon according to toplevel content rect , then run the placer
     if(closable){
         int button_close_x = BTCLOSE_X;
-        int button_close_y =-top_bar_height+4;
-        p_button_close->configure(button_close,NULL,&button_close_x,&button_close_y,NULL,NULL,NULL,NULL,NULL,NULL);
+        int button_close_y =-int(top_bar_height)+4;
+        p_button_close->configure(button_close,nullptr,&button_close_x,&button_close_y,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr);
         p_button_close->run(button_close);
     }
     //Placer config for button resize, positon according to toplevel , then run the placer
-    int resize_button_x = container.size.width()-resize_button_window_size.width();int resize_button_y = container.size.height()-top_bar_height/2;
-    p_resize_button->configure(resize_button,NULL,&resize_button_x,&resize_button_y,NULL,NULL,NULL,NULL,NULL,NULL);
+    int resize_button_x = int(container.size.width()-resize_button_window_size.width());int resize_button_y = int(container.size.height()-top_bar_height/2);
+    p_resize_button->configure(resize_button,nullptr,&resize_button_x,&resize_button_y,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr);
     p_resize_button->run(resize_button);
 
     //draw outside the basic toplevel
@@ -136,9 +136,10 @@ void Toplevel::drawBasic_toplevel(surface_t surface, surface_t pick_surface, Rec
     }
     linked_point_t list_point;
     //Outside the container
-    float border = (float)border_width;
-    float top_bar = (float)top_bar_height;
-
+    int border = int(border_width);
+    int top_bar = int(top_bar_height);
+    int r_height = int(requested_size.height());
+    int r_width = int(requested_size.width());
     //Assign to the list of point each point we need in order to draw the basic toplevel
     list_point.push_back(Point(screen_location.top_left.x()+border,
                                screen_location.top_left.y()+top_bar));
@@ -147,12 +148,12 @@ void Toplevel::drawBasic_toplevel(surface_t surface, surface_t pick_surface, Rec
                                screen_location.top_left.y()+top_bar));
 
     list_point.push_back(Point(screen_location.top_left.x(),
-                               screen_location.top_left.y()+requested_size.height()));
+                               screen_location.top_left.y()+r_height));
 
-    list_point.push_back(Point(screen_location.top_left.x()+requested_size.width(),
-                               screen_location.top_left.y()+requested_size.height()));
+    list_point.push_back(Point(screen_location.top_left.x()+r_width,
+                               screen_location.top_left.y()+r_height));
 
-    list_point.push_back(Point(screen_location.top_left.x()+requested_size.width(),
+    list_point.push_back(Point(screen_location.top_left.x()+r_width,
                                screen_location.top_left.y()));
 
     list_point.push_back(screen_location.top_left);
@@ -160,13 +161,13 @@ void Toplevel::drawBasic_toplevel(surface_t surface, surface_t pick_surface, Rec
     list_point.push_back(Point(screen_location.top_left.x(),
                                screen_location.top_left.y()+top_bar));
 
-    list_point.push_back(Point(screen_location.top_left.x()+requested_size.width()-border,
+    list_point.push_back(Point(screen_location.top_left.x()+r_width-border,
                                screen_location.top_left.y()+top_bar));
 
-    list_point.push_back(Point(screen_location.top_left.x()+requested_size.width()-border,
-                               screen_location.top_left.y()+requested_size.height()-border));
+    list_point.push_back(Point(screen_location.top_left.x()+r_width-border,
+                               screen_location.top_left.y()+r_height-border));
     list_point.push_back(Point(screen_location.top_left.x()+border,
-                               screen_location.top_left.y()+requested_size.height()-border));
+                               screen_location.top_left.y()+r_height-border));
 
     //Finally draw the top_level with the list of points
     draw_polygon(surface,list_point,color,clipper);
@@ -183,10 +184,10 @@ void Toplevel::drawBasic_toplevel(surface_t surface, surface_t pick_surface, Rec
     //Assign list of points we used in order to draw the toplevel background
     list_point_bgr.push_back(content_rect->top_left);
     list_point_bgr.push_back(Point(content_rect->top_left.x(),
-                                   content_rect->top_left.y()+content_rect->size.height()));
-    list_point_bgr.push_back(Point(content_rect->top_left.x()+content_rect->size.width(),
-                                   content_rect->top_left.y()+content_rect->size.height()));
-    list_point_bgr.push_back(Point(content_rect->top_left.x()+content_rect->size.width(),
+                                   content_rect->top_left.y()+int(content_rect->size.height())));
+    list_point_bgr.push_back(Point(content_rect->top_left.x()+int(content_rect->size.width()),
+                                   content_rect->top_left.y()+int(content_rect->size.height())));
+    list_point_bgr.push_back(Point(content_rect->top_left.x()+int(content_rect->size.width()),
                                    content_rect->top_left.y()));
     draw_polygon(surface,list_point_bgr,color_white,clipper);
     //Draw pick_surface outside the container
@@ -197,8 +198,8 @@ void Toplevel::drawBasic_toplevel(surface_t surface, surface_t pick_surface, Rec
 
 
     //Title of the window
-    Point where = Point(screen_location.top_left.x()+40,screen_location.top_left.y()+top_bar_height*0.05);
-    font_t title_font=hw_text_font_create(default_font_filename, top_bar_height*0.8);
+    Point where = Point(screen_location.top_left.x()+40,screen_location.top_left.y()+int(top_bar_height*0.05));
+    font_t title_font=hw_text_font_create(default_font_filename, int(top_bar_height*0.8));
     draw_text(surface,&where,title,title_font,&color_white);
     hw_text_font_free(title_font);
 
@@ -254,7 +255,7 @@ void Toplevel::configure (Size*           requested_size,
         color_t button_color = {255,0,0,ALPHA_MAX};
         int button_close_radius =BUTTON_RADIUS;
         button_close->configure(&button_size,&button_color,
-                                NULL,&button_close_radius,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
+                                nullptr,&button_close_radius,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr);
         //Assign placer to the new button created
         p_button_close=new Placer();
         closable_done=EI_TRUE;

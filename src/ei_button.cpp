@@ -40,8 +40,6 @@ bool_t button_click_down(Widget* widget, Event* event, void* user_param)
      */
 bool_t button_click_up(Widget* widget, Event* event, void* user_param)
 {
-
-    MouseEvent* e = static_cast<MouseEvent*>(event);
     Button* button = static_cast<Button*>(widget);
     if(button->get_relief()==ei_relief_sunken){
         button->set_relief(ei_relief_raised);
@@ -52,7 +50,7 @@ bool_t button_click_up(Widget* widget, Event* event, void* user_param)
 /**
      * @brief   Constructor of Button widget
      *
-     * @param   parent the father of this widget.
+     * @param   parent of this widget.
      */
 Button::Button(Widget *parent) : Widget(BUTTON_NAME, parent){
     //Initialiaze defaults value
@@ -71,8 +69,8 @@ Button::Button(Widget *parent) : Widget(BUTTON_NAME, parent){
     //Tag for later used if event called with tag Button
     addTag(BUTTON_NAME);
     //Bind relief button function
-    EventManager::getInstance().bind(ei_ev_mouse_buttondown, this, "", button_click_down, NULL);
-    EventManager::getInstance().bind(ei_ev_mouse_buttonup, this, "", button_click_up, NULL);
+    EventManager::getInstance().bind(ei_ev_mouse_buttondown, this, "", button_click_down, nullptr);
+    EventManager::getInstance().bind(ei_ev_mouse_buttonup, this, "", button_click_up, nullptr);
 }
 
 /**

@@ -31,12 +31,12 @@ Widget::Widget(const widgetclass_name_t& class_name, Widget* parent){
         parent->children.push_back(this);
     }else{
         name=ROOT_NAME;
-        parent = NULL;
+        parent = nullptr;
     }
     //Increase by 1 to assure the uniqueness of the generated Ids
     pick_id=s_idGenerator++;
     pick_color=convert_id_color(this->pick_id);
-    geom_manager = NULL;
+    geom_manager = nullptr;
 
     //Set a default size
     requested_size.width()=DEFAULT_DIM;
@@ -84,38 +84,40 @@ void Widget::updateContent_rect(){
  * @return the position according to anchor
  */
 Point Widget::anchor_to_pos(Rect rect, anchor_t anchor) const{
-    int x, y;
+    int x = 0, y =0;
+    int r_height = int(requested_size.height());
+    int r_width = int(requested_size.width());
     if(anchor == ei_anc_center){
-        x = rect.top_left.x()+requested_size.width()/2;
-        y = rect.top_left.y()+requested_size.height()/2;
+        x = rect.top_left.x()+r_width/2;
+        y = rect.top_left.y()+r_height/2;
     }
     if(anchor == ei_anc_north){
-        x = rect.top_left.x()+requested_size.width()/2;
+        x = rect.top_left.x()+r_width/2;
         y = rect.top_left.y();
     }
     if(anchor == ei_anc_northeast){
-        x = rect.top_left.x()+requested_size.width();
+        x = rect.top_left.x()+r_width;
         y = rect.top_left.y();
     }
     if(anchor == ei_anc_east){
-        x = rect.top_left.x()+requested_size.width();
-        y = rect.top_left.y()+requested_size.height()/2;
+        x = rect.top_left.x()+r_width;
+        y = rect.top_left.y()+r_height/2;
     }
     if(anchor == ei_anc_southeast){
-        x = rect.top_left.x()+requested_size.width();
-        y = rect.top_left.y()+requested_size.height();
+        x = rect.top_left.x()+r_width;
+        y = rect.top_left.y()+r_height;
     }
     if(anchor == ei_anc_south){
-        x = rect.top_left.x()+requested_size.width()/2;
-        y = rect.top_left.y()+requested_size.height();
+        x = rect.top_left.x()+r_width/2;
+        y = rect.top_left.y()+r_height;
     }
     if(anchor == ei_anc_southwest){
         x = rect.top_left.x();
-        y = rect.top_left.y()+requested_size.height();
+        y = rect.top_left.y()+r_height;
     }
     if(anchor == ei_anc_west){
         x = rect.top_left.x();
-        y = rect.top_left.y()+requested_size.height()/2;
+        y = rect.top_left.y()+r_height/2;
     }
     if(anchor == ei_anc_northwest){
         x = rect.top_left.x();
@@ -132,38 +134,40 @@ Point Widget::anchor_to_pos(Rect rect, anchor_t anchor) const{
  * @return the position according to the text_anchor
  */
 Point Widget::text_anchor_to_pos(Rect rect, anchor_t anchor,Size text_size,int border_width) const{
-    int x, y;
+    int x = 0, y =0;
+    int r_height = int(requested_size.height());
+    int r_width = int(requested_size.width());
     if(anchor == ei_anc_center){
-        x = rect.top_left.x()+(requested_size.width()-text_size.width())/2;
-        y = rect.top_left.y()+(requested_size.height()-text_size.height())/2;
+        x = int(rect.top_left.x()+(r_width-text_size.width())/2);
+        y = int(rect.top_left.y()+(r_height-text_size.height())/2);
     }
     if(anchor == ei_anc_north){
-        x = rect.top_left.x()+(requested_size.width()-text_size.width())/2;
-        y = rect.top_left.y()+border_width;
+        x = int(rect.top_left.x()+(r_width-text_size.width())/2);
+        y = int(rect.top_left.y()+border_width);
     }
     if(anchor == ei_anc_northeast){
-        x = rect.top_left.x()+(requested_size.width()-border_width-text_size.width());
-        y = rect.top_left.y()+border_width;
+        x = int(rect.top_left.x()+(r_width-border_width-text_size.width()));
+        y = int(rect.top_left.y()+border_width);
     }
     if(anchor == ei_anc_east){
-        x = rect.top_left.x()+(requested_size.width()-border_width-text_size.width());
-        y = rect.top_left.y()+(requested_size.height()-text_size.height())/2;
+        x = int(rect.top_left.x()+(r_width-border_width-text_size.width()));
+        y = int(rect.top_left.y()+(r_height-text_size.height())/2);
     }
     if(anchor == ei_anc_southeast){
-        x = rect.top_left.x()+(requested_size.width()-border_width-text_size.width());
-        y = rect.top_left.y()+(requested_size.height()-border_width-text_size.height());
+        x = int(rect.top_left.x()+(r_width-border_width-text_size.width()));
+        y = int(rect.top_left.y()+(r_height-border_width-text_size.height()));
     }
     if(anchor == ei_anc_south){
-        x = rect.top_left.x()+(requested_size.width()-text_size.width())/2;
-        y = rect.top_left.y()+(requested_size.height()-border_width-text_size.height());
+        x = int(rect.top_left.x()+(r_width-text_size.width())/2);
+        y = int(rect.top_left.y()+(r_height-border_width-text_size.height()));
     }
     if(anchor == ei_anc_southwest){
-        x = rect.top_left.x()+border_width;
-        y = rect.top_left.y()+(requested_size.height()-border_width-text_size.height());
+        x = int(rect.top_left.x()+border_width);
+        y = int(rect.top_left.y()+(r_height-border_width-text_size.height()));
     }
     if(anchor == ei_anc_west){
-        x = rect.top_left.x()+border_width;
-        y = rect.top_left.y()+(requested_size.height()-text_size.height())/2;
+        x = int(rect.top_left.x()+border_width);
+        y = int(rect.top_left.y()+(r_height-text_size.height())/2);
     }
     if(anchor == ei_anc_northwest){
         x = rect.top_left.x()+border_width;
@@ -173,7 +177,7 @@ Point Widget::text_anchor_to_pos(Rect rect, anchor_t anchor,Size text_size,int b
 }
 /**
  * @brief Widget::convert_id_color : Convert the id of the widget into the corresponding color
- * @param id
+ * @param id to convert to the color
  * @return the color corresponding to the id
  */
 color_t Widget::convert_id_color(uint32_t id){
@@ -224,7 +228,7 @@ void Widget::geomnotify (Rect rect){
  */
 Widget* Widget::pick(uint32_t id){
     //Nullptr is returned if id is not belong to the existing widget id.
-    if(id <0 || id>this->s_idGenerator) return nullptr;
+    if(id>this->s_idGenerator) return nullptr;
 
     //Case where id is equals to current widget's id.
     //Return current widget;
