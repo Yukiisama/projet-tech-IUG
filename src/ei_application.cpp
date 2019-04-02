@@ -30,7 +30,7 @@ Application::Application(Size* main_window_size){
     //create root and offscreen surface , and the root widget being a frame
     this->root_window = hw_create_window(main_window_size, EI_FALSE);
     this->offscreen = hw_surface_create(this->root_window, main_window_size);
-    this->widget_root = new Frame(NULL);
+    this->widget_root = new Frame(nullptr);
     //singleton application
     this->instance = this;
 }
@@ -54,6 +54,7 @@ Application::~Application(){
      */
 bool_t toplevel_click_up(Widget* widget, Event* event, void* user_param)
 {
+
     MouseEvent* e = static_cast<MouseEvent*>(event);
     Toplevel* top = static_cast<Toplevel*>(widget);
     //Clicked up , update if moving , resizing or closing
@@ -117,7 +118,7 @@ bool_t toplevel_click_down(Widget* widget, Event* event, void* user_param)
      * @param widget must be Toplevel
      * @param event the mouse event
      * @param user_param A user parameter that will be passed to the callback when it is called.
-     * @return
+     * @return EI_TRUE if an action is done as moving or resizing else EI_FALSE
      */
 bool_t default_toplevel(Widget* widget, Event* event, void* user_param)
 {
@@ -130,8 +131,8 @@ bool_t default_toplevel(Widget* widget, Event* event, void* user_param)
             double move_x = (e->where.x())-(top->getMouse_pos().x());
             double move_y = (e->where.y())-(top->getMouse_pos().y());
             //Update geom_manager x & y to update the position of toplevel
-            top->getGeom_manager()->setX(top->getScreen_location().top_left.x()+move_x);
-            top->getGeom_manager()->setY(top->getScreen_location().top_left.y()+move_y);
+            top->getGeom_manager()->setX(int(top->getScreen_location().top_left.x()+move_x));
+            top->getGeom_manager()->setY(int(top->getScreen_location().top_left.y()+move_y));
             //finally run the geom_manager that will result in updating the position
             top->getGeom_manager()->run(top);
             top->setMouse_pos(e->where);
@@ -141,8 +142,8 @@ bool_t default_toplevel(Widget* widget, Event* event, void* user_param)
     //The case when the user is clicking on the resize button and moving the mouse
     if(top->resizing()){
         if(Application::getInstance()->inside_root(e->where)){
-            double new_width = (e->where.x())-(top->getScreen_location().top_left.x());
-            double new_height = (e->where.y())-(top->getScreen_location().top_left.y());
+            float new_width = (e->where.x())-(top->getScreen_location().top_left.x());
+            float new_height = (e->where.y())-(top->getScreen_location().top_left.y());
             //Limit the top level to a minimal size
             if(new_width < top->getMin_size().width()){
                 new_width = top->getMin_size().width();
@@ -152,7 +153,7 @@ bool_t default_toplevel(Widget* widget, Event* event, void* user_param)
             }
             //finally update the new size of the top level
             Size *new_size = new Size(new_width,new_height);
-            top->configure(new_size,NULL,NULL,NULL,NULL,NULL,NULL);
+            top->configure(new_size,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr);
             delete(new_size);
             return EI_TRUE;
 
@@ -168,9 +169,9 @@ bool_t default_toplevel(Widget* widget, Event* event, void* user_param)
      */
 void Application::run(){
     //Binding the default comportments of TopLevel class of widget
-    EventManager::getInstance().bind(ei_ev_mouse_buttonup, NULL, "Toplevel", toplevel_click_up, NULL);
-    EventManager::getInstance().bind(ei_ev_mouse_buttondown, NULL, "Toplevel", toplevel_click_down, NULL);
-    EventManager::getInstance().bind(ei_ev_mouse_move, NULL, "Toplevel", default_toplevel, NULL);
+    EventManager::getInstance().bind(ei_ev_mouse_buttonup, nullptr, "Toplevel", toplevel_click_up, nullptr);
+    EventManager::getInstance().bind(ei_ev_mouse_buttondown, nullptr, "Toplevel", toplevel_click_down, nullptr);
+    EventManager::getInstance().bind(ei_ev_mouse_move, nullptr, "Toplevel", default_toplevel, nullptr);
     running = true;
     //used to limit fps of the application
     double current_time ;
