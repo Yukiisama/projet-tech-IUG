@@ -3,6 +3,7 @@
 #include <iostream>
 #include "ei_types.h"
 #include "ei_widget.h"
+#include "ei_application.h"
 using namespace std;
 namespace ei {
 
@@ -182,16 +183,39 @@ void Placer::run (Widget* widget){
 
     return;
 }
-//[TODO] fonction fausse.
+/**
+ * \brief Tells the geometry manager in charge of a widget to forget it. This removes the
+ *    widget from the screen. If the widget is not currently managed, this function
+ *    returns silently.
+ *    Side effects:
+ *    <ul>
+ *      <li> the current screen_location of the widget is invalided (which will trigger a redraw), </li>
+ *      <li> the screen_location of the widget is reset to 0. </li>
+ *    </ul>
+ *
+ * @param widget    The widget instance that must be forgotten by the geometry manager.
+ */
 void Placer::release (Widget* widget){
-    if (getWidget() != widget) {
-        return;
-    }
-    else {
+
+
+        Application::getInstance()->invalidate_rect(*widget->getContent_rect());
+        Rect r = Rect(Point(0,0),Size(0,0));
+        // Setting new positioning and sizing rectangle to the widget
         setWidget(nullptr);
-        setX(0);
-        setY(0);
-    }
+        widget->setGeom_manager(nullptr);
+        widget->setScreen_location(r);
+        //widget->setContent_rect(&r);
+        // Calling run for the widget's children
+        if (!widget->getChildren().empty())
+        {
+            list<Widget *> w_child = widget->getChildren();
+            for (list<Widget *>::iterator it = w_child.begin();it!=w_child.end();it++){
+                if ((*it)->getGeom_manager()) (*it)->getGeom_manager()->release(*it);
+            }
+
+        }
+
+
 }
 
 }

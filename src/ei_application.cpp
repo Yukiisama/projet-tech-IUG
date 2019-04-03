@@ -65,7 +65,10 @@ bool_t toplevel_click_up(Widget* widget, Event* event, void* user_param)
             top->set_resize_button_pressed(EI_FALSE);
         if(top->closing()){
             if(Application::getInstance()->widget_pick(e->where)->getPick_id()==top->getButton_close()->getPick_id()){
+                top->getGeom_manager()->release(top);
                 delete top;
+                cout<<"deleting top"<<endl;
+                return EI_TRUE;
             }
 
             top->set_button_close_pressed(EI_FALSE);
