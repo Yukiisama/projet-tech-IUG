@@ -76,7 +76,7 @@ void Placer::configure (Widget*    widget,
                         float*     rel_height)
 {
     //Placer already configure
-    if (!widget) return;
+    if (!widget)  return;
     //Let the widget and the placer know each other
     setWidget(widget);
     widget->setGeom_manager(this);
@@ -98,7 +98,7 @@ void Placer::configure (Widget*    widget,
  * @param widget the widget we want to place
  */
 void Placer::run (Widget* widget){
-    if (!widget ) return;
+    if (!widget || !this->getWidget() ) return;
 
     // Creating the new rectangle and setting the right values into it
     Rect new_rect = Rect();
@@ -199,9 +199,10 @@ void Placer::release (Widget* widget){
 
 
         Application::getInstance()->invalidate_rect(*widget->getContent_rect());
-        Rect r = Rect(Point(0,0),Size(0,0));
+        Rect r = Rect(Point(-1,-1),Size(-1,-1));
         // Setting new positioning and sizing rectangle to the widget
-        setWidget(nullptr);
+        this->setWidget(nullptr);
+        //delete widget->getGeom_manager();
         widget->setGeom_manager(nullptr);
         widget->setScreen_location(r);
         //widget->setContent_rect(&r);
