@@ -3,8 +3,14 @@
 
 #include "ei_application.h"
 #include "ei_eventmanager.h"
+#include <iostream>
+#include <stdlib.h>
+
 #include "hw_interface.h"
+#include "ei_main.h"
 #include "ei_widget.h"
+#include "ei_application.h"
+#include "ei_eventmanager.h"
 #include "ei_geometrymanager.h"
 using namespace ei;
 
@@ -57,7 +63,44 @@ TEST_CASE("fill_window", "[unit]")
         uint32_t id = w.conver_color_id(c);
         REQUIRE(id == 7631988);
     }
+}
+TEST_CASE("widget class","[unit]"){
+    surface_t main_window = NULL;
+    Size main_window_size(640,480), query_size;
+    color_t red = {0xff, 0x00, 0x00, 0xff}, query_color;
 
+    Point origin;
+    main_window = hw_create_window(&main_window_size, EI_FALSE);
+    SECTION ("Constructor"){
+        /* Create the application and change the color of the background. */
+        bool state = true;
+        Application* app = new Application(&main_window_size);
+        app->root_widget()->configure(&main_window_size, &red, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+
+        Widget * widget = new Widget("test_widget",app->root_widget());
+
+        REQUIRE(widget->getName() == "test_widget");
+        REQUIRE(widget->getParent()==app->root_widget());
+        REQUIRE(app->root_widget()->getChildren().front()==widget);
+        REQUIRE(widget->getPick_id()==1);
+        REQUIRE(widget->getPick_color().blue==widget->convert_id_color(widget->getPick_id()).blue);
+        REQUIRE(widget->getPick_color().red==widget->convert_id_color(widget->getPick_id()).red);
+        REQUIRE(widget->getPick_color().green==widget->convert_id_color(widget->getPick_id()).red);
+        REQUIRE(widget->getPick_color().alpha==widget->convert_id_color(widget->getPick_id()).alpha);
+        REQUIRE(!widget->getGeom_manager());
+        REQUIRE(widget->getRequested_size().width()==100);
+        REQUIRE(widget->getRequested_size().height()==100);
+        REQUIRE(widget->getScreen_location().top_left.x()==0);
+        REQUIRE(widget->getScreen_location().top_left.y()==0);
+        REQUIRE(widget->getScreen_location().size.width()==100);
+        REQUIRE(widget->getScreen_location().size.height()==100);
+        REQUIRE(widget->getColor().red==0xA0);
+        REQUIRE(widget->getColor().green==0xA0);
+        REQUIRE(widget->getColor().blue==0xA0);
+        REQUIRE(widget->getColor().alpha==0xff);
+        REQUIRE(widget->getBorder_width() == 0);
+
+    }
 }
 
 TEST_CASE("Placer class", "[unit]"){
