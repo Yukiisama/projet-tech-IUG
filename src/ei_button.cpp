@@ -40,11 +40,11 @@ bool_t button_click_down(Widget* widget, Event* event, void* user_param)
      */
 bool_t button_click_up(Widget* widget, Event* event, void* user_param)
 {
-    Button* button = static_cast<Button*>(widget);
-    if(button->get_relief()==ei_relief_sunken){
-        button->set_relief(ei_relief_raised);
-        //return EI_TRUE;
-    }
+//    Button* button = static_cast<Button*>(widget);
+//    if(button->get_relief()==ei_relief_sunken){
+//        button->set_relief(ei_relief_raised);
+//        //return EI_TRUE;
+//    }
     return EI_FALSE;
 }
 /**
@@ -69,7 +69,6 @@ Button::Button(Widget *parent) : Widget(BUTTON_NAME, parent){
     //Tag for later used if event called with tag Button
     addTag(BUTTON_NAME);
     //Bind relief button function
-    cout<<getPick_id()<<endl;
     EventManager::getInstance().bind(ei_ev_mouse_buttondown, this, "", button_click_down, NULL);
     EventManager::getInstance().bind(ei_ev_mouse_buttonup, this, "", button_click_up, NULL);
 }
@@ -153,9 +152,13 @@ void Button::draw(surface_t surface,
     }
 
     //Recursive method that draw all children of current button.
-    for(std::list<Widget*>::iterator it = children.begin();it!= children.end();it++)
+    for(std::list<Widget*>::iterator it = children.begin();it!= children.end();it++){
+
+
         //Children should be display inside the content_rect of his parent.
+        std::cout<<(*it)->getPick_id()<<std::endl;
         (*it)->draw(surface,pick_surface,content_rect);
+    }
 
 }
 

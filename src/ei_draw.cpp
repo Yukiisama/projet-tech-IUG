@@ -72,9 +72,12 @@ void draw_line(surface_t surface, const Point& start,
                   const Rect* clipper)
 {
     al_set_target_bitmap((ALLEGRO_BITMAP*) surface);
+    int cx, cy, cw, ch;
+    al_get_clipping_rectangle(&cx, &cy, &cw, &ch);
     if(clipper)
         al_set_clipping_rectangle(clipper->top_left.x(), clipper->top_left.y(), clipper->size.width(), clipper->size.height());
     al_draw_line(start.x(), start.y(), end.x(), end.y(), al_map_rgba(color.red, color.green, color.blue, color.alpha), 1);
+    al_set_clipping_rectangle(cx, cy, cw, ch);
 }
 
 void draw_polyline(surface_t surface,

@@ -68,12 +68,12 @@ namespace ei {
         widgetclass_name_t getName(); //used to test in eventmanager
         uint32_t getPick_id() const;
         color_t getPick_color()const;
-        Widget *getParent() const;
-        std::list<Widget*> getChildren();
+        Widget *getParent() ;
+        std::list<Widget*>& getChildren();
         GeometryManager *getGeom_manager() const;
         Size getRequested_size();     //used to initialiser default value of requested width and height in geomanager
         Rect getScreen_location();
-        Rect* getContent_rect();       //used to add to invalidate_rec in Application to update
+        Rect *getContent_rect() const;       //used to add to invalidate_rec in Application to update
         linked_tag_t getTag_list()const;
         color_t getColor()const;
         int getBorder_width()const;
@@ -107,7 +107,8 @@ namespace ei {
         void configure(Size *requested_size, const color_t *color);
         virtual string to_string();
 
-      protected:
+
+    protected:
         widgetclass_name_t name; ///< The string name of this class of widget.
 
         static uint32_t s_idGenerator; ///< Static counter to assure the uniqueness of the generated Ids
@@ -123,7 +124,7 @@ namespace ei {
                                        ///  If NULL, the widget is not currently managed and thus, is not mapped on the screen.
         Size  requested_size;  ///< Size requested by the widget (big enough for its label, for example), or by the programmer. This can be different than its screen size defined by the placer.
         Rect  screen_location; ///< Position and size of the widget expressed in the root window reference.
-        Rect* content_rect;    ///< Where to place children, when this widget is used as a container. By defaults, points to the screen_location.
+        Rect *content_rect;    ///< Where to place children, when this widget is used as a container. By defaults, points to the screen_location.
         linked_tag_t tag_list;  ///<list of tags that belongs to this widget
         // common variables for sub class
         color_t color;

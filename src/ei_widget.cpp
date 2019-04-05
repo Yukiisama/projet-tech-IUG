@@ -210,13 +210,14 @@ void Widget::addTag(string newTag){
 
 void Widget::removeChildren(Widget *widget)
 {
-   for(std::list<Widget*>::iterator it = children.begin(); it!=children.end();){
-       if((*it)->getPick_id()== widget->getPick_id()){
-           it=children.erase(it);
-       }else{
-           ++it;
-       }
-   }
+   std::list<Widget*> &c_list =widget->getParent()->getChildren();
+//   for(std::list<Widget*>::iterator it = c_list.begin(); it!=c_list.end();){
+//       if((*it)->getPick_id()== widget->getPick_id()){
+//           it=c_list.erase(it);
+//       }else{
+//           ++it;
+//       }
+//   }
 }
 
 /**
@@ -293,7 +294,9 @@ string Widget::to_string()
     stream << "color_t color : "
            << "Red : " << (int)color.red << " Green : " << (int)color.green << " Blue : " << (int)color.blue << " Alpha : " << (int)color.alpha << "\n";
     stream << "int border_width : " << border_width << "\n";
-    return stream.str();
+
+
+   return stream.str();
 }
 
 //Getter & Setter
@@ -317,11 +320,11 @@ uint32_t Widget::getPick_id() const{
 color_t Widget::getPick_color()const{
     return pick_color;
 }
-Widget* Widget::getParent() const{
+Widget* Widget::getParent() {
     return parent;
 }
 
-std::list<Widget*> Widget::getChildren(){
+std::list<Widget*> & Widget::getChildren(){
     return children;
 }
 
@@ -337,9 +340,11 @@ Rect Widget::getScreen_location(){
     return screen_location;
 }
 
-Rect* Widget::getContent_rect(){
+Rect *Widget::getContent_rect() const
+{
     return content_rect;
 }
+
 linked_tag_t Widget::getTag_list()const{
     return tag_list;
 }

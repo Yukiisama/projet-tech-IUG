@@ -20,6 +20,91 @@
 #define TOPLEVEL_NAME "Toplevel"
 using namespace std;
 namespace ei {
+
+/**
+ * @brief resize_button_callback callback called when a user clicks on the resize button.
+ * @param widget
+ * @param event
+ * @param user_param
+ * @return
+ */
+bool_t resize_button_callback(Widget* widget, Event* event, void* user_param){
+    Toplevel* top = static_cast<Toplevel*>(user_param);
+    if(event->type==ei_ev_mouse_buttonup){
+        if(top->resizing()) {
+            top->set_resize_button_pressed(EI_FALSE);
+            return EI_TRUE;
+        }
+    }else if(event->type==ei_ev_mouse_buttondown){
+        top->set_resize_button_pressed(EI_TRUE);
+        return EI_TRUE;
+    }else if(event->type==ei_ev_mouse_move){
+        if(top->resizing()){
+            MouseEvent* e = static_cast<MouseEvent*>(event);
+            if(Application::getInstance()->inside_root(e->where)){
+                int new_width = (e->where.x())-(top->getScreen_location().top_left.x());
+                int new_height = (e->where.y())-(top->getScreen_location().top_left.y());
+                //Limit the top level to a minimal size
+                if(new_width < top->getMin_size().width())new_width = top->getMin_size().width();
+                if(new_height < top->getMin_size().height())new_height = top->getMin_size().height();
+                //finally update the new size of the top level
+                Size *new_size = new Size(new_width,new_height);
+                top->configure(new_size,NULL,NULL,NULL,NULL,NULL,NULL);
+                delete(new_size);
+                return EI_TRUE;
+            }
+        }
+    }
+    return EI_FALSE;
+}
+
+bool_t button_close_callback(Widget* widget, Event* event, void* user_param){
+    Toplevel* top = static_cast<Toplevel*>(user_param);
+    MouseEvent* e = static_cast<MouseEvent*>(event);
+    if(top->closing()){
+        if(event->type==ei_ev_mouse_buttonup &&
+                Application::getInstance()->widget_pick(e->where)->getPick_id()==top->getButton_close()->getPick_id()){
+            top->getGeom_manager()->release(top);
+            delete top;
+            return EI_TRUE;
+        }
+        top->set_button_close_pressed(EI_FALSE);//optimization
+    }else if(event->type==ei_ev_mouse_buttondown &&
+             Application::getInstance()->widget_pick(e->where)->getPick_id()==top->getButton_close()->getPick_id()){
+        top->set_button_close_pressed(EI_TRUE);
+        return EI_TRUE;
+    }
+    return EI_FALSE;
+}
+
+bool_t topbar_move_callback(Widget* widget, Event* event, void* user_param){
+    Toplevel* top = static_cast<Toplevel*>(user_param);
+    MouseEvent* e = static_cast<MouseEvent*>(event);
+    if(top->moving()&& event->type==ei_ev_mouse_buttonup){
+        top->set_top_bar_clicked(EI_FALSE);
+        return EI_FALSE;
+    }else if(event->type==ei_ev_mouse_buttondown &&
+             Application::getInstance()->widget_pick(e->where)->getPick_id()==top->getPick_id()){
+        if(top->inside_top_bar(e->where)){
+            //Tells the toplevel that its top_bar is clicked
+            top->set_top_bar_clicked(EI_TRUE);
+            top->setMouse_pos(e->where);
+            return EI_FALSE;
+        }
+    }else if(top->moving() && event->type==ei_ev_mouse_move && Application::getInstance()->inside_root(e->where)){
+        double move_x = (e->where.x())-(top->getMouse_pos().x());
+        double move_y = (e->where.y())-(top->getMouse_pos().y());
+        //Update geom_manager x & y to update the position of toplevel
+        top->getGeom_manager()->setX(int(top->getScreen_location().top_left.x()+move_x));
+        top->getGeom_manager()->setY(int(top->getScreen_location().top_left.y()+move_y));
+        //finally run the geom_manager that will result in updating the position
+        top->getGeom_manager()->run(top);
+        top->setMouse_pos(e->where);
+        return EI_TRUE;
+    }
+    return EI_FALSE;
+}
+
 /**
  * @brief Toplevel Constructor
  * @param parent of the toplevel widget
@@ -43,13 +128,20 @@ Toplevel::Toplevel(Widget *parent) : Widget(TOPLEVEL_NAME, parent){
     resize_button = new Button(this);
     resize_button_window_size = Size(RESIZE_DIM,RESIZE_DIM);
     resize_button->configure(&resize_button_window_size,&color,
-                             nullptr,&radius,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr);
+                             NULL,&radius,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
     p_resize_button= new Placer();
     addTag(TOPLEVEL_NAME);
 
     //update Toplevel's own content rect which is now depending on container
     setContent_rect(&container);
-
+    //bind resize button
+    EventManager::getInstance().bind(ei_ev_mouse_buttonup, resize_button, "",resize_button_callback , this);
+    EventManager::getInstance().bind(ei_ev_mouse_buttondown, resize_button, "",resize_button_callback , this);
+    EventManager::getInstance().bind(ei_ev_mouse_move, resize_button, "",resize_button_callback , this);
+    //bind topbar mov
+    EventManager::getInstance().bind(ei_ev_mouse_buttonup, NULL, TOPLEVEL_NAME,topbar_move_callback , this);
+    EventManager::getInstance().bind(ei_ev_mouse_buttondown, NULL, TOPLEVEL_NAME,topbar_move_callback , this);
+    EventManager::getInstance().bind(ei_ev_mouse_move, NULL, TOPLEVEL_NAME,topbar_move_callback , this);
 }
 
 Toplevel::~Toplevel(){
@@ -76,9 +168,7 @@ Toplevel::~Toplevel(){
 //                          Application::getInstance()->get_offscreen(),getParent()->getContent_rect());
         Application::getInstance()->invalidate_rect(*getParent()->getContent_rect());
     }
-    //EventManager::getInstance().totalCallback();
     EventManager::getInstance().deleteWidget(this);
-    //EventManager::getInstance().totalCallback();
 }
 
 
@@ -271,7 +361,7 @@ void Toplevel::configure (Size*           requested_size,
     if(min_size)  this->min_size = *min_size;
 
     //Button close (closable done == true if it has already be done)
-    if(this->closable && !closable_done) {
+    if(this->closable && closable_done==EI_FALSE) {
         button_close = new Button(this);
         color_t button_color = {255,0,0,ALPHA_MAX};
         int button_close_radius =BUTTON_RADIUS;
@@ -280,6 +370,9 @@ void Toplevel::configure (Size*           requested_size,
         //Assign placer to the new button created
         p_button_close=new Placer();
         closable_done=EI_TRUE;
+        //bind button close
+        EventManager::getInstance().bind(ei_ev_mouse_buttonup, button_close, "",button_close_callback , this);
+        EventManager::getInstance().bind(ei_ev_mouse_buttondown, button_close, "",button_close_callback , this);
     }
     //Finally run the geometry manager in order to place the toplevel and the buttons
     if(geom_manager)geom_manager->run(this);

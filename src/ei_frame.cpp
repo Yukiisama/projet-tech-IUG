@@ -34,9 +34,9 @@ Frame::Frame(Widget *parent):Widget(FRAME_NAME,parent){
 **/
 Frame::~Frame(){
     EventManager::getInstance().deleteWidget(this);
-    if(getParent()){
-        getParent()->removeChildren(this);
+    if(this->getParent()){
         Application::getInstance()->invalidate_rect(*getParent()->getContent_rect());
+        getParent()->removeChildren(this);
     }
     hw_text_font_free(text_font);
 }
