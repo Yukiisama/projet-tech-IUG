@@ -42,7 +42,7 @@ public:
     // Declaring umap to be of <ei_eventtype_t,std::vector<param_callback> type
     // key will be of ei_eventtype_t type and mapped value will
     // be of std::vector<param_callback type
-    std::unordered_map<ei_eventtype_t,std::vector<param_callback>> hashMap;
+    std::unordered_map<ei_eventtype_t,std::vector<param_callback>, std::hash<int>> hashMap;
    
 
 public:
