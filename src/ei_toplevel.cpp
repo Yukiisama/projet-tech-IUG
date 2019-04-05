@@ -3,6 +3,8 @@
 #include "ei_types.h"
 #include "ei_event.h"
 #include "ei_geometrymanager.h"
+#include "ei_eventmanager.h"
+#include "ei_application.h"
 #include "hw_interface.h"
 #include <functional>
 #include <iostream>
@@ -51,13 +53,32 @@ Toplevel::Toplevel(Widget *parent) : Widget(TOPLEVEL_NAME, parent){
 }
 
 Toplevel::~Toplevel(){
+    std::list<Widget*>c_list =children;
+    for(std::list<Widget*>::iterator it = c_list.begin();it!= c_list.end();it++){
+        //delete button close only if it exist
+        if((*it)->getPick_id()==button_close->getPick_id()){
+            if(closable){
+                delete (*it);
+            }
+        }
+        else//delete children
+            delete (*it);
+    }
+    //delete toplevel basic placer
     delete p_button_close;
     delete p_resize_button;
-    if(closable)delete button_close;
-    delete resize_button;
-    //TODO delete children from parent's children list.
-    //TODO clean in eventmanager hashmap the param_callback that contains this widget.
 
+    //TODO update pick surface with parant's pick color
+    //remove from parent's child list
+    if(getParent()){
+        getParent()->removeChildren(this);
+//        getParent()->draw(Application::getInstance()->get_root_window(),
+//                          Application::getInstance()->get_offscreen(),getParent()->getContent_rect());
+        Application::getInstance()->invalidate_rect(*getParent()->getContent_rect());
+    }
+    //EventManager::getInstance().totalCallback();
+    EventManager::getInstance().deleteWidget(this);
+    //EventManager::getInstance().totalCallback();
 }
 
 

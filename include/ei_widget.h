@@ -93,6 +93,7 @@ namespace ei {
         color_t convert_id_color(uint32_t id);
         uint32_t conver_color_id(color_t color);
         void addTag(string newTag);
+        void removeChildren(Widget * widget);
         /**
          * \brief   Method that is called to notify the widget that its geometry has been modified
          *      by its geometry manager.

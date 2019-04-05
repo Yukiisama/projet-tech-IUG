@@ -69,15 +69,20 @@ Button::Button(Widget *parent) : Widget(BUTTON_NAME, parent){
     //Tag for later used if event called with tag Button
     addTag(BUTTON_NAME);
     //Bind relief button function
-    EventManager::getInstance().bind(ei_ev_mouse_buttondown, this, "", button_click_down, nullptr);
-    EventManager::getInstance().bind(ei_ev_mouse_buttonup, this, "", button_click_up, nullptr);
+    cout<<getPick_id()<<endl;
+    EventManager::getInstance().bind(ei_ev_mouse_buttondown, this, "", button_click_down, NULL);
+    EventManager::getInstance().bind(ei_ev_mouse_buttonup, this, "", button_click_up, NULL);
 }
 
 /**
     * @brief   Destructor of Button widget
  */
 Button::~Button()
-{
+{   EventManager::getInstance().deleteWidget(this);
+    if(getParent()){
+        getParent()->removeChildren(this);
+        Application::getInstance()->invalidate_rect(*getParent()->getContent_rect());
+    }
     hw_text_font_free(text_font);
 }
 

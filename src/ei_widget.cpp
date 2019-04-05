@@ -208,6 +208,17 @@ void Widget::addTag(string newTag){
     tag_list.push_back(newTag);
 }
 
+void Widget::removeChildren(Widget *widget)
+{
+   for(std::list<Widget*>::iterator it = children.begin(); it!=children.end();){
+       if((*it)->getPick_id()== widget->getPick_id()){
+           it=children.erase(it);
+       }else{
+           ++it;
+       }
+   }
+}
+
 /**
      * \brief   Method that is called to notify the widget that its geometry has been modified
      *      by its geometry manager.

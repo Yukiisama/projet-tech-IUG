@@ -2,6 +2,8 @@
 #include "ei_event.h"
 #include "ei_widget.h"
 #include "ei_geometrymanager.h"
+#include "ei_eventmanager.h"
+#include "ei_application.h"
 #include "hw_interface.h"
 #include <iostream>
 #define ALPHA_MAX 255
@@ -31,6 +33,11 @@ Frame::Frame(Widget *parent):Widget(FRAME_NAME,parent){
      * \brief   Frame deconstructor.
 **/
 Frame::~Frame(){
+    EventManager::getInstance().deleteWidget(this);
+    if(getParent()){
+        getParent()->removeChildren(this);
+        Application::getInstance()->invalidate_rect(*getParent()->getContent_rect());
+    }
     hw_text_font_free(text_font);
 }
 /**
@@ -104,7 +111,8 @@ void Frame::draw(surface_t surface,
     }
     //recursive method that draw all the children.
     if(!children.empty()){
-        for (std::list<Widget *>::iterator it = children.begin(); it != children.end(); it++)
+        std::list<Widget *>c_list =children;
+        for (std::list<Widget *>::iterator it = c_list.begin(); it != c_list.end(); it++)
             //Children should be display inside the content_rect of his parent.
             (*it)->draw(surface, pick_surface, content_rect);
     }

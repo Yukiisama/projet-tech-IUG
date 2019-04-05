@@ -54,7 +54,7 @@ Application::~Application(){
      */
 bool_t toplevel_click_up(Widget* widget, Event* event, void* user_param)
 {
-
+    cout<<"top click up called"<<endl;
     MouseEvent* e = static_cast<MouseEvent*>(event);
     Toplevel* top = static_cast<Toplevel*>(widget);
     //Clicked up , update if moving , resizing or closing
@@ -87,6 +87,7 @@ bool_t toplevel_click_up(Widget* widget, Event* event, void* user_param)
      */
 bool_t toplevel_click_down(Widget* widget, Event* event, void* user_param)
 {
+    cout<<"top click down called"<<endl;
     MouseEvent* e = static_cast<MouseEvent*>(event);
     Toplevel* top = static_cast<Toplevel*>(widget);
 
@@ -125,6 +126,7 @@ bool_t toplevel_click_down(Widget* widget, Event* event, void* user_param)
      */
 bool_t default_toplevel(Widget* widget, Event* event, void* user_param)
 {
+    cout<<"top defaut called"<<endl;
     MouseEvent* e = static_cast<MouseEvent*>(event);
     Toplevel* top = static_cast<Toplevel*>(widget);
 
@@ -172,9 +174,9 @@ bool_t default_toplevel(Widget* widget, Event* event, void* user_param)
      */
 void Application::run(){
     //Binding the default comportments of TopLevel class of widget
-    EventManager::getInstance().bind(ei_ev_mouse_buttonup, nullptr, "Toplevel", toplevel_click_up, nullptr);
-    EventManager::getInstance().bind(ei_ev_mouse_buttondown, nullptr, "Toplevel", toplevel_click_down, nullptr);
-    EventManager::getInstance().bind(ei_ev_mouse_move, nullptr, "Toplevel", default_toplevel, nullptr);
+    EventManager::getInstance().bind(ei_ev_mouse_buttonup, nullptr, "Toplevel", toplevel_click_up, NULL);
+    EventManager::getInstance().bind(ei_ev_mouse_buttondown, nullptr, "Toplevel", toplevel_click_down, NULL);
+    EventManager::getInstance().bind(ei_ev_mouse_move, nullptr, "Toplevel", default_toplevel, NULL);
     running = true;
     //used to limit fps of the application
     double current_time ;

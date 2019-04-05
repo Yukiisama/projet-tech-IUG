@@ -117,7 +117,7 @@ void EventManager::unbind(ei_eventtype_t eventtype,
                           ei_callback_t callback,
                           void *user_param)
 {
-
+    totalCallback();
     //Unbind with tags
     if (!widget && !tag.empty())
     {
@@ -148,6 +148,7 @@ void EventManager::unbind(ei_eventtype_t eventtype,
                             else ++it;
                         }
 
+
                     }
 
                 }
@@ -166,6 +167,7 @@ void EventManager::unbind(ei_eventtype_t eventtype,
                 it = hashMap[eventtype].erase(it);
         }
     }
+    totalCallback();
 }
 /**
      * \brief	Handle the events and add invalid rects into the singleton Application
@@ -189,6 +191,37 @@ void EventManager::eventHandler(Event *event)
         }
     }
 
+}
+
+void EventManager::deleteWidget(Widget* widget){
+    if(widget){
+        int i;
+        for( i= 0;i<=ei_ev_last;++i){
+            ei_eventtype_t in= (ei_eventtype_t)i;
+            std::vector<param_callback> p_list = hashMap[in];
+            for(std::vector<param_callback>::iterator itt = p_list.begin(); itt != p_list.end();){
+                if(itt->widget->getPick_id() == widget->getPick_id()){
+                    itt = p_list.erase(itt);
+                    cout<<"erased"<<endl;
+                }
+                else ++itt;
+            }
+        }
+    }
+
+}
+
+void EventManager::totalCallback()
+{
+    int count =0;
+    for(std::unordered_map<ei_eventtype_t,std::vector<param_callback>>::iterator it = hashMap.begin(); it!= hashMap.end(); ++it){
+
+        std::vector<param_callback> p_list = it->second;
+        for(std::vector<param_callback>::iterator itt = p_list.begin(); itt != p_list.end();++itt){
+            count++;
+        }
+    }
+    cout<<count<<endl;
 }
 
 } // namespace ei

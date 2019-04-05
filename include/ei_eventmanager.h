@@ -86,6 +86,15 @@ public:
      */
     void eventHandler(Event *event);
 
+    /**
+     * @brief deleteWidget
+     * @param widget
+     */
+    void deleteWidget(Widget * widget);
+
+    void totalCallback();
+
+
 };
 
 }
