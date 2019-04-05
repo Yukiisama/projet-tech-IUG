@@ -198,7 +198,7 @@ void EventManager::deleteWidget(Widget* widget){
         int i;
         for( i= 0;i<=ei_ev_last;++i){
             ei_eventtype_t in= (ei_eventtype_t)i;
-            std::vector<param_callback> p_list = hashMap[in];
+            std::vector<param_callback> &p_list = hashMap[in];
             for(std::vector<param_callback>::iterator itt = p_list.begin(); itt != p_list.end();){
                 if(itt->widget->getPick_id() == widget->getPick_id()){
                     itt = p_list.erase(itt);
