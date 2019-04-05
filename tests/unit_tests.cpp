@@ -127,13 +127,8 @@ TEST_CASE("Placer class", "[unit]"){
     button->configure (&button_size, &button_color,
                        &button_border_width, &button_corner_radius, &button_relief, &button_title, NULL, &button_text_color, NULL,
                        NULL, NULL, NULL);
-    Button* button2 = new Button(app->root_widget());
-    button2->configure (&button_size, &button_color,
-                       &button_border_width, &button_corner_radius, &button_relief, &button_title, NULL, &button_text_color, NULL,
-                       NULL, NULL, NULL);
 
     Placer* p1 = new Placer();
-    Placer* p2 = new Placer();
 
     SECTION("Constructor"){
 
@@ -154,8 +149,8 @@ TEST_CASE("Placer class", "[unit]"){
     SECTION("Configure"){
 
         anchor_t button_anchor   = ei_anc_southeast;
-        float   button_rel_x    = 1.0;
-        float   button_rel_y    = 1.0;
+        float   button_rel_x    = 1.5;
+        float   button_rel_y    = 1.5;
         int     button_x    = -10;
         int     button_y    = -10;
         float   button_rel_size_x = 0.45;
@@ -173,35 +168,44 @@ TEST_CASE("Placer class", "[unit]"){
         REQUIRE(p1->getRel_width() == button_rel_size_x);
         REQUIRE(p1->getRel_height() == 0.0);
 
-        p2->configure(button2, &button_anchor, &button_x, &button_y, NULL, NULL, &button_rel_x, &button_rel_y, &button_rel_size_x, NULL);
+        p1->configure(button, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
-        REQUIRE(p2->getWidget() == button2);
-        REQUIRE(p2->getAnchor() == button_anchor);
-        REQUIRE(p2->getX() == button_x);
-        REQUIRE(p2->getY() == button_y);
-        REQUIRE(p2->getWidth() == button2->getRequested_size().width());
-        REQUIRE(p2->getHeight() == button2->getRequested_size().height());
-        REQUIRE(p2->getRel_x() == button_rel_x);
-        REQUIRE(p2->getRel_y() == button_rel_y);
-        REQUIRE(p2->getRel_width() == button_rel_size_x);
-        REQUIRE(p2->getRel_height() == 0.0);
+        REQUIRE(p1->getWidget() == button);
+        REQUIRE(p1->getAnchor() == ei_anc_northwest);
+        REQUIRE(p1->getX() == 0);
+        REQUIRE(p1->getY() == 0);
+        REQUIRE(p1->getWidth() == button->getRequested_size().width());
+        REQUIRE(p1->getHeight() == button->getRequested_size().height());
+        REQUIRE(p1->getRel_x() == 0.0);
+        REQUIRE(p1->getRel_y() == 0.0);
+        REQUIRE(p1->getRel_width() == 0.0);
+        REQUIRE(p1->getRel_height() == 0.0);
 
-        p2->configure(button2, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+        p1->configure(button, &button_anchor, &button_x, &button_y, NULL, NULL, &button_rel_x, &button_rel_y, &button_rel_size_x, NULL);
+    }
 
-        REQUIRE(p2->getWidget() == button2);
-        REQUIRE(p2->getAnchor() == ei_anc_northwest);
-        REQUIRE(p2->getX() == 0);
-        REQUIRE(p2->getY() == 0);
-        REQUIRE(p2->getWidth() == button2->getRequested_size().width());
-        REQUIRE(p2->getHeight() == button2->getRequested_size().height());
-        REQUIRE(p2->getRel_x() == 0.0);
-        REQUIRE(p2->getRel_y() == 0.0);
-        REQUIRE(p2->getRel_width() == 0.0);
-        REQUIRE(p2->getRel_height() == 0.0);
+    SECTION("Run"){
+
+        cout << "button->getContent_rect()->size.height() : " << button->getContent_rect()->size.height() << endl;
+        cout << "button->getContent_rect()->size.width() : " << button->getContent_rect()->size.width() << endl;
+        cout << "button->getContent_rect()->top_left.x() : " << button->getContent_rect()->top_left.x() << endl;
+        cout << "button->getContent_rect()->top_left.y() : " << button->getContent_rect()->top_left.y() << endl;
+
+
+
+        Size      * new_screen_size = new Size(2000, 1000);
+        cout << "app->root_widget()->configure(&new_screen_size, &root_bgcol, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL) :D" << endl;
+        app->root_widget()->configure(new_screen_size, &root_bgcol, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+        cout << "p1->run(button) :D" << endl;
+        p1->run(button);
+        cout<<app->root_widget()->getContent_rect()->size.height()<<endl;
+        cout << "button->getContent_rect()->size.height() : " << button->getContent_rect()->size.height() << endl;
+        cout << "button->getContent_rect()->size.width() : " << button->getContent_rect()->size.width() << endl;
+        cout << "button->getContent_rect()->top_left.x() : " << button->getContent_rect()->top_left.x() << endl;
+        cout << "button->getContent_rect()->top_left.y() : " << button->getContent_rect()->top_left.y() << endl;
     }
 
     delete p1;
-    delete p2;
 }
 
 int ei_main(int argc, char* argv[])
