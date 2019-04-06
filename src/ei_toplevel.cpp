@@ -145,7 +145,7 @@ Toplevel::Toplevel(Widget *parent) : Widget(TOPLEVEL_NAME, parent){
 }
 
 Toplevel::~Toplevel(){
-    std::list<Widget*>c_list =children;
+    std::list<Widget*>&c_list =children;
     for(std::list<Widget*>::iterator it = c_list.begin();it!= c_list.end();it++){
         //delete button close only if it exist
         if((*it)->getPick_id()==button_close->getPick_id()){
@@ -163,7 +163,7 @@ Toplevel::~Toplevel(){
     //TODO update pick surface with parant's pick color
     //remove from parent's child list
     if(getParent()){
-        getParent()->removeChildren(this);
+        //getParent()->removeChildren(this);
 //        getParent()->draw(Application::getInstance()->get_root_window(),
 //                          Application::getInstance()->get_offscreen(),getParent()->getContent_rect());
         Application::getInstance()->invalidate_rect(*getParent()->getContent_rect());

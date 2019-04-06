@@ -34,9 +34,13 @@ Frame::Frame(Widget *parent):Widget(FRAME_NAME,parent){
 **/
 Frame::~Frame(){
     EventManager::getInstance().deleteWidget(this);
-    if(this->getParent()){
-        Application::getInstance()->invalidate_rect(*getParent()->getContent_rect());
+    std::list<Widget*>c_list =children;
+    for(std::list<Widget*>::iterator it = c_list.begin();it!= c_list.end();it++){
+            delete (*it);
+    }
+    if(getParent()){
         getParent()->removeChildren(this);
+        Application::getInstance()->invalidate_rect(*getParent()->getContent_rect());
     }
     hw_text_font_free(text_font);
 }

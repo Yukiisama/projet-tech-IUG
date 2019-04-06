@@ -211,13 +211,13 @@ void Widget::addTag(string newTag){
 void Widget::removeChildren(Widget *widget)
 {
    std::list<Widget*> &c_list =widget->getParent()->getChildren();
-//   for(std::list<Widget*>::iterator it = c_list.begin(); it!=c_list.end();){
-//       if((*it)->getPick_id()== widget->getPick_id()){
-//           it=c_list.erase(it);
-//       }else{
-//           ++it;
-//       }
-//   }
+   for(std::list<Widget*>::iterator it = c_list.begin(); it!=c_list.end();){
+       if((*it)->getPick_id()== widget->getPick_id()){
+           it=c_list.erase(it);
+       }else{
+           ++it;
+       }
+   }
 }
 
 /**

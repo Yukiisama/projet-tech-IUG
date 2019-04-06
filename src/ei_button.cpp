@@ -79,7 +79,7 @@ Button::Button(Widget *parent) : Widget(BUTTON_NAME, parent){
 Button::~Button()
 {   EventManager::getInstance().deleteWidget(this);
     if(getParent()){
-        getParent()->removeChildren(this);
+        //getParent()->removeChildren(this);
         Application::getInstance()->invalidate_rect(*getParent()->getContent_rect());
     }
     hw_text_font_free(text_font);

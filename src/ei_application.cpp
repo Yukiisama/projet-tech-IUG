@@ -41,8 +41,8 @@ Application::Application(Size* main_window_size){
      */
 Application::~Application(){
     hw_surface_free(this->offscreen);
-    delete widget_root;
     hw_quit();
+    delete widget_root;
 }
 
 
@@ -60,11 +60,17 @@ void Application::run(){
     /*This loop waits an event , then treat it with the event manager
      *Then update the screen and limit it to 60 fps
      */
+
+    KeyEvent * ev_key;
     while(running){
-        Event *ev = hw_event_wait_next();
+        Event *ev=hw_event_wait_next();
         if( ev->type == ei_ev_keydown ){
-            KeyEvent * ev_key = static_cast<KeyEvent*>  (ev);
-            if(ev_key->key_sym == ALLEGRO_KEY_Q) quit_request();
+             ev_key= static_cast<KeyEvent*>  (ev);
+            if(ev_key->key_sym == ALLEGRO_KEY_Q){
+                running=false;
+                quit_request();
+            }
+
         }else{
             EventManager::getInstance().eventHandler(ev);
         }
@@ -79,7 +85,9 @@ void Application::run(){
             to_clear_rectangle_list.clear();
             update_time  = current_time + FPS_MAX;
         }
+        delete ev;
     }
+
 
     return;
 }
