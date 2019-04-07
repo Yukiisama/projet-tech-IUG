@@ -120,6 +120,17 @@ TEST_CASE("widget class","[unit]"){
         REQUIRE(widget->getRequested_size().height()==300.f);
         delete widget;
         }
+    SECTION("ID <=> COLOR"){
+        uint id = 30; // aka uint32
+        Application* app = new Application(&main_window_size);
+        REQUIRE(app->root_widget()->conver_color_id(app->root_widget()->convert_id_color(id)) == id);
+        }
+    SECTION("ADD TAG"){
+            string c = "coucou";
+            Application* app = new Application(&main_window_size);
+            app->get_widget_root()->addTag(c);
+            REQUIRE(app->get_widget_root()->getTag_list().back()==c);
+        }
     }
 
 
