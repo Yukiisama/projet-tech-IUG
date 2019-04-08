@@ -86,6 +86,7 @@ void Application::run(){
             update_time  = current_time + FPS_MAX;
         }
         delete ev;
+        ev=NULL;
     }
 
 

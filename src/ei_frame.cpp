@@ -109,9 +109,6 @@ void Frame::draw(surface_t surface,
             Point pos = anchor_to_pos(screen_location,img_anchor);
             ei_copy_surface(surface,img,&pos,EI_TRUE);
         }
-
-
-
     }
     //recursive method that draw all the children.
     if(!children.empty()){

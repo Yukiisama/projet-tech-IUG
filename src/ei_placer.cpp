@@ -98,7 +98,8 @@ void Placer::configure (Widget*    widget,
  * @param widget the widget we want to place
  */
 void Placer::run (Widget* widget){
-    if (!widget || !this->getWidget() ) return;
+    if (!widget ) return;
+    if(!widget->getParent()) return;
 
     // Creating the new rectangle and setting the right values into it
     Rect new_rect = Rect();
