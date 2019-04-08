@@ -113,7 +113,7 @@ public:
      *
      * @return              True if there were a fusion, else False.
      */
-    bool_t rectFusion(Rect rect1, Rect rect2);
+    bool_t rectFusion(Rect *rect1, Rect *rect2);
 
     /**
      * @brief optimizedRect

@@ -300,12 +300,12 @@ bool_t Application::rectFusion(Rect* rect1, Rect* rect2){
 }
 
 void Application::optimizedRect(){
-    /*to_clear_rectangle_list.clear();
+    to_clear_rectangle_list.clear();
     to_clear_rectangle_list.push_back(Rect(Point(5,5),Size(100,60)));
     to_clear_rectangle_list.push_back(Rect(Point(10,10),Size(110,65)));
     to_clear_rectangle_list.push_back(Rect(Point(80,105),Size(45,45)));
     to_clear_rectangle_list.push_back(Rect(Point(190,45),Size(180,90)));
-    to_clear_rectangle_list.push_back(Rect(Point(195,35),Size(120,60)));*/
+    to_clear_rectangle_list.push_back(Rect(Point(195,35),Size(120,60)));
     if(to_clear_rectangle_list.size()>1){
         std::cout<<"size is at the begining : "<<to_clear_rectangle_list.size()<<"\n\n"<<endl;
         for(linked_rect_t::iterator it = to_clear_rectangle_list.begin(), next_it = ++to_clear_rectangle_list.begin(); next_it!=to_clear_rectangle_list.end();){
