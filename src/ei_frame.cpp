@@ -78,12 +78,12 @@ void Frame::draw(surface_t surface,
     list_frame.push_back(Point(content_rect->top_left.x(),
                                content_rect->top_left.y()+int(content_rect->size.height())));
     //Draw on pick_surface the rectangle  with frame's pick_color.
-    hw_surface_lock(pick_surface);
     pick_color.alpha=ALPHA_MAX;
-    draw_polygon(pick_surface,list_frame,pick_color,clipper);
-    hw_surface_unlock(pick_surface);
+    //draw_polygon(pick_surface,list_frame,pick_color,clipper);
+    draw_rectangle(pick_surface,*content_rect,pick_color,clipper);
     //Finally draw the frame on the main surface
-    draw_polygon(surface,list_frame,color,clipper);
+    //draw_polygon(surface,list_frame,color,clipper);
+    draw_rectangle(surface,*content_rect,color,clipper);
     if (text)
     {
         Point where = anchor_to_pos(screen_location, text_anchor);
@@ -112,7 +112,7 @@ void Frame::draw(surface_t surface,
     }
     //recursive method that draw all the children.
     if(!children.empty()){
-        std::list<Widget *>c_list =children;
+        std::list<Widget *>&c_list =children;
         for (std::list<Widget *>::iterator it = c_list.begin(); it != c_list.end(); it++)
             //Children should be display inside the content_rect of his parent.
             (*it)->draw(surface, pick_surface, content_rect);

@@ -145,6 +145,15 @@ Toplevel::Toplevel(Widget *parent) : Widget(TOPLEVEL_NAME, parent){
 }
 
 Toplevel::~Toplevel(){
+    //unbind resize button
+    EventManager::getInstance().unbind(ei_ev_mouse_buttonup, resize_button, "",resize_button_callback , this);
+    EventManager::getInstance().unbind(ei_ev_mouse_buttondown, resize_button, "",resize_button_callback , this);
+    EventManager::getInstance().unbind(ei_ev_mouse_move, resize_button, "",resize_button_callback , this);
+    //unbind topbar mov
+    EventManager::getInstance().unbind(ei_ev_mouse_buttonup, NULL, TOPLEVEL_NAME,topbar_move_callback , this);
+    EventManager::getInstance().unbind(ei_ev_mouse_buttondown, NULL, TOPLEVEL_NAME,topbar_move_callback , this);
+    EventManager::getInstance().unbind(ei_ev_mouse_move, NULL, TOPLEVEL_NAME,topbar_move_callback , this);
+    EventManager::getInstance().deleteWidget(this);
     std::list<Widget*>&c_list =children;
     for(std::list<Widget*>::iterator it = c_list.begin();it!= c_list.end();it++){
         //delete button close only if it exist
@@ -168,7 +177,7 @@ Toplevel::~Toplevel(){
 //                          Application::getInstance()->get_offscreen(),getParent()->getContent_rect());
         Application::getInstance()->invalidate_rect(*getParent()->getContent_rect());
     }
-    EventManager::getInstance().deleteWidget(this);
+
 }
 
 
@@ -284,10 +293,8 @@ void Toplevel::drawBasic_toplevel(surface_t surface, surface_t pick_surface, Rec
     draw_polygon(surface,list_point,color,clipper);
 
     //Draw pick_surface outside the container
-    hw_surface_lock(pick_surface);
     pick_color.alpha=ALPHA_MAX;
     draw_polygon(pick_surface,list_point,pick_color,clipper);
-    hw_surface_unlock(pick_surface);
 
     color_t color_white = {255,255,255,ALPHA_MAX};
     //Draw toplevel background
@@ -300,11 +307,13 @@ void Toplevel::drawBasic_toplevel(surface_t surface, surface_t pick_surface, Rec
                                    content_rect->top_left.y()+int(content_rect->size.height())));
     list_point_bgr.push_back(Point(content_rect->top_left.x()+int(content_rect->size.width()),
                                    content_rect->top_left.y()));
-    draw_polygon(surface,list_point_bgr,color_white,clipper);
+//    /draw_polygon(surface,list_point_bgr,color_white,clipper);
+    draw_rectangle(surface,*content_rect,color_white,clipper);
     //Draw pick_surface outside the container
     hw_surface_lock(pick_surface);
     pick_color.alpha=ALPHA_MAX;
-    draw_polygon(pick_surface,list_point_bgr,pick_color,clipper);
+//    draw_polygon(pick_surface,list_point_bgr,pick_color,clipper);
+    draw_rectangle(pick_surface,*content_rect,pick_color,clipper);
     hw_surface_unlock(pick_surface);
 
 
