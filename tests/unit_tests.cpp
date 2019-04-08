@@ -256,6 +256,41 @@ TEST_CASE("Placer class", "[unit]"){
     delete p1;
 }
 
+TEST_CASE("Frame class"){
+
+    Size       screen_size = Size(600, 600);
+    Application* app = new Application(&screen_size);
+
+    Frame* frame;
+
+
+    SECTION("Constructor"){
+        frame = new Frame(app->root_widget());
+
+        REQUIRE(frame->get_relief() == ei_relief_none);
+        REQUIRE(frame->get_text() == nullptr);
+        REQUIRE(frame->get_text_color().alpha == font_default_color.alpha);
+        REQUIRE(frame->get_text_color().red == font_default_color.red);
+        REQUIRE(frame->get_text_color().green == font_default_color.green);
+        REQUIRE(frame->get_text_color().blue == font_default_color.blue);
+        REQUIRE(frame->get_text_anchor() == ei_anc_center);
+        REQUIRE(frame->get_img() == nullptr);
+        REQUIRE(frame->get_img_rect() == nullptr);
+        REQUIRE(frame->get_img_anchor() == ei_anc_center);
+    }
+
+    SECTION("Configure"){
+        /*
+         * J'ai capté des cas non traités par configure (requested size et color à NULL font un segfault ->
+         *                                               faut pas se contenter de mettre un if (requested_size && color),
+         *                                               il faut calculer une requested size par défaut qui correspond à la taille de l'img ou du texte passé un paramètre, ou (0,0) sinon
+         *                                               et il faut mettre un couleur par défaut)
+         */
+        frame->configure(NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+
+    }
+}
+
 int ei_main(int argc, char* argv[])
 {
     // Init acces to hardware.
