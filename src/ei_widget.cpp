@@ -228,6 +228,10 @@ void Widget::removeChildren(Widget *widget)
      *                      (i.e., = widget->screen_location).
      */
 void Widget::geomnotify (Rect rect){
+    if(rect.size.width() < 0 || rect.size.height() <0 || rect.top_left.x() < 0 || rect.top_left.y() < 0) {
+        cout << "Negatives inside rect (geomnotify) nothing to do " << endl;
+        return;
+    }
     this->screen_location.size.width() = rect.size.width();
     this->screen_location.size.height() = rect.size.height();
     this->screen_location.top_left.x() = rect.top_left.x();
@@ -262,6 +266,10 @@ Widget* Widget::pick(uint32_t id){
  */
 void Widget::configure(Size * requested_size, const color_t * color){
     //Assign requested_size if it's not nullptr else this->requested_size stay unchange.
+     if(requested_size->width() < 0 || requested_size->height() <0 ){
+        cout << "Negatives width or height (widget::configure) nothing to do " << endl;
+        return;
+    }
     setRequested_size(*requested_size);
     if(color){
         this->color.red = color->red;

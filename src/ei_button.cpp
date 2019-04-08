@@ -108,7 +108,7 @@ void Button::draw(surface_t surface,
     }
 
     //The Rect of the button.
-    Rect button_rect = Rect(screen_location.top_left,requested_size);
+    Rect button_rect = Rect(content_rect->top_left,content_rect->size);
     //Draw on pick_surface the forme of button with button's pick_color.
     hw_surface_lock(pick_surface);
     //The list of points to draw the button
@@ -125,7 +125,7 @@ void Button::draw(surface_t surface,
         Size text_size=Size(0,0);
         //Register the size that the text will take in text_size
         hw_text_compute_size(text,text_font,text_size);
-        Point where = text_anchor_to_pos(screen_location, text_anchor,text_size,border_width);
+        Point where = text_anchor_to_pos(*content_rect, text_anchor,text_size,border_width);
         //Finally draw the text at the where position
         draw_text(surface, &where, text, text_font, &text_color);
     }
