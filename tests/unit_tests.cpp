@@ -154,6 +154,7 @@ TEST_CASE("Placer class", "[unit]"){
     button->configure (&button_size, &button_color,
                        &button_border_width, &button_corner_radius, &button_relief, &button_title, NULL, &button_text_color, NULL,
                        NULL, NULL, NULL);
+    anchor_t button_anchor   = ei_anc_southeast;
     Placer* p1 = new Placer();
     SECTION("Constructor"){
         REQUIRE(p1->getWidget() == nullptr);
@@ -169,11 +170,8 @@ TEST_CASE("Placer class", "[unit]"){
         REQUIRE(p1->getRel_height() == 0.0);
     }
     SECTION("Configure"){
-        anchor_t button_anchor   = ei_anc_southeast;
         float   button_rel_x    = 1.5;
         float   button_rel_y    = 1.5;
-        int     button_x    = -10;
-        int     button_y    = -10;
         float   button_rel_size_x = 0.45;
         p1->configure(button, &button_anchor, &button_x, &button_y, NULL, NULL, &button_rel_x, &button_rel_y, &button_rel_size_x, NULL);
         REQUIRE(p1->getWidget() == button);
@@ -199,22 +197,62 @@ TEST_CASE("Placer class", "[unit]"){
         REQUIRE(p1->getRel_height() == 0.0);
         p1->configure(button, &button_anchor, &button_x, &button_y, NULL, NULL, &button_rel_x, &button_rel_y, &button_rel_size_x, NULL);
     }
-    SECTION("Run"){
-        cout << "button->getContent_rect()->size.height() : " << button->getContent_rect()->size.height() << endl;
-        cout << "button->getContent_rect()->size.width() : " << button->getContent_rect()->size.width() << endl;
-        cout << "button->getContent_rect()->top_left.x() : " << button->getContent_rect()->top_left.x() << endl;
-        cout << "button->getContent_rect()->top_left.y() : " << button->getContent_rect()->top_left.y() << endl;
-        Size      * new_screen_size = new Size(2000, 1000);
-        cout << "app->root_widget()->configure(&new_screen_size, &root_bgcol, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL) :D" << endl;
+    SECTION("Run on button son"){
+        float   button_rel_x    = 1.5;
+        float   button_rel_y    = 1.5;
+        float   button_rel_size_x = 0.45;
+        p1->configure(button, &button_anchor, &button_x, &button_y, NULL, NULL, &button_rel_x, &button_rel_y, &button_rel_size_x, NULL);
+        REQUIRE(button->getContent_rect()->size.height() == 200);
+        REQUIRE(button->getContent_rect()->size.width() == 570);
+        REQUIRE(button->getContent_rect()->top_left.x() == 750);
+        REQUIRE(button->getContent_rect()->top_left.y() == 900);
+        Size* new_screen_size = new Size(2000, 1000);
         app->root_widget()->configure(new_screen_size, &root_bgcol, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-        cout << "p1->run(button) :D" << endl;
         p1->run(button);
-        cout<<app->root_widget()->getContent_rect()->size.height()<<endl;
-        cout << "button->getContent_rect()->size.height() : " << button->getContent_rect()->size.height() << endl;
-        cout << "button->getContent_rect()->size.width() : " << button->getContent_rect()->size.width() << endl;
-        cout << "button->getContent_rect()->top_left.x() : " << button->getContent_rect()->top_left.x() << endl;
-        cout << "button->getContent_rect()->top_left.y() : " << button->getContent_rect()->top_left.y() << endl;
+        REQUIRE(button->getContent_rect()->size.height() == 200);
+        REQUIRE(button->getContent_rect()->size.width() == 1200);
+        REQUIRE(button->getContent_rect()->top_left.x() == 2850);
+        REQUIRE(button->getContent_rect()->top_left.y() == 1500);
     }
+    SECTION("Run on frame son"){
+        Size frame_size = Size(300, 200);
+        int frame_x = 150;
+        int frame_y = 200;
+        float rel_width = 0.75;
+        float rel_height = 0.1;
+        float rel_x = 0.15;
+        float rel_y = 0.8;
+        color_t frame_color = { 0x88, 0x88, 0x88, 0xff };
+        const char* button_title        = "Test text on frame";
+        color_t  button_text_color   = {0x00, 0x00, 0x00, 0xff};
+        relief_t frame_relief = ei_relief_raised;
+        int frame_border_width = 6;
+        Frame* frame = new Frame(app->root_widget());
+        frame->configure(&frame_size, &frame_color, &frame_border_width,
+                         &frame_relief, &button_title, NULL, &button_text_color, NULL, NULL, NULL, NULL);
+        p1->configure(frame, NULL, &frame_x, &frame_y, NULL, NULL, &rel_x, &rel_y, &rel_width, &rel_height);
+        REQUIRE(frame->getContent_rect()->size.height() == 260);
+        REQUIRE(frame->getContent_rect()->size.width() == 750);
+        REQUIRE(frame->getContent_rect()->top_left.x() == 240);
+        REQUIRE(frame->getContent_rect()->top_left.y() == 680);
+        Size* new_screen_size = new Size(2000, 1000);
+        app->root_widget()->configure(new_screen_size, &root_bgcol, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+        p1->run(frame);
+        REQUIRE(frame->getContent_rect()->size.height() == 300);
+        REQUIRE(frame->getContent_rect()->size.width() == 1800);
+        REQUIRE(frame->getContent_rect()->top_left.x() == 450);
+        REQUIRE(frame->getContent_rect()->top_left.y() == 1000);
+    }
+    SECTION("Release"){
+        p1->release(button);
+        REQUIRE(p1->getWidget() == nullptr);
+        REQUIRE(button->getGeom_manager() == nullptr);
+        REQUIRE(button->getScreen_location().size.width() == -1);
+        REQUIRE(button->getScreen_location().size.height() == -1);
+        REQUIRE(button->getScreen_location().top_left.x() == -1);
+        REQUIRE(button->getScreen_location().top_left.y() == -1);
+    }
+
     delete p1;
 }
 
