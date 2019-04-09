@@ -286,7 +286,9 @@ TEST_CASE("Frame class"){
          *                                               il faut calculer une requested size par défaut qui correspond à la taille de l'img ou du texte passé un paramètre, ou (0,0) sinon
          *                                               et il faut mettre un couleur par défaut)
          */
-        frame->configure(NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+        Size * s = new Size(100,100);
+        color_t c = default_background_color;
+        frame->configure(s, &c, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
     }
 }
