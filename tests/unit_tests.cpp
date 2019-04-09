@@ -3,6 +3,7 @@
 
 #include "ei_application.h"
 #include "ei_eventmanager.h"
+#include "ei_types.h"
 #include <iostream>
 #include <stdlib.h>
 
@@ -280,15 +281,59 @@ TEST_CASE("Frame class"){
     }
 
     SECTION("Configure"){
-        /*
-         * J'ai capté des cas non traités par configure (requested size et color à NULL font un segfault ->
-         *                                               faut pas se contenter de mettre un if (requested_size && color),
-         *                                               il faut calculer une requested size par défaut qui correspond à la taille de l'img ou du texte passé un paramètre, ou (0,0) sinon
-         *                                               et il faut mettre un couleur par défaut)
-         */
-        Size * s = new Size(100,100);
-        color_t c = default_background_color;
-        frame->configure(s, &c, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+        frame = new Frame(app->root_widget());
+        Size frame_size = Size(300, 200);
+        color_t frame_color = { 0x88, 0x88, 0x88, 0xff };
+        color_t  button_text_color   = {0x00, 0x00, 0x00, 0xff};
+        surface_t img_a = hw_image_load(DATA_DIR"img.jpg");
+        relief_t frame_relief = ei_relief_raised;
+        int frame_border_width = 6;
+
+        frame->configure(NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+
+        REQUIRE(frame->getRequested_size().width() == 0);
+        REQUIRE(frame->getRequested_size().height() == 0);
+        REQUIRE(frame->getColor().alpha == default_background_color.alpha);
+        REQUIRE(frame->getColor().red == default_background_color.red);
+        REQUIRE(frame->getColor().green == default_background_color.green);
+        REQUIRE(frame->getColor().blue == default_background_color.blue);
+        REQUIRE(frame->getBorder_width() == 0);
+        REQUIRE(frame->get_relief() == ei_relief_none);
+        REQUIRE(frame->get_text() == nullptr);
+        REQUIRE(frame->get_text_color().alpha == font_default_color.alpha);
+        REQUIRE(frame->get_text_color().red == font_default_color.red);
+        REQUIRE(frame->get_text_color().green == font_default_color.green);
+        REQUIRE(frame->get_text_color().blue == font_default_color.blue);
+        REQUIRE(frame->get_text_anchor() == ei_anc_center);
+        REQUIRE(frame->get_text_font() == default_font);
+        REQUIRE(frame->get_img() == nullptr);
+        REQUIRE(frame->get_img_anchor() == ei_anc_center);
+        REQUIRE(frame->get_img_rect() == nullptr);
+        REQUIRE(frame->get_img_anchor() == ei_anc_center);
+
+        frame->configure(&frame_size, &frame_color, &frame_border_width,
+                         &frame_relief, NULL, NULL, &button_text_color, NULL, &img_a, NULL, NULL);
+
+        REQUIRE(frame->getRequested_size().width() == frame_size.width());
+        REQUIRE(frame->getRequested_size().height() == frame_size.height());
+        REQUIRE(frame->getColor().alpha == frame_color.alpha);
+        REQUIRE(frame->getColor().red == frame_color.red);
+        REQUIRE(frame->getColor().green == frame_color.green);
+        REQUIRE(frame->getColor().blue == frame_color.blue);
+        REQUIRE(frame->getBorder_width() == frame_border_width);
+        REQUIRE(frame->get_relief() == frame_relief);
+        REQUIRE(frame->get_text() == nullptr);
+        REQUIRE(frame->get_text_color().alpha == button_text_color.alpha);
+        REQUIRE(frame->get_text_color().red == button_text_color.red);
+        REQUIRE(frame->get_text_color().green == button_text_color.green);
+        REQUIRE(frame->get_text_color().blue == button_text_color.blue);
+        REQUIRE(frame->get_text_anchor() == ei_anc_center);
+        REQUIRE(frame->get_text_font() == default_font);
+        REQUIRE(frame->get_img() == img_a);
+        REQUIRE(frame->get_img_anchor() == ei_anc_center);
+        REQUIRE(frame->get_img_rect() == nullptr);
+        REQUIRE(frame->get_img_anchor() == ei_anc_center);
+
 
     }
 }
