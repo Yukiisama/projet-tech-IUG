@@ -44,12 +44,16 @@ bool_t resize_button_callback(Widget* widget, Event* event, void* user_param){
             if(Application::getInstance()->inside_root(e->where)){
                 int new_width = (e->where.x())-(top->getScreen_location().top_left.x());
                 int new_height = (e->where.y())-(top->getScreen_location().top_left.y());
+                float deltaX = top->getContent_rect()->size.width()-new_width;
+                float deltaY = top->getContent_rect()->size.height()-new_height;
+                //we return if the delta is 0 or just incredibly insignifiant
+                if((deltaX * deltaX)/2 <2.0f || (deltaY * deltaY)/2 <2.0f) return EI_FALSE;
                 //Limit the top level to a minimal size
                 if(new_width < top->getMin_size().width())new_width = top->getMin_size().width();
                 if(new_height < top->getMin_size().height())new_height = top->getMin_size().height();
                 //finally update the new size of the top level
                 Size *new_size = new Size(new_width,new_height);
-                top->configure(new_size,NULL,NULL,NULL,NULL,NULL,NULL);
+                top->configure(new_size,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr);
                 delete(new_size);
                 return EI_TRUE;
             }
