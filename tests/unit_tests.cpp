@@ -257,7 +257,7 @@ TEST_CASE("Placer class", "[unit]"){
     delete p1;
 }
 
-TEST_CASE("Frame class"){
+TEST_CASE("Frame class","[unit]"){
 
     Size       screen_size = Size(600, 600);
     Application* app = new Application(&screen_size);
@@ -332,7 +332,7 @@ TEST_CASE("Frame class"){
     }
 }
 
-TEST_CASE("Button class"){
+TEST_CASE("Button class","[unit]"){
 
     Size       screen_size = Size(600, 600);
     Application* app = new Application(&screen_size);
