@@ -87,8 +87,10 @@ bool_t topbar_move_callback(Widget* widget, Event* event, void* user_param){
              Application::getInstance()->widget_pick(e->where)->getPick_id()==top->getPick_id()){
         if(top->inside_top_bar(e->where)){
             //Tells the toplevel that its top_bar is clicked
-            top->set_top_bar_clicked(EI_TRUE);
-            top->setMouse_pos(e->where);
+            if(!top->moving()){
+                top->set_top_bar_clicked(EI_TRUE);
+                top->setMouse_pos(e->where);
+             }
             return EI_FALSE;
         }
     }else if(top->moving() && event->type==ei_ev_mouse_move && Application::getInstance()->inside_root(e->where)){
