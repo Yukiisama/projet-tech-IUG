@@ -282,12 +282,10 @@ void Toplevel::drawBasic_toplevel(surface_t surface, surface_t pick_surface, Rec
 
     //Finally draw the top_level with the list of points
     draw_polygon(surface,list_point,color,clipper);
-
     //Draw pick_surface outside the container
-    hw_surface_lock(pick_surface);
     pick_color.alpha=ALPHA_MAX;
     draw_polygon(pick_surface,list_point,pick_color,clipper);
-    hw_surface_unlock(pick_surface);
+    list_point.clear();
 
     color_t color_white = {255,255,255,ALPHA_MAX};
     //Draw toplevel background
@@ -302,10 +300,9 @@ void Toplevel::drawBasic_toplevel(surface_t surface, surface_t pick_surface, Rec
                                    content_rect->top_left.y()));
     draw_polygon(surface,list_point_bgr,color_white,clipper);
     //Draw pick_surface outside the container
-    hw_surface_lock(pick_surface);
     pick_color.alpha=ALPHA_MAX;
     draw_polygon(pick_surface,list_point_bgr,pick_color,clipper);
-    hw_surface_unlock(pick_surface);
+    list_point_bgr.clear();
 
 
     //Title of the window

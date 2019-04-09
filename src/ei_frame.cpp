@@ -79,12 +79,11 @@ void Frame::draw(surface_t surface,
     list_frame.push_back(Point(content_rect->top_left.x(),
                                content_rect->top_left.y()+int(content_rect->size.height())));
     //Draw on pick_surface the rectangle  with frame's pick_color.
-    hw_surface_lock(pick_surface);
     pick_color.alpha=ALPHA_MAX;
     draw_polygon(pick_surface,list_frame,pick_color,clipper);
-    hw_surface_unlock(pick_surface);
     //Finally draw the frame on the main surface
     draw_polygon(surface,list_frame,color,clipper);
+    list_frame.clear();
     if (text)
     {
         Point where = anchor_to_pos(screen_location, text_anchor);

@@ -110,13 +110,12 @@ void Button::draw(surface_t surface,
     //The Rect of the button.
     Rect button_rect = Rect(content_rect->top_left,content_rect->size);
     //Draw on pick_surface the forme of button with button's pick_color.
-    hw_surface_lock(pick_surface);
     //The list of points to draw the button
     linked_point_t list_frame = rounded_frame(button_rect, corner_radius, BT_FULL);
     pick_color.alpha=ALPHA_MAX;
     //Draw button polygon on pick_surface with color pick_color
     draw_polygon(pick_surface, list_frame, pick_color, clipper);
-    hw_surface_unlock(pick_surface);
+    list_frame.clear();
     //Draw button on the main surface
     draw_button(surface,&button_rect,color,corner_radius,border_width,clipper,relief);
 
