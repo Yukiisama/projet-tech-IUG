@@ -204,7 +204,7 @@ void Frame::configure (Size*           requested_size,
     if (text && !img) this->text = *text;
     (text_color) ? this->text_color = *text_color : this->text_color = font_default_color;
     (text_anchor) ? this->text_anchor=*text_anchor : this->text_anchor = ei_anc_center;
-    (text_font) ? this->text_font = *text_font : this->text_font = default_font;
+    if (text_font) this->text_font = *text_font;
     if (img && !text) this->img = *img;
     if (img_rect) this->img_rect = *img_rect;
     (img_anchor) ? this->img_anchor = *img_anchor : this->img_anchor = ei_anc_center;

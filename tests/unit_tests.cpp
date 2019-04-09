@@ -305,11 +305,9 @@ TEST_CASE("Frame class"){
         REQUIRE(frame->get_text_color().green == font_default_color.green);
         REQUIRE(frame->get_text_color().blue == font_default_color.blue);
         REQUIRE(frame->get_text_anchor() == ei_anc_center);
-        REQUIRE(frame->get_text_font() == default_font);
         REQUIRE(frame->get_img() == nullptr);
         REQUIRE(frame->get_img_anchor() == ei_anc_center);
         REQUIRE(frame->get_img_rect() == nullptr);
-        REQUIRE(frame->get_img_anchor() == ei_anc_center);
 
         frame->configure(&frame_size, &frame_color, &frame_border_width,
                          &frame_relief, NULL, NULL, &button_text_color, NULL, &img_a, NULL, NULL);
@@ -328,12 +326,92 @@ TEST_CASE("Frame class"){
         REQUIRE(frame->get_text_color().green == button_text_color.green);
         REQUIRE(frame->get_text_color().blue == button_text_color.blue);
         REQUIRE(frame->get_text_anchor() == ei_anc_center);
-        REQUIRE(frame->get_text_font() == default_font);
         REQUIRE(frame->get_img() == img_a);
         REQUIRE(frame->get_img_anchor() == ei_anc_center);
         REQUIRE(frame->get_img_rect() == nullptr);
-        REQUIRE(frame->get_img_anchor() == ei_anc_center);
+    }
+}
 
+TEST_CASE("Button class"){
+
+    Size       screen_size = Size(600, 600);
+    Application* app = new Application(&screen_size);
+
+    Button* button;
+
+    SECTION("Constructor"){
+        button = new Button(app->root_widget());
+
+        REQUIRE(button->getBorder_width() == default_button_border_width);
+        REQUIRE(button->get_corner_radius() == default_button_corner_radius);
+        REQUIRE(button->get_relief() == ei_relief_raised);
+        REQUIRE(button->get_text() == nullptr);
+        REQUIRE(button->get_text_color().alpha == font_default_color.alpha);
+        REQUIRE(button->get_text_color().red == font_default_color.red);
+        REQUIRE(button->get_text_color().green == font_default_color.green);
+        REQUIRE(button->get_text_color().blue == font_default_color.blue);
+        REQUIRE(button->get_text_anchor() == ei_anc_center);
+        REQUIRE(button->get_img() == nullptr);
+        REQUIRE(button->get_img_rect() == nullptr);
+        REQUIRE(button->get_img_anchor() == ei_anc_center);
+    }
+
+    SECTION("Configure"){
+        button = new Button(app->root_widget());
+
+        Size    button_size = Size(300,200);
+        color_t  button_color        = {0x88, 0x88, 0x88, 0xff};
+        const char* button_title        = "Mon premier Bouton !";
+        color_t  button_text_color   = {0x00, 0x00, 0x00, 0xff};
+        int button_corner_radius        = 20;
+        relief_t button_relief       = ei_relief_raised;
+        int button_border_width      = 6;
+
+        button->configure (NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+
+        REQUIRE(button->getRequested_size().width() == 0);
+        REQUIRE(button->getRequested_size().height() == 0);
+        REQUIRE(button->getColor().alpha == default_background_color.alpha);
+        REQUIRE(button->getColor().red == default_background_color.red);
+        REQUIRE(button->getColor().green == default_background_color.green);
+        REQUIRE(button->getColor().blue == default_background_color.blue);
+        REQUIRE(button->get_corner_radius() == default_button_corner_radius);
+        REQUIRE(button->getBorder_width() == 0);
+        REQUIRE(button->get_relief() == ei_relief_none);
+        REQUIRE(button->get_text() == nullptr);
+        REQUIRE(button->get_text_color().alpha == font_default_color.alpha);
+        REQUIRE(button->get_text_color().red == font_default_color.red);
+        REQUIRE(button->get_text_color().green == font_default_color.green);
+        REQUIRE(button->get_text_color().blue == font_default_color.blue);
+        REQUIRE(button->get_text_anchor() == ei_anc_center);
+        REQUIRE(button->get_img() == nullptr);
+        REQUIRE(button->get_img_anchor() == ei_anc_center);
+        REQUIRE(button->get_img_rect() == nullptr);
+
+
+
+        button->configure (&button_size, &button_color,
+                           &button_border_width, &button_corner_radius, &button_relief, &button_title, NULL, &button_text_color, NULL,
+                           NULL, NULL, NULL);
+
+        REQUIRE(button->getRequested_size().width() == button_size.width());
+        REQUIRE(button->getRequested_size().height() == button_size.height());
+        REQUIRE(button->getColor().alpha == button_color.alpha);
+        REQUIRE(button->getColor().red == button_color.red);
+        REQUIRE(button->getColor().green == button_color.green);
+        REQUIRE(button->getColor().blue == button_color.blue);
+        REQUIRE(button->get_corner_radius() == button_corner_radius);
+        REQUIRE(button->getBorder_width() == button_border_width);
+        REQUIRE(button->get_relief() == button_relief);
+        REQUIRE(button->get_text() == button_title);
+        REQUIRE(button->get_text_color().alpha == button_text_color.alpha);
+        REQUIRE(button->get_text_color().red == button_text_color.red);
+        REQUIRE(button->get_text_color().green == button_text_color.green);
+        REQUIRE(button->get_text_color().blue == button_text_color.blue);
+        REQUIRE(button->get_text_anchor() == ei_anc_center);
+        REQUIRE(button->get_img() == nullptr);
+        REQUIRE(button->get_img_anchor() == ei_anc_center);
+        REQUIRE(button->get_img_rect() == nullptr);
 
     }
 }
