@@ -92,8 +92,8 @@ bool_t topbar_move_callback(Widget* widget, Event* event, void* user_param){
             return EI_FALSE;
         }
     }else if(top->moving() && event->type==ei_ev_mouse_move && Application::getInstance()->inside_root(e->where)){
-        double move_x = (e->where.x())-(top->getMouse_pos().x());
-        double move_y = (e->where.y())-(top->getMouse_pos().y());
+        int move_x = (e->where.x())-(top->getMouse_pos().x());
+        int move_y = (e->where.y())-(top->getMouse_pos().y());
         //we return if the movement result is 0 or just incredibly insignifiant
         if(move_x==0.0 && move_y==0.0)return EI_FALSE;
         if(move_x!= 0.0 && (move_x * move_x)/2<1) return EI_FALSE;
