@@ -364,7 +364,7 @@ void Toplevel::configure (Size*           requested_size,
     if(min_size)  this->min_size = *min_size;
 
     //Button close (closable done == true if it has already be done)
-    if(this->closable && closable_done==EI_FALSE) {
+    if(this->closable && !closable_done) {
         button_close = new Button(this);
         color_t button_color = {255,0,0,ALPHA_MAX};
         int button_close_radius =BUTTON_RADIUS;
