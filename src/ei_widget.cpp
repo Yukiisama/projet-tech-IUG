@@ -228,7 +228,7 @@ void Widget::removeChildren(Widget *widget)
      *                      (i.e., = widget->screen_location).
      */
 void Widget::geomnotify (Rect rect){
-    if(rect.size.width() < 0 || rect.size.height() <0 || rect.top_left.x() < 0 || rect.top_left.y() < 0) {
+    if(rect.size.width() < 0 || rect.size.height() <0) {
         cout << "Negatives inside rect (geomnotify) nothing to do " << endl;
         return;
     }
