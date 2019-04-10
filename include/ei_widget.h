@@ -506,7 +506,7 @@ namespace ei {
                         surface_t*       img,
                         Rect**           img_rect,
                         anchor_t*        img_anchor);
-        bool_t activate(Widget* widget, Event* event, void* user_param);
+
 
 
 

@@ -51,7 +51,8 @@ void RadioButton::draw (surface_t surface,
     surface_t textSurface = hw_text_create_surface(get_text(), this->get_text_font(), &t);
     Size sizeText = hw_surface_get_size(textSurface);
     Point posTexte;
-    posTexte.x() = screen_location.top_left.x()+screen_location.size.width();
+    int32_t margin = 5;
+    posTexte.x() = margin + screen_location.top_left.x()+int(screen_location.size.width());
     posTexte.y() = screen_location.top_left.y();
     ei_copy_surface(surface, textSurface, &posTexte, EI_TRUE);
 
@@ -71,16 +72,19 @@ bool_t button_click_down2(Widget* widget, Event* event, void* user_param)
     RadioButton* button = static_cast<RadioButton*>(widget);
     if(Application::getInstance()->widget_pick(e->where)->getPick_id()==button->getPick_id()){
         //button->set_relief(ei_relief_sunken);
-        //Relief isn't working for a reason that I clearly don't get
+        //[Maybe this comment is outdated]Relief isn't working for a reason that I clearly don't get
         //It's basically the same behavior that button but won't ,
         //So I made a strategy , switching the color of the one needed and reset the others linked to old color ,
         //This for a mysterious reason will do what button->set_relief(ei_relief_sunken) should do ...........
-        color_t c = {125,125,125,125};
-        color_t old = button->getColor();
-        button->setColor(c);
+        //color_t c = {125,125,125,125};
+        //color_t old = button->getColor();
+        button->set_relief(ei_relief_sunken);
         for(std::list<Widget*>::iterator it =button->getParent()->getChildren().begin();it!= button->getParent()->getChildren().end();it++){
-            if(button!=(*it))
-                (*it)->setColor(old);
+            if(button!=(*it)){
+                RadioButton* iterate_button = static_cast<RadioButton*>((*it));
+                iterate_button->set_relief(ei_relief_raised);
+                //(*it)->setColor(old);
+            }
         }
         return EI_TRUE;
     }

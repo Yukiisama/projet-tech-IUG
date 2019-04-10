@@ -59,20 +59,24 @@ int ei_main(int argc, char** argv)
 
     /* Create and configure the containers */
     Size containerSize = Size(300, 600);
-    Frame* firstContainer = new Frame(app->root_widget());
-    firstContainer->configure(&containerSize, &root_bgcol, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-    Frame* secondContainer = new Frame(app->root_widget());
-    secondContainer->configure(&containerSize, &root_bgcol, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+    Frame* first_Frame_Container = new Frame(app->root_widget());
+    first_Frame_Container->configure(&containerSize, &root_bgcol, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+    Frame* second_Frame_Container = new Frame(app->root_widget());
+    second_Frame_Container->configure(&containerSize, &root_bgcol, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
-    int xFirstContainer=0, yFirstContainer=0, xSecondContainer=300, ySecondContainer=0;
-    Placer* firstContainerPlacer = new Placer(); firstContainerPlacer->configure(firstContainer, NULL, &xFirstContainer, &yFirstContainer, NULL, NULL, NULL, NULL, NULL, NULL);
-    Placer* secondContainerPlacer = new Placer();secondContainerPlacer->configure(secondContainer, NULL, &xSecondContainer, &ySecondContainer, NULL, NULL, NULL, NULL, NULL, NULL);
+    int xFirstContainer=0, yFirstContainer=0;
+    int xSecondContainer=300, ySecondContainer=0;
+
+    Placer* first_Frame_ContainerPlacer = new Placer();
+    first_Frame_ContainerPlacer->configure(first_Frame_Container, NULL, &xFirstContainer, &yFirstContainer, NULL, NULL, NULL, NULL, NULL, NULL);
+    Placer* second_Frame_ContainerPlacer = new Placer();
+    second_Frame_ContainerPlacer->configure(second_Frame_Container, NULL, &xSecondContainer, &ySecondContainer, NULL, NULL, NULL, NULL, NULL, NULL);
 
     /* Create and configure the first radiobutton's group */
-    const char *firstText = "first radio button", *secondText = "second radio button", *thirdText = "third radio button";
-    RadioButton* first = new RadioButton(firstContainer);
-    RadioButton* second = new RadioButton(firstContainer);
-    RadioButton* third = new RadioButton(firstContainer);
+    const char *firstText = "1st radio button (group 1)", *secondText = "2nd radio button (group 1)", *thirdText = "3rd radio button (group 1)";
+    RadioButton* first = new RadioButton(first_Frame_Container);
+    RadioButton* second = new RadioButton(first_Frame_Container);
+    RadioButton* third = new RadioButton(first_Frame_Container);
     Size radioButtonSize(30, 30);
 
 
@@ -81,23 +85,28 @@ int ei_main(int argc, char** argv)
     third->configure(&radioButtonSize, NULL, NULL,NULL,NULL, &thirdText, NULL, NULL, NULL, NULL, NULL, NULL);
 
     /* Place the first radiobutton's group on screen. */
-    int firstY=0, secondY=50, thirdY=100;
+    int firstY=50, secondY=100, thirdY=150;
     float width=30, height=30;
-    Placer* firstPlacer = new Placer();firstPlacer->configure(first, NULL, NULL, &firstY, &width, &height, NULL, NULL, NULL, NULL);
-    Placer* secondPlacer = new Placer();secondPlacer->configure(second, NULL, NULL, &secondY, &width, &height, NULL, NULL, NULL, NULL);
-    Placer* thirdPlacer = new Placer();thirdPlacer->configure(third, NULL, NULL, &thirdY, &width, &height, NULL, NULL, NULL, NULL);
+    Placer* p_first = new Placer();
+    p_first->configure(first, NULL, NULL, &firstY, &width, &height, NULL, NULL, NULL, NULL);
+    Placer* p_second = new Placer();
+    p_second->configure(second, NULL, NULL, &secondY, &width, &height, NULL, NULL, NULL, NULL);
+    Placer* p_third = new Placer();
+    p_third->configure(third, NULL, NULL, &thirdY, &width, &height, NULL, NULL, NULL, NULL);
 
     /* Create and configure the second radiobutton's group */
-    const char *first2Text = "fourth button", *second2Text = "fifth radio button";
-    RadioButton* first2 = new RadioButton(secondContainer);
-    RadioButton* second2 = new RadioButton(secondContainer);
-    first2->configure(&radioButtonSize, NULL, NULL,NULL,NULL, &first2Text, NULL, NULL, NULL, NULL, NULL, NULL);
-    second2->configure(&radioButtonSize, NULL, NULL,NULL,NULL, &second2Text, NULL, NULL, NULL, NULL, NULL, NULL);
+    const char *first2Text = "1st radio button (group 2)", *second2Text = "2nd radio button (group 2)";
+    RadioButton* first_group2 = new RadioButton(second_Frame_Container);
+    RadioButton* second_group2 = new RadioButton(second_Frame_Container);
+    first_group2->configure(&radioButtonSize, NULL, NULL,NULL,NULL, &first2Text, NULL, NULL, NULL, NULL, NULL, NULL);
+    second_group2->configure(&radioButtonSize, NULL, NULL,NULL,NULL, &second2Text, NULL, NULL, NULL, NULL, NULL, NULL);
 
     /* Place the second radiobutton's group on screen. */
-    int firstY2=0, secondY2=50, thirdY2=100;
-    Placer* firstPlacer2 = new Placer();firstPlacer2->configure(first2, NULL, NULL, &firstY2, &width, &height, NULL, NULL, NULL, NULL);
-    Placer* secondPlacer2 = new Placer();secondPlacer2->configure(second2, NULL, NULL, &secondY2, &width, &height, NULL, NULL, NULL, NULL);
+    int firstY2=50, secondY2=100, thirdY2=150;
+    Placer* p_first2 = new Placer();
+    p_first2->configure(first_group2, NULL, NULL, &firstY2, &width, &height, NULL, NULL, NULL, NULL);
+    Placer* p_second2 = new Placer();
+    p_second2->configure(second_group2, NULL, NULL, &secondY2, &width, &height, NULL, NULL, NULL, NULL);
 
     /* Hook the keypress and close button callbacks to the event. */
     EventManager::getInstance().bind(ei_ev_keydown, NULL, "all", process_key, app);
