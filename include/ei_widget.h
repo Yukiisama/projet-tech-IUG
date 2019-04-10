@@ -401,6 +401,10 @@ namespace ei {
 
     Rect getContainer() const;
 
+    bool_t getTo_forget() const;
+
+    void setTo_forget(const bool_t &value);
+
     private:
     int             border_width;
     double          top_bar_height;//The width of the top bar
@@ -420,7 +424,8 @@ namespace ei {
     bool_t          resize_button_pressed=EI_FALSE;
     bool_t          button_close_pressed=EI_FALSE;
     Point           mouse_pos;
-    bool_t closable_done = EI_FALSE;
+    bool_t          closable_done = EI_FALSE; //to prevent recreate button close
+    bool_t          to_forget =EI_FALSE;
     };
 
 }

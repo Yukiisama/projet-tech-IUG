@@ -42,7 +42,7 @@ Application::Application(Size* main_window_size){
 Application::~Application(){
     hw_surface_free(this->offscreen);
     hw_quit();
-    delete widget_root;
+    delete (widget_root);
 }
 
 
@@ -69,7 +69,7 @@ void Application::run(){
             //Screen need to be update , draw the widgets then update rects
             if(!to_clear_rectangle_list.empty()){
                 widget_root->draw(root_window,offscreen,widget_root->getContent_rect());
-                //hw_surface_update_rects(to_clear_rectangle_list);
+                hw_surface_update_rects(to_clear_rectangle_list);
             }
             //next step is to clear the rectangle list.
             to_clear_rectangle_list.clear();
@@ -88,7 +88,7 @@ void Application::run(){
      *        A copy is made, so it is safe to release the rectangle on return.
      */
 void Application::invalidate_rect(const Rect &rect){
-    to_clear_rectangle_list.push_back(rect);
+    to_clear_rectangle_list.push_front(rect);
 }
 
 /**

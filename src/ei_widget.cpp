@@ -210,7 +210,8 @@ void Widget::addTag(string newTag){
 
 void Widget::removeChildren(Widget *widget)
 {
-   std::list<Widget*> &c_list =widget->getParent()->getChildren();
+    cout<<widget->getParent()->getName()<<endl;
+   std::list<Widget*>& c_list =widget->getParent()->getChildren();
    for(std::list<Widget*>::iterator it = c_list.begin(); it!=c_list.end();){
        if((*it)->getPick_id()== widget->getPick_id()){
            it=c_list.erase(it);
@@ -303,6 +304,7 @@ string Widget::to_string()
    return stream.str();
 }
 
+
 //Getter & Setter
 int Toplevel::getBorder_width() const
 {
@@ -312,6 +314,16 @@ int Toplevel::getBorder_width() const
 Rect Toplevel::getContainer() const
 {
     return container;
+}
+
+bool_t Toplevel::getTo_forget() const
+{
+    return to_forget;
+}
+
+void Toplevel::setTo_forget(const bool_t &value)
+{
+    to_forget = value;
 }
 
 widgetclass_name_t Widget::getName(){
@@ -328,7 +340,7 @@ Widget* Widget::getParent() {
     return parent;
 }
 
-std::list<Widget*> & Widget::getChildren(){
+std::list<Widget*>& Widget::getChildren(){
     return children;
 }
 

@@ -33,17 +33,21 @@ bool_t resize_button_callback(Widget* widget, Event* event, void* user_param){
     if(event->type==ei_ev_mouse_buttonup){
         if(top->resizing()) {
             top->set_resize_button_pressed(EI_FALSE);
-            return EI_TRUE;
+            return EI_FALSE;
         }
     }else if(event->type==ei_ev_mouse_buttondown){
+        MouseEvent* e = static_cast<MouseEvent*>(event);
         top->set_resize_button_pressed(EI_TRUE);
+        top->setMouse_pos(e->where);
         return EI_TRUE;
     }else if(event->type==ei_ev_mouse_move){
         if(top->resizing()){
             MouseEvent* e = static_cast<MouseEvent*>(event);
             if(Application::getInstance()->inside_root(e->where)){
-                int new_width = (e->where.x())-(top->getScreen_location().top_left.x());
-                int new_height = (e->where.y())-(top->getScreen_location().top_left.y());
+                int dx = e->where.x()-top->getMouse_pos().x();
+                int dy = e->where.y()-top->getMouse_pos().y();
+                int new_width = top->getRequested_size().width()+dx-top->getBorder_width()*2;
+                int new_height = top->getRequested_size().height()+dy-top->getBorder_width()-top->getTop_bar_height();
                 //Limit the top level to a minimal size
                 if(new_width < top->getMin_size().width())new_width = top->getMin_size().width();
                 if(new_height < top->getMin_size().height())new_height = top->getMin_size().height();
@@ -51,6 +55,8 @@ bool_t resize_button_callback(Widget* widget, Event* event, void* user_param){
                 Size *new_size = new Size(new_width,new_height);
                 top->configure(new_size,NULL,NULL,NULL,NULL,NULL,NULL);
                 delete(new_size);
+                //update the last position of the mouse
+                top->setMouse_pos(e->where);
                 return EI_TRUE;
             }
         }
@@ -65,8 +71,8 @@ bool_t button_close_callback(Widget* widget, Event* event, void* user_param){
         if(event->type==ei_ev_mouse_buttonup &&
                 Application::getInstance()->widget_pick(e->where)->getPick_id()==top->getButton_close()->getPick_id()){
             top->getGeom_manager()->release(top);
-            delete top;
-            return EI_TRUE;
+            top->setTo_forget(EI_TRUE);
+            return EI_FALSE;
         }
         top->set_button_close_pressed(EI_FALSE);//optimization
     }else if(event->type==ei_ev_mouse_buttondown &&
@@ -149,22 +155,11 @@ Toplevel::~Toplevel(){
     EventManager::getInstance().unbind(ei_ev_mouse_buttonup, resize_button, "",resize_button_callback , this);
     EventManager::getInstance().unbind(ei_ev_mouse_buttondown, resize_button, "",resize_button_callback , this);
     EventManager::getInstance().unbind(ei_ev_mouse_move, resize_button, "",resize_button_callback , this);
-    //unbind topbar mov
-    EventManager::getInstance().unbind(ei_ev_mouse_buttonup, NULL, TOPLEVEL_NAME,topbar_move_callback , this);
-    EventManager::getInstance().unbind(ei_ev_mouse_buttondown, NULL, TOPLEVEL_NAME,topbar_move_callback , this);
-    EventManager::getInstance().unbind(ei_ev_mouse_move, NULL, TOPLEVEL_NAME,topbar_move_callback , this);
+
+
     EventManager::getInstance().deleteWidget(this);
-    std::list<Widget*>&c_list =children;
-    for(std::list<Widget*>::iterator it = c_list.begin();it!= c_list.end();it++){
-        //delete button close only if it exist
-        if((*it)->getPick_id()==button_close->getPick_id()){
-            if(closable){
-                delete (*it);
-            }
-        }
-        else//delete children
-            delete (*it);
-    }
+
+    if(closable_done)delete button_close;
     //delete toplevel basic placer
     delete p_button_close;
     delete p_resize_button;
@@ -172,11 +167,14 @@ Toplevel::~Toplevel(){
     //TODO update pick surface with parant's pick color
     //remove from parent's child list
     if(getParent()){
-        //getParent()->removeChildren(this);
-//        getParent()->draw(Application::getInstance()->get_root_window(),
-//                          Application::getInstance()->get_offscreen(),getParent()->getContent_rect());
+        getParent()->removeChildren(this);
+        getParent()->draw(Application::getInstance()->get_root_window(),
+                          Application::getInstance()->get_offscreen(),getParent()->getContent_rect());
         Application::getInstance()->invalidate_rect(*getParent()->getContent_rect());
     }
+    EventManager::getInstance().bind(ei_ev_mouse_buttonup, NULL, TOPLEVEL_NAME,topbar_move_callback , this);
+    EventManager::getInstance().bind(ei_ev_mouse_buttondown, NULL, TOPLEVEL_NAME,topbar_move_callback , this);
+    EventManager::getInstance().bind(ei_ev_mouse_move, NULL, TOPLEVEL_NAME,topbar_move_callback , this);
 
 }
 
@@ -208,6 +206,8 @@ bool_t Toplevel::inside_top_bar(Point where) const{
 void Toplevel::draw (surface_t surface,
                      surface_t pick_surface,
                      Rect*     clipper){
+    //case when button close has been trigged
+    if(to_forget) return;
 
     if(!surface){
         fprintf(stderr,"Error occured for Frame::draw - surface is not valid\n");
@@ -254,73 +254,41 @@ void Toplevel::drawBasic_toplevel(surface_t surface, surface_t pick_surface, Rec
         fprintf(stderr,"Error occured for Frame::draw - surface or pick_surface is not valid\n");
         exit(EXIT_FAILURE);
     }
-    linked_point_t list_point;
-    //Outside the container
-    int border = int(border_width);
-    int top_bar = int(top_bar_height);
-    int r_height = int(requested_size.height());
-    int r_width = int(requested_size.width());
-    //Assign to the list of point each point we need in order to draw the basic toplevel
-    list_point.push_back(Point(screen_location.top_left.x()+border,
-                               screen_location.top_left.y()+top_bar));
 
-    list_point.push_back(Point(screen_location.top_left.x(),
-                               screen_location.top_left.y()+top_bar));
-
-    list_point.push_back(Point(screen_location.top_left.x(),
-                               screen_location.top_left.y()+r_height));
-
-    list_point.push_back(Point(screen_location.top_left.x()+r_width,
-                               screen_location.top_left.y()+r_height));
-
-    list_point.push_back(Point(screen_location.top_left.x()+r_width,
-                               screen_location.top_left.y()));
-
-    list_point.push_back(screen_location.top_left);
-
-    list_point.push_back(Point(screen_location.top_left.x(),
-                               screen_location.top_left.y()+top_bar));
-
-    list_point.push_back(Point(screen_location.top_left.x()+r_width-border,
-                               screen_location.top_left.y()+top_bar));
-
-    list_point.push_back(Point(screen_location.top_left.x()+r_width-border,
-                               screen_location.top_left.y()+r_height-border));
-    list_point.push_back(Point(screen_location.top_left.x()+border,
-                               screen_location.top_left.y()+r_height-border));
-
-    //Finally draw the top_level with the list of points
-    draw_polygon(surface,list_point,color,clipper);
-
-    //Draw pick_surface outside the container
+    int LR_height = requested_size.height()-top_bar_height-border_width;
     pick_color.alpha=ALPHA_MAX;
-    draw_polygon(pick_surface,list_point,pick_color,clipper);
+    //Top bar rectangle
+    Rect topbar_rec= Rect(screen_location.top_left,Size(requested_size.width(),top_bar_height));
+    draw_rectangle(pick_surface,topbar_rec,pick_color,clipper);
+    draw_rectangle(surface,topbar_rec,color,clipper);
 
+    //left border rec
+    Rect left_border_rec = Rect(Point(screen_location.top_left.x(),screen_location.top_left.y()+top_bar_height),Size(border_width,LR_height));
+    draw_rectangle(pick_surface,left_border_rec,pick_color,clipper);
+    draw_rectangle(surface,left_border_rec,color,clipper);
+
+    //right border rec
+    Rect right_border_rec = Rect(Point(screen_location.top_left.x()+requested_size.width()-border_width,screen_location.top_left.y()+top_bar_height),
+                                 Size(border_width,LR_height));
+    draw_rectangle(pick_surface,right_border_rec,pick_color,clipper);
+    draw_rectangle(surface,right_border_rec,color,clipper);
+
+    //buttom border rec
+    Rect buttom_border_rec = Rect(Point(screen_location.top_left.x(),screen_location.top_left.y()+requested_size.height()-border_width),
+                                 Size(requested_size.width(),border_width));
+    draw_rectangle(pick_surface,buttom_border_rec,pick_color,clipper);
+    draw_rectangle(surface,buttom_border_rec,color,clipper);
+
+    //Draw toplevel background that means the container zone
     color_t color_white = {255,255,255,ALPHA_MAX};
-    //Draw toplevel background
-    linked_point_t list_point_bgr;
-    //Assign list of points we used in order to draw the toplevel background
-    list_point_bgr.push_back(content_rect->top_left);
-    list_point_bgr.push_back(Point(content_rect->top_left.x(),
-                                   content_rect->top_left.y()+int(content_rect->size.height())));
-    list_point_bgr.push_back(Point(content_rect->top_left.x()+int(content_rect->size.width()),
-                                   content_rect->top_left.y()+int(content_rect->size.height())));
-    list_point_bgr.push_back(Point(content_rect->top_left.x()+int(content_rect->size.width()),
-                                   content_rect->top_left.y()));
-//    /draw_polygon(surface,list_point_bgr,color_white,clipper);
-    draw_rectangle(surface,*content_rect,color_white,clipper);
-    //Draw pick_surface outside the container
-    hw_surface_lock(pick_surface);
-    pick_color.alpha=ALPHA_MAX;
-//    draw_polygon(pick_surface,list_point_bgr,pick_color,clipper);
     draw_rectangle(pick_surface,*content_rect,pick_color,clipper);
-    hw_surface_unlock(pick_surface);
+    draw_rectangle(surface,*content_rect,color_white,clipper);
 
 
     //Title of the window
     Point where = Point(screen_location.top_left.x()+40,screen_location.top_left.y()+int(top_bar_height*0.05));
     font_t title_font=hw_text_font_create(default_font_filename, int(top_bar_height*0.8));
-    draw_text(surface,&where,title,title_font,&color_white);
+    draw_text(surface,&where,title,title_font,&color_white,NULL);
     hw_text_font_free(title_font);
 
 }
