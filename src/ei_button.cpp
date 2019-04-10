@@ -77,7 +77,10 @@ Button::Button(Widget *parent) : Widget(BUTTON_NAME, parent){
     * @brief   Destructor of Button widget
  */
 Button::~Button()
-{   EventManager::getInstance().deleteWidget(this);
+{
+    EventManager::getInstance().unbind(ei_ev_mouse_buttondown, this, "", button_click_down, NULL);
+    EventManager::getInstance().unbind(ei_ev_mouse_buttonup, this, "", button_click_up, NULL);
+    EventManager::getInstance().deleteWidget(this);
     if(getParent()){
         //getParent()->removeChildren(this);
         Application::getInstance()->invalidate_rect(*getParent()->getContent_rect());

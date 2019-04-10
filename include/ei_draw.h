@@ -109,6 +109,13 @@ void draw_text(surface_t surface, const Point *where,
                const color_t *color);
 
 /**
+ * @brief draw_rectangle
+ * @param r
+ * @param color
+ * @param clipper
+ */
+void draw_rectangle(surface_t surface,Rect r,const color_t color, Rect * clipper);
+/**
  * \brief Fills the surface with the specified color.
  *
  * @param surface   The surface to be filled. The surface must be *locked* by \ref hw_surface_lock.

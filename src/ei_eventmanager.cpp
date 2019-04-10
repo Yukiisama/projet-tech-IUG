@@ -175,7 +175,13 @@ void EventManager::unbind(ei_eventtype_t eventtype,
 void EventManager::eventHandler(Event *event)
 {
 
+    if( event->type == ei_ev_keydown ){
+        KeyEvent * ev_key= static_cast<KeyEvent*>  (event);
+        if(ev_key->key_sym == ALLEGRO_KEY_Q){
+            Application::getInstance()->quit_request();
+        }
 
+    }
 
     //Iterate and callback the associated function to the event
     for (std::vector<param_callback>::iterator it = hashMap[event->type].begin(); it != hashMap[event->type].end(); ++it)

@@ -52,8 +52,7 @@ Application::~Application(){
      */
 void Application::run(){
     running = true;
-    //used to limit fps of the application
-    double current_time ;
+    update_time  = hw_now();
     //We first need to add the window rect to invalid rect list in order to update it at launch
     Rect window_rect = hw_surface_get_rect(root_window);
     invalidate_rect(window_rect);
@@ -61,34 +60,23 @@ void Application::run(){
      *Then update the screen and limit it to 60 fps
      */
 
-    KeyEvent * ev_key;
+
     while(running){
         Event *ev=hw_event_wait_next();
-        if( ev->type == ei_ev_keydown ){
-             ev_key= static_cast<KeyEvent*>  (ev);
-            if(ev_key->key_sym == ALLEGRO_KEY_Q){
-                running=false;
-                quit_request();
-            }
+        EventManager::getInstance().eventHandler(ev);
 
-        }else{
-            EventManager::getInstance().eventHandler(ev);
-        }
-        current_time = hw_now();
-        if(update_time<=current_time){
+        if(hw_now()-update_time>FPS_MAX){
             //Screen need to be update , draw the widgets then update rects
             if(!to_clear_rectangle_list.empty()){
                 widget_root->draw(root_window,offscreen,widget_root->getContent_rect());
-                hw_surface_update_rects(to_clear_rectangle_list);
+                //hw_surface_update_rects(to_clear_rectangle_list);
             }
             //next step is to clear the rectangle list.
             to_clear_rectangle_list.clear();
-            update_time  = current_time + FPS_MAX;
+            update_time  = hw_now();
         }
         delete ev;
     }
-
-
     return;
 }
 

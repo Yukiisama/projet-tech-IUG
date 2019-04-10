@@ -444,6 +444,13 @@ void draw_text(surface_t surface, const Point* where,
 
     hw_surface_free(s_text);
 }
+void draw_rectangle(surface_t surface, Rect r,const color_t color,  Rect * clipper){
+    hw_surface_lock(surface);
+    for(int i = r.top_left.y();i<=r.top_left.y()+r.size.height();i++){
+        draw_line(surface,Point(r.top_left.x(),i),Point(r.top_left.x()+r.size.width(),i),color,clipper);
+    }
+    hw_surface_unlock(surface);
+}
 
 void fill(surface_t surface, const color_t* color, const bool_t use_alpha)
 {
