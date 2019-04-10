@@ -213,10 +213,11 @@ void EventManager::eventHandler(Event *event)
                 }
                 if(!button->getParent()->getName().compare("Toplevel")){
                     Toplevel* toplevel = static_cast<Toplevel*>(button->getParent());
-                    toplevel->set_resize_button_pressed(EI_FALSE);
+                    toplevel->setResize_button_pressed(EI_FALSE);
                 }
                 MouseEvent * me= static_cast<MouseEvent*>(event);
-                if(Application::getInstance()->widget_pick(me->where)->getPick_id()==it->widget->getPick_id()){
+
+                if(Application::getInstance()->inside_root(me->where) && Application::getInstance()->widget_pick(me->where)->getPick_id()==it->widget->getPick_id()){
                     if(it->callback(it->widget, event, it->user_param)){
                         Application::getInstance()->invalidate_rect((*it->widget->getContent_rect()));
                         break;

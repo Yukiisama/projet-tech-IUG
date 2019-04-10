@@ -310,25 +310,7 @@ string Widget::to_string()
 
 
 //Getter & Setter
-int Toplevel::getBorder_width() const
-{
-    return border_width;
-}
 
-Rect Toplevel::getContainer() const
-{
-    return container;
-}
-
-bool_t Toplevel::getTo_forget() const
-{
-    return to_forget;
-}
-
-void Toplevel::setTo_forget(const bool_t &value)
-{
-    to_forget = value;
-}
 
 widgetclass_name_t Widget::getName(){
     if(!name.empty()) return name ;
@@ -400,6 +382,15 @@ void Widget::setColor(color_t color){
 void Widget::setBorder_width(int border_width){
     this->border_width=border_width;
 }
+
+
+
+
+
+
+
+
+
 //End Getter Setter
 
 }

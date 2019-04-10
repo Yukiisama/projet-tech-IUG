@@ -31,17 +31,17 @@ namespace ei {
 bool_t resize_button_callback(Widget* widget, Event* event, void* user_param){
     Toplevel* top = static_cast<Toplevel*>(user_param);
     if(event->type==ei_ev_mouse_buttonup){
-        if(top->resizing()) {
-            top->set_resize_button_pressed(EI_FALSE);
+        if(top->getResize_button_pressed()) {
+            top->setResize_button_pressed(EI_FALSE);
             return EI_FALSE;
         }
     }else if(event->type==ei_ev_mouse_buttondown){
         MouseEvent* e = static_cast<MouseEvent*>(event);
-        top->set_resize_button_pressed(EI_TRUE);
+        top->setResize_button_pressed(EI_TRUE);
         top->setMouse_pos(e->where);
         return EI_TRUE;
     }else if(event->type==ei_ev_mouse_move){
-        if(top->resizing()){
+        if(top->getResize_button_pressed()){
             MouseEvent* e = static_cast<MouseEvent*>(event);
             if(Application::getInstance()->inside_root(e->where)){
                 int dx = e->where.x()-top->getMouse_pos().x();
@@ -71,17 +71,17 @@ bool_t resize_button_callback(Widget* widget, Event* event, void* user_param){
 bool_t button_close_callback(Widget* widget, Event* event, void* user_param){
     Toplevel* top = static_cast<Toplevel*>(user_param);
     MouseEvent* e = static_cast<MouseEvent*>(event);
-    if(top->closing()){
+    if(top->getButton_close_pressed()){
         if(event->type==ei_ev_mouse_buttonup &&
                 Application::getInstance()->widget_pick(e->where)->getPick_id()==top->getButton_close()->getPick_id()){
             top->getGeom_manager()->release(top);
             top->setTo_forget(EI_TRUE);
             return EI_FALSE;
         }
-        top->set_button_close_pressed(EI_FALSE);//optimization
+        top->setButton_close_pressed(EI_FALSE);//optimization
     }else if(event->type==ei_ev_mouse_buttondown &&
              Application::getInstance()->widget_pick(e->where)->getPick_id()==top->getButton_close()->getPick_id()){
-        top->set_button_close_pressed(EI_TRUE);
+        top->setButton_close_pressed(EI_TRUE);
         return EI_TRUE;
     }
     return EI_FALSE;
@@ -90,33 +90,69 @@ bool_t button_close_callback(Widget* widget, Event* event, void* user_param){
 bool_t topbar_move_callback(Widget* widget, Event* event, void* user_param){
     Toplevel* top = static_cast<Toplevel*>(user_param);
     MouseEvent* e = static_cast<MouseEvent*>(event);
-    if(top->moving()&& event->type==ei_ev_mouse_buttonup){
-        top->set_top_bar_clicked(EI_FALSE);
-        return EI_FALSE;
+    if(top->getTop_bar_clicked()&& event->type==ei_ev_mouse_buttonup){
+        top->setTop_bar_clicked(EI_FALSE);
+        top->setHalfScreen(EI_FALSE);
+        return EI_TRUE;
     }else if(event->type==ei_ev_mouse_buttondown &&
              Application::getInstance()->widget_pick(e->where)->getPick_id()==top->getPick_id()){
         if(top->inside_top_bar(e->where)){
             //Tells the toplevel that its top_bar is clicked
-            if(!top->moving()){
-                top->set_top_bar_clicked(EI_TRUE);
+            if(!top->getTop_bar_clicked()){
+                top->setTop_bar_clicked(EI_TRUE);
                 top->setMouse_pos(e->where);
              }
             return EI_FALSE;
         }
-    }else if(top->moving() && event->type==ei_ev_mouse_move && Application::getInstance()->inside_root(e->where)){
-        int move_x = (e->where.x())-(top->getMouse_pos().x());
-        int move_y = (e->where.y())-(top->getMouse_pos().y());
-        //we return if the movement result is 0 or just incredibly insignifiant
-        if(move_x==0.0 && move_y==0.0)return EI_FALSE;
-        if(move_x!= 0.0 && (move_x * move_x)/2<1) return EI_FALSE;
-        if(move_y!= 0.0 && (move_y * move_y)/2<1) return EI_FALSE;
-        //Update geom_manager x & y to update the position of toplevel
-        top->getGeom_manager()->setX(int(top->getScreen_location().top_left.x()+move_x));
-        top->getGeom_manager()->setY(int(top->getScreen_location().top_left.y()+move_y));
-        //finally run the geom_manager that will result in updating the position
-        top->getGeom_manager()->run(top);
-        top->setMouse_pos(e->where);
-        return EI_TRUE;
+    }else if(top->getTop_bar_clicked() && event->type==ei_ev_mouse_move && Application::getInstance()->inside_root(e->where)){
+        if(e->where.x()==top->getParent()->getContent_rect()->top_left.x() &&!top->getHalfScreen()){
+            top->setHalfScreen(EI_TRUE);
+            top->setPre_pos(top->getScreen_location().top_left);
+            top->setPre_size(top->getContent_rect()->size);
+            top->getGeom_manager()->setX(top->getParent()->getContent_rect()->top_left.x());
+            top->getGeom_manager()->setY(top->getParent()->getContent_rect()->top_left.y());
+            Size *new_size = new Size(top->getParent()->getContent_rect()->size.width()/2,top->getParent()->getContent_rect()->size.height()-top->getTop_bar_height()-top->getBorder_width());
+            top->configure(new_size,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr);
+            delete(new_size);
+            return EI_TRUE;
+        }else if(e->where.x()==top->getParent()->getContent_rect()->top_left.x()+top->getParent()->getContent_rect()->size.width()
+                 && !top->getHalfScreen()){
+            top->setHalfScreen(EI_TRUE);
+            top->setPre_pos(top->getScreen_location().top_left);
+            top->setPre_size(top->getContent_rect()->size);
+            top->getGeom_manager()->setX(top->getParent()->getContent_rect()->top_left.x()+top->getParent()->getContent_rect()->size.width()/2);
+            top->getGeom_manager()->setY(top->getParent()->getContent_rect()->top_left.y());
+            Size *new_size = new Size(top->getParent()->getContent_rect()->size.width()/2,top->getParent()->getContent_rect()->size.height()-top->getTop_bar_height()-top->getBorder_width());
+            top->configure(new_size,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr);
+            delete(new_size);
+            return EI_TRUE;
+        }else if(top->getHalfScreen() && e->where.x()>top->getParent()->getContent_rect()->top_left.x()+top->getTop_bar_height()
+                 && e->where.x()<top->getParent()->getContent_rect()->top_left.x()+top->getParent()->getContent_rect()->size.width()-top->getTop_bar_height()){
+            top->setHalfScreen(EI_FALSE);
+            top->getGeom_manager()->setX(top->getPre_pos().x());
+            top->getGeom_manager()->setY(top->getPre_pos().y());
+            Size *new_size = new Size(top->getPre_size().width(),top->getPre_size().height());
+            top->configure(new_size,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr);
+            delete(new_size);
+            top->setPre_pos(Point(0,0));
+            top->setPre_size(Size(0,0));
+            return EI_TRUE;
+        }else{
+            int move_x = (e->where.x())-(top->getMouse_pos().x());
+            int move_y = (e->where.y())-(top->getMouse_pos().y());
+            //we return if the movement result is 0 or just incredibly insignifiant
+            if(move_x==0.0 && move_y==0.0)return EI_FALSE;
+            if(move_x!= 0.0 && (move_x * move_x)/2<1) return EI_FALSE;
+            if(move_y!= 0.0 && (move_y * move_y)/2<1) return EI_FALSE;
+            //Update geom_manager x & y to update the position of toplevel
+            top->getGeom_manager()->setX(int(top->getScreen_location().top_left.x()+move_x));
+            top->getGeom_manager()->setY(int(top->getScreen_location().top_left.y()+move_y));
+            //finally run the geom_manager that will result in updating the position
+            top->getGeom_manager()->run(top);
+            top->setMouse_pos(e->where);
+            return EI_TRUE;
+        }
+
     }
     return EI_FALSE;
 }
@@ -365,117 +401,181 @@ void Toplevel::configure (Size*           requested_size,
     if(geom_manager)geom_manager->run(this);
 }
 
-bool_t Toplevel::moving() const{
-    return top_bar_clicked;
-}
 
-bool_t Toplevel::resizing() const{
-    return resize_button_pressed;
-}
-
-bool_t Toplevel::closing() const{
-    return button_close_pressed;
-}
 
 
 
 //Getter & Setter
+int Toplevel::getBorder_width() const
+{
+    return border_width;
+}
 
-int  Toplevel::get_border_width(){
-    return this->border_width;
+void Toplevel::setBorder_width(int value)
+{
+    border_width = value;
 }
-void Toplevel::set_border_width(int border_width){
-    this->border_width = border_width;
-}
+
 double Toplevel::getTop_bar_height() const
 {
     return top_bar_height;
 }
-void   Toplevel::set_top_bar_height( double top_bar_height){
-    this->top_bar_height = top_bar_height;
-}
-const char * Toplevel::get_title(){
-    return this->title;
-}
-void Toplevel::set_title(const char * title){
-    this->title = title;
-}
-bool_t Toplevel::get_closable(){
-    return this->closable;
-}
-void Toplevel::set_closable(bool_t closable){
-    this->closable = closable;
-}
-axis_set_t Toplevel::get_resizable(){
-    return this->resizable;
-}
-void Toplevel::set_resizable(axis_set_t resizable){
-    this->resizable = resizable;
-}
-Size Toplevel::get_min_size(){
-    return this->min_size;
-}
-void Toplevel::set_min_size( Size min_size){
-    this->min_size = min_size;
-}
-Button * Toplevel::get_button_close(){
-    return this->button_close;
-}
-void Toplevel::set_button_close(Button * button_close){
-    this->button_close = button_close;
-}
-Placer * Toplevel::get_p_button_close(){
-    return this->p_button_close;
-}
-void Toplevel::set_p_button_close(Placer * p_button_close){
-    this->p_button_close = p_button_close;
-}
-Button * Toplevel::get_resize_button(){
-    return this->resize_button;
-}
-void Toplevel::set_resize_button(Button * resize_button){
-    this->resize_button = resize_button;
-}
-Placer * Toplevel::get_p_resize_button(){
-    return this->p_resize_button;
-}
-void Toplevel::set_p_resize_button(Placer * p_resize_button){
-    this->p_resize_button = p_resize_button;
-}
-Placer * Toplevel::get_p_in_window(){
-    return this->p_in_window;
-}
-void Toplevel::set_p_in_window(Placer * p_in_window){
-    this->p_in_window = p_in_window;
-}
-void Toplevel::set_top_bar_clicked(bool_t clicking){
-    top_bar_clicked = clicking;
+
+void Toplevel::setTop_bar_height(double value)
+{
+    top_bar_height = value;
 }
 
-void Toplevel::set_resize_button_pressed(bool_t pressed){
-    resize_button_pressed = pressed;
+const char *Toplevel::getTitle() const
+{
+    return title;
 }
 
-void Toplevel::set_button_close_pressed(bool_t pressed){
-    button_close_pressed = pressed;
+void Toplevel::setTitle(const char *value)
+{
+    title = value;
+}
+
+bool_t Toplevel::getClosable() const
+{
+    return closable;
+}
+
+void Toplevel::setClosable(const bool_t &value)
+{
+    closable = value;
+}
+
+axis_set_t Toplevel::getResizable() const
+{
+    return resizable;
+}
+
+void Toplevel::setResizable(const axis_set_t &value)
+{
+    resizable = value;
+}
+
+Size Toplevel::getMin_size() const{
+    return min_size;
+}
+
+void Toplevel::setMin_size(const Size &value)
+{
+    min_size = value;
+}
+
+Size Toplevel::getButton_size() const
+{
+    return button_size;
+}
+
+void Toplevel::setButton_size(const Size &value)
+{
+    button_size = value;
 }
 
 Button* Toplevel::getButton_close() const{
     return button_close;
 }
 
+void Toplevel::setButton_close(Button *value)
+{
+    button_close = value;
+}
+
+Size Toplevel::getResize_button_window_size() const
+{
+    return resize_button_window_size;
+}
+
+void Toplevel::setResize_button_window_size(const Size &value)
+{
+    resize_button_window_size = value;
+}
+
+Placer *Toplevel::getP_button_close() const
+{
+    return p_button_close;
+}
+
+void Toplevel::setP_button_close(Placer *value)
+{
+    p_button_close = value;
+}
+
+
 Button* Toplevel::getResize_button() const{
     return resize_button;
 }
 
+void Toplevel::setResize_button(Button *value)
+{
+    resize_button = value;
+}
 
+Placer *Toplevel::getP_resize_button() const
+{
+    return p_resize_button;
+}
+
+void Toplevel::setP_resize_button(Placer *value)
+{
+    p_resize_button = value;
+}
+
+Rect Toplevel::getContainer() const
+{
+    return container;
+}
+
+void Toplevel::setContainer(const Rect &value)
+{
+    container = value;
+}
+
+Placer *Toplevel::getP_in_window() const
+{
+    return p_in_window;
+}
+
+void Toplevel::setP_in_window(Placer *value)
+{
+    p_in_window = value;
+}
+
+bool_t Toplevel::getTop_bar_clicked() const
+{
+    return top_bar_clicked;
+}
+
+void Toplevel::setTop_bar_clicked(const bool_t &value)
+{
+    top_bar_clicked = value;
+}
+
+bool_t Toplevel::getResize_button_pressed() const
+{
+    return resize_button_pressed;
+}
+
+void Toplevel::setResize_button_pressed( bool_t value)
+{
+    resize_button_pressed = value;
+}
+
+bool_t Toplevel::getButton_close_pressed() const
+{
+    return button_close_pressed;
+}
+
+void Toplevel::setButton_close_pressed(const bool_t &value)
+{
+    button_close_pressed = value;
+}
 
 Point Toplevel::getMouse_pos() const{
     return mouse_pos;
-}
-
-Size Toplevel::getMin_size() const{
-    return min_size;
 }
 
 void Toplevel::setMouse_pos(Point point){
@@ -485,6 +585,63 @@ void Toplevel::setMouse_pos(Point point){
 void Toplevel::setContainer_topleft(Point contopleft){
     container.top_left=contopleft;
 }
+
+bool_t Toplevel::getClosable_done() const
+{
+    return closable_done;
+}
+
+void Toplevel::setClosable_done(const bool_t &value)
+{
+    closable_done = value;
+}
+
+
+bool_t Toplevel::getTo_forget() const
+{
+    return to_forget;
+}
+
+void Toplevel::setTo_forget(const bool_t &value)
+{
+    to_forget = value;
+}
+
+Point Toplevel::getPre_pos() const
+{
+    return pre_pos;
+}
+
+void Toplevel::setPre_pos(const Point &value)
+{
+    pre_pos = value;
+}
+
+Size Toplevel::getPre_size() const
+{
+    return pre_size;
+}
+
+void Toplevel::setPre_size(const Size &value)
+{
+    pre_size = value;
+}
+
+bool_t Toplevel::getHalfScreen() const
+{
+    return halfScreen;
+}
+
+void Toplevel::setHalfScreen(const bool_t &value)
+{
+    halfScreen = value;
+}
+
+
+
+
+
+
 //End Getter & Setter
 
 }
