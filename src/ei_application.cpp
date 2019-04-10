@@ -42,7 +42,7 @@ Application::Application(Size* main_window_size){
 Application::~Application(){
     hw_surface_free(this->offscreen);
     hw_quit();
-    delete widget_root;
+    delete (widget_root);
 }
 
 

@@ -428,7 +428,7 @@ void draw_button(surface_t surface, Rect *rect, const color_t color, int radius,
 
 void draw_text(surface_t surface, const Point* where,
                   const char* text, const font_t font,
-                  const color_t* color)
+                  const color_t* color,Rect* clipper)
 {
     if (text == NULL || color == NULL){
         fprintf(stderr, "no text or color specified");
@@ -440,7 +440,33 @@ void draw_text(surface_t surface, const Point* where,
     } else {
         s_text = hw_text_create_surface(text, font, color);
     }
-    ei_copy_surface(surface, s_text, where, EI_TRUE);
+
+    color_t p;
+    color_t d;
+    color_t f;
+    Point src_pos=Point(0,0);
+    Point dst_pos;
+    src_pos.x()=0;src_pos.y()=0;
+    hw_surface_lock(surface);
+    hw_surface_lock(s_text);
+    Size size =hw_surface_get_size(s_text);
+    for(int y = where->y();y<where->y()+size.height();y++){
+        for(int x= where->x();x<where->x()+size.width();x++){
+            if(clipper==NULL || ((clipper->top_left.x()<=x) &&(x<clipper->top_left.x()+clipper->size.width())
+                                 && (clipper->top_left.y()<=y) &&(y<clipper->top_left.y() + clipper->size.height()))){
+                p=hw_get_pixel(s_text,src_pos);
+                dst_pos.x()=x;dst_pos.y()=y;
+                d=hw_get_pixel(surface,dst_pos);
+                f=alpha_blend(p,d);
+                hw_put_pixel(surface,dst_pos,f);
+                src_pos.x()=src_pos.x()+1;
+            }
+        }
+        src_pos.y()=src_pos.y()+1;
+        src_pos.x()=0;
+    }
+    hw_surface_unlock(surface);
+    hw_surface_unlock(s_text);
 
     hw_surface_free(s_text);
 }

@@ -98,11 +98,9 @@ Button::Button(Widget *parent, const widgetclass_name_t &class_name) : Widget(cl
  */
 Button::~Button()
 {
-    EventManager::getInstance().unbind(ei_ev_mouse_buttondown, this, "", button_click_down, NULL);
-    EventManager::getInstance().unbind(ei_ev_mouse_buttonup, this, "", button_click_up, NULL);
     EventManager::getInstance().deleteWidget(this);
     if(getParent()){
-        //getParent()->removeChildren(this);
+        getParent()->removeChildren(this);
         Application::getInstance()->invalidate_rect(*getParent()->getContent_rect());
     }
     hw_text_font_free(text_font);
@@ -132,7 +130,6 @@ void Button::draw(surface_t surface,
 
     //The Rect of the button.
     Rect button_rect = Rect(content_rect->top_left,content_rect->size);
-    //Draw on pick_surface the forme of button with button's pick_color.
     //The list of points to draw the button
     linked_point_t list_frame = rounded_frame(button_rect, corner_radius, BT_FULL);
     pick_color.alpha=ALPHA_MAX;
@@ -149,7 +146,7 @@ void Button::draw(surface_t surface,
         hw_text_compute_size(text,text_font,text_size);
         Point where = text_anchor_to_pos(*content_rect, text_anchor,text_size,border_width);
         //Finally draw the text at the where position
-        draw_text(surface, &where, text, text_font, &text_color);
+        draw_text(surface, &where, text, text_font, &text_color,content_rect);
     }
     if(img){
         //Case where only subpart of img should be display.
@@ -235,7 +232,7 @@ void Button::configure(Size *requested_size,
     Widget::configure(requested_size,color);
     //Assign values and run the geometry manager
     (corner_radius) ? this->corner_radius = *corner_radius : this->corner_radius = default_button_corner_radius;
-    (border_width) ? this->border_width = *border_width : this->border_width = 0;
+    (border_width) ? this->border_width = *border_width : this->border_width = default_button_border_width;
     (relief) ? this->relief = *relief : this->relief = ei_relief_none;
     if(text && !img) this->text = *text;
     (text_color) ? this->text_color = *text_color : this->text_color = font_default_color;

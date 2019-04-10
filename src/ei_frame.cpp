@@ -33,16 +33,10 @@ Frame::Frame(Widget *parent):Widget(FRAME_NAME,parent){
      * \brief   Frame deconstructor.
 **/
 Frame::~Frame(){
-    //[BUG] Fait crasher à la fin
-    EventManager::getInstance().deleteWidget(this);
-    std::list<Widget*>c_list =children;
-    for(std::list<Widget*>::iterator it = c_list.begin();it!= c_list.end();it++){
-            delete (*it);
-    }
-    if(getParent()){
+    if(getName().compare("root")){
         getParent()->removeChildren(this);
-        Application::getInstance()->invalidate_rect(*getParent()->getContent_rect());
     }
+    EventManager::getInstance().deleteWidget(this);
     hw_text_font_free(text_font);
 }
 /**
@@ -89,7 +83,7 @@ void Frame::draw(surface_t surface,
     if (text)
     {
         Point where = anchor_to_pos(screen_location, text_anchor);
-        draw_text(surface, &where, text, text_font, &text_color);
+        draw_text(surface, &where, text, text_font, &text_color,content_rect);
     }
     if(img){
         //Case where only subpart of img should be display.
