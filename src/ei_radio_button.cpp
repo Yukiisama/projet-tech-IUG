@@ -51,7 +51,8 @@ void RadioButton::draw (surface_t surface,
     surface_t textSurface = hw_text_create_surface(get_text(), this->get_text_font(), &t);
     Size sizeText = hw_surface_get_size(textSurface);
     Point posTexte;
-    posTexte.x() = screen_location.top_left.x()+screen_location.size.width();
+    int32_t margin = 5;
+    posTexte.x() = margin + screen_location.top_left.x()+int(screen_location.size.width());
     posTexte.y() = screen_location.top_left.y();
     ei_copy_surface(surface, textSurface, &posTexte, EI_TRUE);
 
