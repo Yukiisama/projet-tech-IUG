@@ -48,12 +48,16 @@ bool_t resize_button_callback(Widget* widget, Event* event, void* user_param){
                 int dy = e->where.y()-top->getMouse_pos().y();
                 int new_width = top->getRequested_size().width()+dx-top->getBorder_width()*2;
                 int new_height = top->getRequested_size().height()+dy-top->getBorder_width()-top->getTop_bar_height();
+                float deltaX = top->getContent_rect()->size.width()-new_width;
+                float deltaY = top->getContent_rect()->size.height()-new_height;
+                //we return if the delta is 0 or just incredibly insignifiant
+                if((deltaX * deltaX)/2 <15.0f || (deltaY * deltaY)/2 <15.0f) return EI_FALSE;
                 //Limit the top level to a minimal size
                 if(new_width < top->getMin_size().width())new_width = top->getMin_size().width();
                 if(new_height < top->getMin_size().height())new_height = top->getMin_size().height();
                 //finally update the new size of the top level
                 Size *new_size = new Size(new_width,new_height);
-                top->configure(new_size,NULL,NULL,NULL,NULL,NULL,NULL);
+                top->configure(new_size,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr);
                 delete(new_size);
                 //update the last position of the mouse
                 top->setMouse_pos(e->where);
@@ -93,13 +97,19 @@ bool_t topbar_move_callback(Widget* widget, Event* event, void* user_param){
              Application::getInstance()->widget_pick(e->where)->getPick_id()==top->getPick_id()){
         if(top->inside_top_bar(e->where)){
             //Tells the toplevel that its top_bar is clicked
-            top->set_top_bar_clicked(EI_TRUE);
-            top->setMouse_pos(e->where);
+            if(!top->moving()){
+                top->set_top_bar_clicked(EI_TRUE);
+                top->setMouse_pos(e->where);
+             }
             return EI_FALSE;
         }
     }else if(top->moving() && event->type==ei_ev_mouse_move && Application::getInstance()->inside_root(e->where)){
-        double move_x = (e->where.x())-(top->getMouse_pos().x());
-        double move_y = (e->where.y())-(top->getMouse_pos().y());
+        int move_x = (e->where.x())-(top->getMouse_pos().x());
+        int move_y = (e->where.y())-(top->getMouse_pos().y());
+        //we return if the movement result is 0 or just incredibly insignifiant
+        if(move_x==0.0 && move_y==0.0)return EI_FALSE;
+        if(move_x!= 0.0 && (move_x * move_x)/2<1) return EI_FALSE;
+        if(move_y!= 0.0 && (move_y * move_y)/2<1) return EI_FALSE;
         //Update geom_manager x & y to update the position of toplevel
         top->getGeom_manager()->setX(int(top->getScreen_location().top_left.x()+move_x));
         top->getGeom_manager()->setY(int(top->getScreen_location().top_left.y()+move_y));
@@ -338,7 +348,7 @@ void Toplevel::configure (Size*           requested_size,
     if(min_size)  this->min_size = *min_size;
 
     //Button close (closable done == true if it has already be done)
-    if(this->closable && closable_done==EI_FALSE) {
+    if(this->closable && !closable_done) {
         button_close = new Button(this);
         color_t button_color = {255,0,0,ALPHA_MAX};
         int button_close_radius =BUTTON_RADIUS;
