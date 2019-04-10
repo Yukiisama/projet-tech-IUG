@@ -73,6 +73,26 @@ Button::Button(Widget *parent) : Widget(BUTTON_NAME, parent){
     EventManager::getInstance().bind(ei_ev_mouse_buttonup, this, "", button_click_up, NULL);
 }
 
+Button::Button(Widget *parent, const widgetclass_name_t &class_name) : Widget(class_name, parent){
+    //Initialiaze defaults value
+    border_width = default_button_border_width;
+    corner_radius = default_button_corner_radius;
+    relief=ei_relief_raised;
+    //Initialiaze defaults text value and text is nullptr by default (no text)
+    text=nullptr;
+    text_font= hw_text_font_create(default_font_filename, font_default_size);
+    text_color=font_default_color;
+    text_anchor=ei_anc_center;
+    //Initialiaze defaults img value and img is nullptr by default (no img)
+    img=nullptr;
+    img_rect=nullptr;
+    img_anchor =ei_anc_center;
+    //Tag for later used if event called with tag Button
+    addTag(class_name);
+    //Bind relief button function
+    EventManager::getInstance().bind(ei_ev_mouse_buttondown, this, "", button_click_down, NULL);
+    EventManager::getInstance().bind(ei_ev_mouse_buttonup, this, "", button_click_up, NULL);
+}
 /**
     * @brief   Destructor of Button widget
  */

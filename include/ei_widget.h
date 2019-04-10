@@ -249,6 +249,7 @@ namespace ei {
     {
     public:
         Button(Widget* parent);
+        Button(Widget *parent,const widgetclass_name_t& class_name);
 
         virtual ~Button();
 
@@ -421,6 +422,32 @@ namespace ei {
     bool_t          button_close_pressed=EI_FALSE;
     Point           mouse_pos;
     bool_t closable_done = EI_FALSE;
+    };
+    class RadioButton : public Button
+    {
+    public:
+        RadioButton();
+        RadioButton(Widget * parent);
+        virtual ~RadioButton();
+        virtual void draw (surface_t surface,
+                           surface_t pick_surface,
+                           Rect*     clipper);
+        void configure (Size*            requested_size,
+                        const color_t*   color,
+                        int*             border_width,
+                        int*             corner_radius,
+                        relief_t*        relief,
+                        const char       **text,
+                        font_t*          text_font,
+                        color_t*         text_color,
+                        anchor_t*        text_anchor,
+                        surface_t*       img,
+                        Rect**           img_rect,
+                        anchor_t*        img_anchor);
+        bool_t activate(Widget* widget, Event* event, void* user_param);
+
+
+
     };
 
 }
