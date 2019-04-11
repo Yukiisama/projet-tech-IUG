@@ -71,19 +71,13 @@ bool_t button_click_down2(Widget* widget, Event* event, void* user_param)
     MouseEvent* e = static_cast<MouseEvent*>(event);
     RadioButton* button = static_cast<RadioButton*>(widget);
     if(Application::getInstance()->widget_pick(e->where)->getPick_id()==button->getPick_id()){
-        //button->set_relief(ei_relief_sunken);
-        //[Maybe this comment is outdated]Relief isn't working for a reason that I clearly don't get
-        //It's basically the same behavior that button but won't ,
-        //So I made a strategy , switching the color of the one needed and reset the others linked to old color ,
-        //This for a mysterious reason will do what button->set_relief(ei_relief_sunken) should do ...........
-        //color_t c = {125,125,125,125};
-        //color_t old = button->getColor();
+
         button->set_relief(ei_relief_sunken);
         for(std::list<Widget*>::iterator it =button->getParent()->getChildren().begin();it!= button->getParent()->getChildren().end();it++){
             if(button!=(*it)){
                 RadioButton* iterate_button = static_cast<RadioButton*>((*it));
                 iterate_button->set_relief(ei_relief_raised);
-                //(*it)->setColor(old);
+
             }
         }
         return EI_TRUE;

@@ -180,7 +180,7 @@ void EventManager::eventHandler(Event *event)
 
     if( event->type == ei_ev_keydown ){
         KeyEvent * ev_key= static_cast<KeyEvent*>  (event);
-        if(ev_key->key_sym == ALLEGRO_KEY_Q){
+        if(ev_key->key_sym == ALLEGRO_KEY_F4){
             Application::getInstance()->quit_request();
         }
 
