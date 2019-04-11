@@ -7,6 +7,8 @@
 #include "hw_interface.h"
 #include <iostream>
 #include <algorithm>
+#include <cctype>
+#include <functional>
 
 #define FPS_MAX (1.0/60.0)
 namespace ei {
@@ -67,6 +69,39 @@ bool Application::isIntersect(Rect rect1, Rect rect2){
     }
     return false;
 }
+
+//bool_t Application::rectFusion(Rect* rect1, Rect* rect2){
+//    //if success the fusion rect will be stored in rect1
+//    //find intersection
+//    //if(!isIntersect(*rect1,*rect2)) return EI_FALSE;
+//    int x,y,width,height;
+//    int x1=rect1->top_left.x(),y1 = rect1->top_left.y(),w1=rect1->size.width(),h1=rect1->size.height();
+//    int x2=rect2->top_left.x(),y2 = rect2->top_left.y(),w2=rect2->size.width(),h2=rect2->size.height();
+
+//    x=max(x1,x2);
+//    y=max(y1,y2);
+//    width=min(x1+w1,x2+w2)-x;
+//    height=min(y1+h1,y2+h2)-y;
+//    if(width<0 || height<0) return EI_FALSE;
+
+//    //check if the intersection is big enough
+//    int intersect_area =width*height;
+//    int r1_area = w1*h1;
+//    int r2_area = w2*h2;
+//    int check1 = intersect_area/r1_area *100;
+//    int check2 =intersect_area/r2_area *100;
+//    if(check1<50 || check2<50) return EI_FALSE;
+
+//    //Union
+//    x=min(x1,x2);
+//    y=min(y1,y2);
+//    width=max(x1+w1,x2+w2)-x;
+//    height=max(y1+h1,y2+h2)-y;
+
+//    rect1->top_left=Point(x,y);
+//    rect1->size=Size(width,height);
+//    return EI_TRUE;
+//}
 
 bool_t Application::rectFusion(Rect* rect1, Rect* rect2){
     int new_rect_width = 0;//The width of the fusion of rect1 and rect2
@@ -164,11 +199,11 @@ bool_t Application::rectFusion(Rect* rect1, Rect* rect2){
     return EI_FALSE;
 }
 
-bool compareRectsByPositionX(Rect rect1, Rect rect2){
+bool compareRectsByPositionX(const ei::Rect& rect1,const ei::Rect& rect2){
     return (rect1.top_left.x()<rect2.top_left.x());
 }
 
-bool compareRectsByPositionY(Rect rect1, Rect rect2){
+bool compareRectsByPositionY(const ei::Rect& rect1,const ei::Rect& rect2){
     return (rect1.top_left.y()<rect2.top_left.y());
 }
 
@@ -219,23 +254,26 @@ void Application::run(){
         if(hw_now()-update_time>FPS_MAX){
             //Screen need to be update , draw the widgets then update rects
             if(!to_clear_rectangle_list.empty()){
-                /*std::cout<<"\nrect nb at first :"<<to_clear_rectangle_list.size()<<endl;
+                std::cout<<"\nrect nb at first :"<<to_clear_rectangle_list.size()<<endl;
                 for(linked_rect_t::iterator it = to_clear_rectangle_list.begin(); it!=to_clear_rectangle_list.end();++it){
                    std::cout<<"rect position : "<<it->top_left.x()<<","<<it->top_left.y()<<" and size : "<<it->size.width()<<","<<it->size.height()<<endl;
-                }*/
+                }
                 optimizedRect();
-                /*std::cout<<"rect nb after :"<<to_clear_rectangle_list.size()<<endl;
+                std::cout<<"rect nb after :"<<to_clear_rectangle_list.size()<<endl;
                 for(linked_rect_t::iterator it = to_clear_rectangle_list.begin(); it!=to_clear_rectangle_list.end();++it){
                    std::cout<<"rect position : "<<it->top_left.x()<<","<<it->top_left.y()<<" and size : "<<it->size.width()<<","<<it->size.height()<<endl;
-                }*/
-                /*for(linked_rect_t::iterator it = to_clear_rectangle_list.begin(); it!=to_clear_rectangle_list.end();++it){
+                }
+                for(linked_rect_t::iterator it = to_clear_rectangle_list.begin(); it!=to_clear_rectangle_list.end();++it){
                     widget_root->draw(root_window,offscreen,&(*it));
                     hw_surface_update_rects(to_clear_rectangle_list);
-                }*/
+                }
 
-                widget_root->draw(root_window,offscreen,widget_root->getContent_rect());
-                //Dont delete hw_surface_update_rects , it will not work outside of cremi
-                hw_surface_update_rects(to_clear_rectangle_list);
+//                Rect r = Rect(Point(0,0),Size(800,800));
+//                widget_root->draw(root_window,offscreen,&r);
+//                hw_surface_update_rects(to_clear_rectangle_list);
+//                widget_root->draw(root_window,offscreen,widget_root->getContent_rect());
+//                //Dont delete hw_surface_update_rects , it will not work outside of cremi
+//                hw_surface_update_rects(to_clear_rectangle_list);
             }
             //next step is to clear the rectangle list.
             to_clear_rectangle_list.clear();

@@ -63,6 +63,9 @@ void Frame::draw(surface_t surface,
         fprintf(stderr,"Error occured for Frame::draw - pick_surface is not vaild\n");
         exit(EXIT_FAILURE);
     }
+
+    //if(!Application::getInstance()->isIntersect(*content_rect,*clipper))return;
+
     //Initialize frame position in list_frame
     linked_point_t list_frame;
     list_frame.push_back(screen_location.top_left);

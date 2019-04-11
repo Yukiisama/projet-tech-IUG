@@ -31,15 +31,17 @@ namespace ei {
 bool_t resize_button_callback(Widget* widget, Event* event, void* user_param){
     Toplevel* top = static_cast<Toplevel*>(widget);
     MouseEvent* e = static_cast<MouseEvent*>(event);
-    /*if(top->getResize_button()->getPick_id()==Application::getInstance()->widget_pick(e->where)->getPick_id()){
-
-    }*/
     if(event->type==ei_ev_mouse_buttonup){
         if(top->getResize_button_pressed()) {
             top->setResize_button_pressed(EI_FALSE);
+            if(top->get_show_arrow()){
+                top->set_show_arrow(EI_FALSE);
+            }
+                //std::cout<<"njkjfsjfnsjk"<<endl;
+            //Application::getInstance()->invalidate_rect(top->getScreen_location());
             return EI_FALSE;
         }
-    }else if(event->type==ei_ev_mouse_buttondown && top->getResize_button()->getPick_id()==Application::getInstance()->widget_pick(e->where)->getPick_id()){
+    }else if(event->type==ei_ev_mouse_buttondown && top->inside_right_bottom_corner(e->where)){
         top->setResize_button_pressed(EI_TRUE);
         top->setMouse_pos(e->where);
         top->setFixScreen(EI_FALSE);
@@ -55,7 +57,7 @@ bool_t resize_button_callback(Widget* widget, Event* event, void* user_param){
                 float deltaX = top->getContent_rect()->size.width()-new_width;
                 float deltaY = top->getContent_rect()->size.height()-new_height;
                 //we return if the delta is 0 or just incredibly insignifiant
-                if((deltaX * deltaX)/2 <15.0f || (deltaY * deltaY)/2 <15.0f) return EI_FALSE;
+                if((deltaX * deltaX)/2 <2.0f || (deltaY * deltaY)/2 <2.0f) return EI_FALSE;
                 //Limit the top level to a minimal size
                 if(new_width < top->getMin_size().width())new_width = top->getMin_size().width();
                 if(new_height < top->getMin_size().height())new_height = top->getMin_size().height();
@@ -71,6 +73,27 @@ bool_t resize_button_callback(Widget* widget, Event* event, void* user_param){
     }
     return EI_FALSE;
 }
+
+bool_t arrow_callback(Widget* widget, Event* event, void* user_param){
+    Toplevel* top = static_cast<Toplevel*>(widget);
+    MouseEvent* e = static_cast<MouseEvent*>(event);
+
+    if(top->inside_right_bottom_corner(e->where)){
+        if(!top->get_show_arrow()){
+            top->set_show_arrow(EI_TRUE);
+            Application::getInstance()->invalidate_rect(*top->getContent_rect());
+        }
+    }
+    else{
+        if(top->get_show_arrow()){
+            top->set_show_arrow(EI_FALSE);
+            Application::getInstance()->invalidate_rect(*top->getContent_rect());
+        }
+    }
+    return EI_FALSE;
+}
+
+
 
 bool_t button_close_callback(Widget* widget, Event* event, void* user_param){
     Toplevel* top = static_cast<Toplevel*>(widget);
@@ -238,11 +261,7 @@ Toplevel::Toplevel(Widget *parent) : Widget(TOPLEVEL_NAME, parent){
 
     //Initialize Resize button
     int radius = 0;
-    resize_button = new Button(this);
     resize_button_window_size = Size(RESIZE_DIM,RESIZE_DIM);
-    resize_button->configure(&resize_button_window_size,&color,
-                             NULL,&radius,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
-    p_resize_button= new Placer();
     addTag(TOPLEVEL_NAME);
 
     //update Toplevel's own content rect which is now depending on container
@@ -255,6 +274,8 @@ Toplevel::Toplevel(Widget *parent) : Widget(TOPLEVEL_NAME, parent){
     EventManager::getInstance().bind(ei_ev_mouse_buttonup, this, "",topbar_move_callback , NULL);
     EventManager::getInstance().bind(ei_ev_mouse_buttondown, this, "",topbar_move_callback , NULL);
     EventManager::getInstance().bind(ei_ev_mouse_move, this, "",topbar_move_callback , NULL);
+    //bind show arrow
+    EventManager::getInstance().bind(ei_ev_mouse_move, this, "", arrow_callback, NULL);
 }
 
 Toplevel::~Toplevel(){
@@ -271,7 +292,6 @@ Toplevel::~Toplevel(){
     if(closable_done)delete button_close;
     //delete toplevel basic placer
     delete p_button_close;
-    delete p_resize_button;
 
     //TODO update pick surface with parant's pick color
     //remove from parent's child list
@@ -311,9 +331,9 @@ bool_t Toplevel::inside_top_bar(Point where) const{
  * @return boolean state ( true if inside else false)
  */
 bool_t Toplevel::inside_right_bottom_corner(Point where) const{
-    if(where.x()>=content_rect->top_left.x()+content_rect->size.width()
+    if(where.x()>=content_rect->top_left.x()+content_rect->size.width()-RESIZE_DIM
             && where.x()<=content_rect->top_left.x()+content_rect->size.width()+border_width
-            && where.y()>=content_rect->top_left.y()+content_rect->size.height()
+            && where.y()>=content_rect->top_left.y()+content_rect->size.height()-RESIZE_DIM
             && where.y()<=content_rect->top_left.y()+content_rect->size.height()+border_width){
         return EI_TRUE;
     }
@@ -335,6 +355,8 @@ void Toplevel::draw (surface_t surface,
     //case when button close has been trigged
     if(to_forget) return;
 
+    if(!Application::getInstance()->isIntersect(*content_rect,*clipper))return;
+
     if(!surface){
         fprintf(stderr,"Error occured for Frame::draw - surface is not valid\n");
         exit(EXIT_FAILURE);
@@ -346,27 +368,25 @@ void Toplevel::draw (surface_t surface,
         p_button_close->configure(button_close,nullptr,&button_close_x,&button_close_y,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr);
         p_button_close->run(button_close);
     }
-    //Placer config for button resize, positon according to toplevel , then run the placer
-    int resize_button_x = int(container.size.width()-resize_button_window_size.width());int resize_button_y = int(container.size.height()-top_bar_height/2);
-    p_resize_button->configure(resize_button,nullptr,&resize_button_x,&resize_button_y,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr);
-    p_resize_button->run(resize_button);
 
     //draw outside the basic toplevel
     drawBasic_toplevel(surface,pick_surface,clipper);
 
-
-    if(resize_button_pressed)draw_arrow(surface,Point(screen_location.top_left.x()+content_rect->size.width()/2,screen_location.top_left.y()+content_rect->size.height()/2),border_width*5,NULL);
+    if(show_arrow || resize_button_pressed)
+        draw_arrow(surface,
+                   Point(content_rect->top_left.x()+content_rect->size.width()-RESIZE_DIM+border_width,
+                         content_rect->top_left.y()+content_rect->size.height()-RESIZE_DIM+border_width),
+                   RESIZE_DIM,
+                   NULL);
 
 
     //recursive draw
     for(std::list<Widget*>::iterator it = children.begin();it!= children.end();it++){
         //donc apply content rect to button close because it display on the top bar which is not belong to content rect
-        if((*it)->getPick_id()==button_close->getPick_id()
-                ||(*it)->getPick_id()==resize_button->getPick_id())
+        if((*it)->getPick_id()==button_close->getPick_id())
             (*it)->draw(surface,pick_surface,clipper);
         else
             (*it)->draw(surface,pick_surface,clipper);
-
     }
     return;
 }
@@ -589,26 +609,6 @@ void Toplevel::setP_button_close(Placer *value)
     p_button_close = value;
 }
 
-
-Button* Toplevel::getResize_button() const{
-    return resize_button;
-}
-
-void Toplevel::setResize_button(Button *value)
-{
-    resize_button = value;
-}
-
-Placer *Toplevel::getP_resize_button() const
-{
-    return p_resize_button;
-}
-
-void Toplevel::setP_resize_button(Placer *value)
-{
-    p_resize_button = value;
-}
-
 Rect Toplevel::getContainer() const
 {
     return container;
@@ -733,7 +733,15 @@ void Toplevel::setFix_screen_released(const bool_t &value)
     fix_screen_released = value;
 }
 
+bool_t Toplevel::get_show_arrow() const
+{
+    return show_arrow;
+}
 
+void Toplevel::set_show_arrow(bool_t show)
+{
+    show_arrow = show;
+}
 
 
 //End Getter & Setter

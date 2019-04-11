@@ -128,6 +128,8 @@ void Button::draw(surface_t surface,
         exit(EXIT_FAILURE);
     }
 
+    if(!Application::getInstance()->isIntersect(*content_rect,*clipper))return;
+
     //The Rect of the button.
     Rect button_rect = Rect(content_rect->top_left,content_rect->size);
     //The list of points to draw the button

@@ -197,7 +197,6 @@ void EventManager::eventHandler(Event *event)
                 if(!it->widget->getName().compare("Toplevel")){
                     Toplevel * top= static_cast<Toplevel*>(it->widget);
                     if(mouse_id == top->getButton_close()->getPick_id()
-                            || mouse_id == top->getResize_button()->getPick_id()
                             || mouse_id == top->getPick_id()){
                         if(it->callback(it->widget, event, it->user_param)){
                             Application::getInstance()->invalidate_rect((it->widget->getScreen_location()));

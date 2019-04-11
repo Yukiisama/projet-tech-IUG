@@ -102,7 +102,7 @@ void draw_arrow(surface_t surface, const Point where, int dimension, Rect* clipp
     Point diagonal_start = Point(where.x(),where.y()+size);
     Point diagonal_end = Point(where.x()+((dimension-size)/2+0.5),where.y()+((dimension-size)/2+0.5+size));
 
-    color_t color = {255,0,0,255};
+    color_t color = {0,0,0,150};
 
     for(;diagonal_start.y()>where.y();){
         draw_line(surface,diagonal_start,diagonal_end,color,clipper);
