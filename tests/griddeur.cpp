@@ -36,23 +36,13 @@ int ei_main(int argc, char* argv[])
 
     color_t      button_color    = {0x88, 0x88, 0x88, 0xff};
     color_t      text_color      = {0x00, 0x00, 0x00, 0xff};
+    anchor_t     text_anchor     = ei_anc_northwest;
     Size         button_size     = Size(100,40);
     relief_t     relief          = ei_relief_raised;
     int          button_border_width = 3;
-    const char*  button_title_ok     = "Ok";
-    const char*  button_title_cancel = "Cancel";
+    const char*  button_title_ok     = "Ok mon ami";
+    const char*  button_title_cancel = "Cancel tout stp";
     const char*  button_title_cut = "Cut";
-
-    anchor_t button_anchor   = ei_anc_southeast;
-    anchor_t button_anchor_2   = ei_anc_southwest;
-    float   button_rel_x    = 1.0;
-    float   button_rel_y    = 1.0;
-    float   button_rel_x2    = 0.0;
-    int     button_x    = -10;
-    int     button_y    = -10;
-    int     button_x2   = 10;
-    int     button_y2   = -62;
-    float   button_rel_size_x = 0.45;
 
     Size         window_size(400,400);
     const char*  window_title    = "Window";
@@ -69,24 +59,24 @@ int ei_main(int argc, char* argv[])
     toplevel->configure(&window_size, &window_color, &window_border_width, &window_title, &closable, &window_resizable, NULL);
 
     Button* button_ok = new Button(toplevel);
-    button_ok->configure (&button_size, &button_color, &button_border_width, NULL, &relief, &button_title_ok, NULL, &text_color, NULL, NULL, NULL, NULL);
+    button_ok->configure (&button_size, &button_color, &button_border_width, NULL, &relief, &button_title_ok, NULL, &text_color, &text_anchor, NULL, NULL, NULL);
 
     Button* button_cancel = new Button(toplevel);
-    button_cancel->configure (&button_size, &button_color, &button_border_width, NULL, &relief, &button_title_cancel, NULL, &text_color, NULL, NULL, NULL, NULL);
+    button_cancel->configure (&button_size, &button_color, &button_border_width, NULL, &relief, &button_title_cancel, NULL, &text_color, &text_anchor, NULL, NULL, NULL);
+
+    Button* button_cancel2 = new Button(toplevel);
+    button_cancel2->configure (&button_size, &button_color, &button_border_width, NULL, &relief, &button_title_cancel, NULL, &text_color, &text_anchor, NULL, NULL, NULL);
 
     Button* button_cut = new Button(toplevel);
-    button_cut->configure (&button_size, &button_color, &button_border_width, NULL, &relief, &button_title_cut, NULL, &text_color, NULL, NULL, NULL, NULL);
+    button_cut->configure (&button_size, &button_color, &button_border_width, NULL, &relief, &button_title_cut, NULL, &text_color, &text_anchor, NULL, NULL, NULL);
 
     Placer* p1 = new Placer();
     p1->configure(toplevel, NULL, &(window_position.x()), &(window_position.y()), NULL, NULL, NULL, NULL, NULL, NULL);
-    Placer* p2 = new Placer();
-    p2->configure(button_ok, &button_anchor, &button_x, &button_y, NULL,NULL, &button_rel_x, &button_rel_y, &button_rel_size_x, NULL);
-    Placer* p3 = new Placer();
-    p3->configure(button_cancel, &button_anchor_2, &button_x2, &button_y, NULL,NULL, &button_rel_x2, &button_rel_y, &button_rel_size_x, NULL);
-    Griddeur* g1 = new Griddeur(toplevel, new int(30), new int(30));
-    g1->addWidget(button_cut, new int(0), new int(0), new int(2), new int(3));
-    g1->addWidget(button_ok, new int(2), new int(0), new int(1), new int(3));
-    g1->addWidget(button_cancel, new int(3), new int(0), new int(1), new int(3));
+    Griddeur* g1 = new Griddeur(toplevel, new int(50), new int(35));
+    g1->addWidget(button_cut, new int(0), new int(0), new int(1), new int(1));
+    g1->addWidget(button_ok, new int(1), new int(1), new int(5), new int(1));
+    g1->addWidget(button_cancel, new int(1), new int(2), new int(6), new int(1));
+    g1->addWidget(button_cancel2, new int(1), new int(3), new int(7), new int(1));
     g1->run_all();
 
     EventManager::getInstance().bind(ei_ev_keydown, NULL, "all", process_key, app);
@@ -99,8 +89,6 @@ int ei_main(int argc, char* argv[])
 
     delete app;
     delete p1;
-    delete p2;
-    delete p3;
     delete g1;
 
     return (EXIT_SUCCESS);

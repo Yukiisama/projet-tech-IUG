@@ -89,8 +89,11 @@ int ei_main(int argc, char* argv[])
     p2->configure(button_ok, &button_anchor, &button_x, &button_y, NULL,NULL, &button_rel_x, &button_rel_y, &button_rel_size_x, NULL);
     Placer* p3 = new Placer();
     p3->configure(button_cancel, &button_anchor_2, &button_x2, &button_y, NULL,NULL, &button_rel_x2, &button_rel_y, &button_rel_size_x, NULL);
-    Placer* p4 = new Placer();
-    p4->configure(button_cut, &button_anchor, &button_x2, &button_y2, NULL,NULL, &button_rel_x, &button_rel_y, &button_rel_size_x, NULL);
+    //Placer* p4 = new Placer();
+    //p4->configure(button_cut, &button_anchor, &button_x2, &button_y2, NULL,NULL, &button_rel_x, &button_rel_y, &button_rel_size_x, NULL);
+    Griddeur* g1 = new Griddeur(toplevel, new int(30), new int(30));
+    g1->addWidget(button_cut, new int(0), new int(0), new int(2), new int(3));
+    g1->run_all();
 
     EventManager::getInstance().bind(ei_ev_keydown, NULL, "all", process_key, app);
     EventManager::getInstance().bind(ei_ev_display, NULL, "all", process_display, app);
@@ -104,7 +107,8 @@ int ei_main(int argc, char* argv[])
     delete p1;
     delete p2;
     delete p3;
-    delete p4;
+    delete g1;
+    //delete p4;
     //delete p5;
 
     return (EXIT_SUCCESS);

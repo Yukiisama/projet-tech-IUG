@@ -41,15 +41,15 @@ void Griddeur::configure (Widget*    widget,
 }
 
 void Griddeur::run (Widget* widget){
-    for (int i=0; i < this->Widgets.size(); i++){
-        if (this->Widgets[i].widget == widget){
+    for (list <widget_in_grid>::iterator i = this->Widgets.begin(); i != this->Widgets.end(); ++i){
+        if (i->widget == widget){
             //Positioning
             Point starting_point = Point(this->getWidget()->getContent_rect()->top_left.x(), this->getWidget()->getContent_rect()->top_left.y());
-            int temp_x = starting_point.x() + this->cell_width * this->Widgets[i].x;
-            int temp_y = starting_point.y() + this->cell_height * this->Widgets[i].y;
+            int temp_x = starting_point.x() + this->cell_width * i->x;
+            int temp_y = starting_point.y() + this->cell_height * i->y;
             //Sizing
-            int temp_width = this->cell_width * this->Widgets[i].width;
-            int temp_height = this->cell_height * this->Widgets[i].height;
+            int temp_width = this->cell_width * i->width;
+            int temp_height = this->cell_height * i->height;
 
             Rect new_rect = Rect(Point(temp_x, temp_y), Size(temp_width, temp_height));
             widget->geomnotify(new_rect);
@@ -64,12 +64,16 @@ void Griddeur::run_all(){
 }
 
 void Griddeur::release (Widget* widget){
-    for (auto i = this->Widgets.begin(); i != this->Widgets.end(); ++i) {
+    if (!(widget->getGeom_manager())){ return; }
+    for (list <widget_in_grid>::iterator i = this->Widgets.begin(); i != this->Widgets.end(); ++i) {
         if (i->widget == widget){
-            this->Widgets.erase(i);
+            this->Widgets.pop_front();
+            Application::getInstance()->invalidate_rect(*(widget->getContent_rect()));
+            Rect r = Rect(Point(-1,-1),Size(-1,-1));
             widget->setGeom_manager(nullptr);
+            widget->setScreen_location(r);
             // Calling release for the widget's children
-            if (i->widget->getChildren().empty())
+            if (widget->getChildren().empty())
             {
                 list<Widget *> w_child = widget->getChildren();
                 for (list<Widget *>::iterator it = w_child.begin();it!=w_child.end();it++){
@@ -127,8 +131,8 @@ int Griddeur::getCell_height(){ return cell_height; }
 
 void Griddeur::setCell_height(int cell_height){ this->cell_height = cell_height; }
 
-vector <struct widget_in_grid> Griddeur::getWidgets(){ return Widgets; }
+list <struct widget_in_grid> Griddeur::getWidgets(){ return Widgets; }
 
-void Griddeur::setWidgets(vector <struct widget_in_grid>Widgets){ this->Widgets = Widgets; }
+void Griddeur::setWidgets(list <struct widget_in_grid>Widgets){ this->Widgets = Widgets; }
 
 }

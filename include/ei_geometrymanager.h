@@ -234,14 +234,14 @@ public:
 
     void setCell_height(int cell_height);
 
-    vector <struct widget_in_grid> getWidgets();
+    list <struct widget_in_grid> getWidgets();
 
-    void setWidgets(vector <struct widget_in_grid>Widgets);
+    void setWidgets(list <struct widget_in_grid>Widgets);
 
 private:
     int cell_width;
     int cell_height;
-    vector <struct widget_in_grid>Widgets;
+    list <struct widget_in_grid>Widgets;
 };
 
 }
