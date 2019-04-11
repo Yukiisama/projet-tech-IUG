@@ -159,7 +159,6 @@ TEST_CASE("Placer class", "[unit]"){
     Placer* p1 = new Placer();
     SECTION("Constructor"){
         REQUIRE(p1->getWidget() == nullptr);
-        REQUIRE(p1->getPlacer() == true);
         REQUIRE(p1->getAnchor() == ei_anc_northwest);
         REQUIRE(p1->getX() == 0);
         REQUIRE(p1->getY() == 0);

@@ -51,69 +51,10 @@ public:
      */
     virtual void release (Widget* widget) = 0;
 
-    virtual string to_string();
-    
-
-    //GETTERS AND SETTERS
-
-    bool getPlacer() const;
-
-    void setPlacer(bool value);
-
-    Widget *getWidget() const;
-
-    void setWidget(Widget *value);
-
-    anchor_t getAnchor() const;
-
-    void setAnchor(const anchor_t &value);
-
-    int getX() const;
-
-    void setX(int value);
-
-    int getY() const;
-
-    void setY(int value);
-
-    float getWidth() const;
-
-    void setWidth(float value);
-
-    float getHeight() const;
-
-    void setHeight(float value);
-
-    float getRel_x() const;
-
-    void setRel_x(float value);
-
-    float getRel_y() const;
-
-    void setRel_y(float value);
-
-    float getRel_width() const;
-
-    void setRel_width(float value);
-
-    float getRel_height() const;
-
-    void setRel_height(float value);
-
-
-
-private:
-     bool placer = false;
-     Widget*    widget;
-     anchor_t  anchor;
-     int       x;
-     int       y;
-     float     width;
-     float     height;
-     float     rel_x;
-     float     rel_y;
-     float     rel_width;
-     float     rel_height;
+    /**
+     * \brief Returns the name of the Geometry Manager type.
+     */
+    virtual string getName() = 0;
 };
 
 
@@ -168,8 +109,113 @@ public:
     virtual void run (Widget* widget);
 
     virtual void release (Widget* widget);
+
+    virtual string getName();
+
+    Widget *getWidget() const;
+
+    void setWidget(Widget *value);
+
+    anchor_t getAnchor() const;
+
+    void setAnchor(const anchor_t &value);
+
+    float getWidth() const;
+
+    void setWidth(float value);
+
+    float getHeight() const;
+
+    void setHeight(float value);
+
+    float getRel_x() const;
+
+    void setRel_x(float value);
+
+    float getRel_y() const;
+
+    void setRel_y(float value);
+
+    float getRel_width() const;
+
+    void setRel_width(float value);
+
+    float getRel_height() const;
+
+    void setRel_height(float value);
+
+    int getX() const;
+
+    void setX(int value);
+
+    int getY() const;
+
+    void setY(int value);
     
+private:
+    Widget*   widget;
+    anchor_t  anchor;
+    int       x;
+    int       y;
+    float     rel_x;
+    float     rel_y;
+    float     rel_width;
+    float     rel_height;
+    float     width;
+    float     height;
     
+};
+
+/**
+ * @brief The Placer class
+ */
+class Griddeur : public GeometryManager
+{
+public:
+    Griddeur();
+    virtual ~Griddeur();
+    /**
+     * \brief Configures the geometry of a widget using the "griddeur" geometry manager.
+     *    If the widget was already managed by another geometry manager, then it is first
+     *    removed from the previous geometry manager.
+     *    If the widget was already managed by the "griddeur", then this calls simply updates
+     *    the placer parameters: arguments that are not NULL replace previous values.
+     *    When the arguments are passed as NULL, the placer uses default values (detailed in
+     *    the argument descriptions below). If no size is provided (either absolute or
+     *    relative), then the requested size of the widget is used, i.e., the minimal size
+     *    required to display its content.
+     *
+     * @param widget    The widget to place.
+     * @param anchor    How to anchor the widget to the position defined by the placer
+     *        (defaults to ei_anc_northwest).
+     * @param x   The absolute x position of the widget (defaults to 0).
+     * @param y   The absolute y position of the widget (defaults to 0).
+     * @param width   The absolute width for the widget (defaults to the requested width
+     *        of the widget).
+     * @param height    The absolute height for the widget (defaults to the requested height
+     *        of the widget).
+     * @param cell_width   The relative x position of the widget: 0.0 corresponds to the left
+     *        side of the master, 1.0 to the right side (defaults to 0.0).
+     * @param cell_height   The relative y position of the widget: 0.0 corresponds to the top
+     *        side of the master, 1.har 0 to the bottom side (defaults to 0.0).
+     */
+    void configure (Widget*    widget,
+                    anchor_t*  anchor,
+                    int*       x,
+                    int*       y,
+                    int*     width,
+                    int*     height,
+                    int*     cell_width,
+                    int*     cell_height);
+
+    virtual void run (Widget* widget);
+
+    virtual void release (Widget* widget);
+
+    virtual string getName();
+
+private:
+
 };
 
 }

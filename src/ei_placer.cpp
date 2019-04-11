@@ -13,7 +13,6 @@ namespace ei {
 Placer::Placer():GeometryManager(){
     //No widget at initialization
     setWidget(nullptr);
-    setPlacer(true);
     //Set default values
     setAnchor(ei_anc_northwest);
     setX(0);
@@ -216,6 +215,108 @@ void Placer::release (Widget* widget){
         }
 
 
+}
+
+string Placer::getName(){ return "placer"; }
+
+Widget *Placer::getWidget() const
+{
+    return widget;
+}
+
+void Placer::setWidget(Widget *value)
+{
+    widget = value;
+}
+
+anchor_t Placer::getAnchor() const
+{
+    return anchor;
+}
+
+void Placer::setAnchor(const anchor_t &value)
+{
+    anchor = value;
+}
+
+float Placer::getRel_width() const
+{
+    return rel_width;
+}
+
+void Placer::setRel_width(float value)
+{
+    rel_width = value;
+}
+
+float Placer::getRel_height() const
+{
+    return rel_height;
+}
+
+void Placer::setRel_height(float value)
+{
+    rel_height = value;
+}
+
+float Placer::getWidth() const
+{
+    return width;
+}
+
+void Placer::setWidth(float value)
+{
+    width = value;
+}
+
+float Placer::getHeight() const
+{
+    return height;
+}
+
+void Placer::setHeight(float value)
+{
+    height = value;
+}
+
+float Placer::getRel_x() const
+{
+    return rel_x;
+}
+
+void Placer::setRel_x(float value)
+{
+    rel_x = value;
+}
+
+float Placer::getRel_y() const
+{
+    return rel_y;
+}
+
+void Placer::setRel_y(float value)
+{
+    rel_y = value;
+}
+
+int Placer::getX() const
+{
+    return x;
+}
+
+void Placer::setX(int value)
+{
+    x = value;
+}
+
+int Placer::getY() const
+{
+    return y;
+}
+
+void Placer::setY(int value)
+{
+    y = value;
 }
 
 }
