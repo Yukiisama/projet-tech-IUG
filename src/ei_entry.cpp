@@ -38,42 +38,43 @@ bool Entry::get_done(){
     return done;
 }
 void Entry::set_done(bool done){
-    done=done;
+    this->done=done;
 }
 //Defaults color ( if null) is parent color
 char * convert_unicode(int x){
     cout<<x<<endl;
+    char * result = const_cast<char *>("");
     //CHARACTERS
     //********************UPPERCASE****************
-    if(x==65) return "A";  if(x==66) return "B"; if(x==67) return "C"; if(x==68) return "D";
-    if(x==69) return "E";  if(x==70) return "F"; if(x==71) return "G"; if(x==72) return "H";
-    if(x==73) return "I";  if(x==74) return "J"; if(x==75) return "K"; if(x==76) return "L";
-    if(x==77) return "M";  if(x==78) return "N"; if(x==79) return "O"; if(x==80) return "P";
-    if(x==81) return "Q";  if(x==82) return "R"; if(x==83) return "S"; if(x==84) return "T";
-    if(x==85)return "U";   if(x==86) return "V"; if(x==87) return "W"; if(x==88) return "X";
-    if(x==89) return "Y";  if(x==90) return "Z";
+    if(x==65)  result  = const_cast<char*>( "A");  if(x==66)  result  = const_cast<char*>( "B"); if(x==67)  result  = const_cast<char*>( "C"); if(x==68) result  = const_cast<char*>( "D");
+    if(x==69)  result  = const_cast<char*>( "E");  if(x==70)  result  = const_cast<char*>( "F"); if(x==71)  result  = const_cast<char*>( "G"); if(x==72) result  = const_cast<char*>( "H");
+    if(x==73)  result  = const_cast<char*>( "I");  if(x==74)  result  = const_cast<char*>( "J"); if(x==75)  result  = const_cast<char*>( "K"); if(x==76) result  = const_cast<char*>( "L");
+    if(x==77)  result  = const_cast<char*>( "M");  if(x==78)  result  = const_cast<char*>( "N"); if(x==79)  result  = const_cast<char*>( "O"); if(x==80) result  = const_cast<char*>( "P");
+    if(x==81)  result  = const_cast<char*>( "Q");  if(x==82)  result  = const_cast<char*>( "R"); if(x==83)  result  = const_cast<char*>( "S"); if(x==84) result  = const_cast<char*>( "T");
+    if(x==85)  result  = const_cast<char*>( "U");  if(x==86)  result  = const_cast<char*>( "V"); if(x==87)  result  = const_cast<char*>( "W"); if(x==88) result  = const_cast<char*>( "X");
+    if(x==89)  result  = const_cast<char*>( "Y");  if(x==90)  result  = const_cast<char*>( "Z");
     //*******************LOWERCASE********************
-    if(x==97) return "a";  if(x==98) return "b";  if(x==99) return "c";  if(x==100) return "d";
-    if(x==101) return "e"; if(x==102) return "f"; if(x==103) return "g"; if(x==104) return "h";
-    if(x==105) return "i"; if(x==106) return "j"; if(x==107) return "k"; if(x==108) return "l";
-    if(x==109) return "m"; if(x==110) return "n"; if(x==111) return "o"; if(x==112) return "p";
-    if(x==113) return "q"; if(x==114) return "r"; if(x==115) return "s"; if(x==116) return "t";
-    if(x==117) return "u"; if(x==118) return "v"; if(x==119) return "w"; if(x==120) return "x";
-    if(x==121) return "y"; if(x==122) return "z";
+    if(x==97)  result  = const_cast<char*>( "a");  if(x==98)  result  = const_cast<char*>( "b"); if(x==99)  result  = const_cast<char*>( "c"); if(x==100) result  = const_cast<char*>( "d");
+    if(x==101) result  = const_cast<char*>( "e");  if(x==102) result  = const_cast<char*>( "f"); if(x==103) result  = const_cast<char*>( "g"); if(x==104) result  = const_cast<char*>( "h");
+    if(x==105) result  = const_cast<char*>( "i");  if(x==106) result  = const_cast<char*>( "j"); if(x==107) result  = const_cast<char*>( "k"); if(x==108) result  = const_cast<char*>( "l");
+    if(x==109) result  = const_cast<char*>( "m");  if(x==110) result  = const_cast<char*>( "n"); if(x==111) result  = const_cast<char*>( "o"); if(x==112) result  = const_cast<char*>( "p");
+    if(x==113) result  = const_cast<char*>( "q");  if(x==114) result  = const_cast<char*>( "r"); if(x==115) result  = const_cast<char*>( "s"); if(x==116) result  = const_cast<char*>( "t");
+    if(x==117) result  = const_cast<char*>( "u");  if(x==118) result  = const_cast<char*>( "v"); if(x==119) result  = const_cast<char*>( "w"); if(x==120) result  = const_cast<char*>( "x");
+    if(x==121) result  = const_cast<char*>( "y");  if(x==122) result  = const_cast<char*>( "z");
     //Punctuation
-    if(x==32) return " ";  if(x==33) return "!";  if(x==34) return "\"";
-    if(x==35) return "#";  if(x==36) return "$";  if(x==37) return "%";
-    if(x==38) return "&";  if(x==39) return "'";  if(x==40) return "(";
-    if(x==41) return ")";  if(x==42) return "*";  if(x==43) return "+";
-    if(x==44) return ",";  if(x==45) return "-";  if(x==46) return ".";
-    if(x==47) return "/";  if(x==48) return "0";  if(x==49) return "1";
-    if(x==50) return "2";  if(x==51) return "3";  if(x==52) return "4";
-    if(x==53) return "5";  if(x==54) return "6";  if(x==55) return "7";
-    if(x==56) return "8";  if(x==57) return "9";  if(x==58) return ":";
-    if(x==59) return ";";  if(x==60) return "<";  if(x==61) return "=";
-    if(x==62) return ">";  if(x==63) return "?";  if(x==64) return "@";
+    if(x==32)  result  = const_cast<char*>( " ");  if(x==33)  result  = const_cast<char*>( "!");  if(x==34) result  = const_cast<char*>( "\"");
+    if(x==35)  result  = const_cast<char*>( "#");  if(x==36)  result  = const_cast<char*>( "$");  if(x==37) result  = const_cast<char*>( "%");
+    if(x==38)  result  = const_cast<char*>( "&");  if(x==39)  result  = const_cast<char*>( "'");  if(x==40) result  = const_cast<char*>( "(");
+    if(x==41)  result  = const_cast<char*>( ")");  if(x==42)  result  = const_cast<char*>( "*");  if(x==43) result  = const_cast<char*>( "+");
+    if(x==44)  result  = const_cast<char*>( ",");  if(x==45)  result  = const_cast<char*>( "-");  if(x==46) result  = const_cast<char*>( ".");
+    if(x==47)  result  = const_cast<char*>( "/");  if(x==48)  result  = const_cast<char*>( "0");  if(x==49) result  = const_cast<char*>( "1");
+    if(x==50)  result  = const_cast<char*>( "2");  if(x==51)  result  = const_cast<char*>( "3");  if(x==52) result  = const_cast<char*>( "4");
+    if(x==53)  result  = const_cast<char*>( "5");  if(x==54)  result  = const_cast<char*>( "6");  if(x==55) result  = const_cast<char*>( "7");
+    if(x==56)  result  = const_cast<char*>( "8");  if(x==57)  result  = const_cast<char*>( "9");  if(x==58) result  = const_cast<char*>( ":");
+    if(x==59)  result  = const_cast<char*>( ";");  if(x==60)  result  = const_cast<char*>( "<");  if(x==61) result  = const_cast<char*>( "=");
+    if(x==62)  result  = const_cast<char*>( ">");  if(x==63)  result  = const_cast<char*>( "?");  if(x==64) result  = const_cast<char*>( "@");
 
-    return "";
+    return result;
 
 
     }
@@ -117,6 +118,7 @@ bool_t move_mouse(Widget* widget, Event* event, void* user_param){
         //top->setMouse_pos(e->where);
         return EI_TRUE;
     }
+    return EI_FALSE;
 }
 
 bool_t process_key(Widget* widget, Event* event, void* user_param)
@@ -159,9 +161,9 @@ bool_t process_key(Widget* widget, Event* event, void* user_param)
         Placer * geo = (Placer *) e->getGeom_manager();
         int x = geo->getX();
         int y = geo->getY();
-        geo->configure(e, NULL, &x, &y, NULL, NULL, NULL, NULL, NULL, NULL);
+        geo->configure(e, nullptr, &x, &y, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr);
         e->configure(size_text,&c,&bd_width,&rel
-                    ,(const char **)&concatString,&font,&c_txt,&anc
+                    ,const_cast<const char **>(&concatString),&font,&c_txt,&anc
                     ,&img,&img_r,&img_anc);
 
 
