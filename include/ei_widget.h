@@ -449,11 +449,17 @@ namespace ei {
 
     void setPre_size(const Size &value);
 
-    bool_t getHalfScreen() const;
+    bool_t getFixScreen() const;
 
-    void setHalfScreen(const bool_t &value);
+    void setFixScreen(const bool_t &value);
+
+    bool_t getFix_screen_released() const;
+
+    void setFix_screen_released(const bool_t &value);
 
     //End Getter & Setter
+
+
 
 
     private:
@@ -480,7 +486,8 @@ namespace ei {
     //Bonus resize to half screen
     Point           pre_pos;
     Size            pre_size;
-    bool_t          halfScreen=EI_FALSE;
+    bool_t          fixScreen=EI_FALSE;
+    bool_t          fix_screen_released=EI_FALSE;
     };
 
 

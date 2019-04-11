@@ -78,15 +78,6 @@ void Frame::draw(surface_t surface,
         fprintf(stderr,"Error occured for Frame::draw - pick_surface is not vaild\n");
         exit(EXIT_FAILURE);
     }
-    //Initialize frame position in list_frame
-    linked_point_t list_frame;
-    list_frame.push_back(screen_location.top_left);
-    list_frame.push_back(Point(content_rect->top_left.x()+int(content_rect->size.width()),
-                               content_rect->top_left.y()));
-    list_frame.push_back(Point(content_rect->top_left.x()+int(content_rect->size.width()),
-                               content_rect->top_left.y()+int(content_rect->size.height())));
-    list_frame.push_back(Point(content_rect->top_left.x(),
-                               content_rect->top_left.y()+int(content_rect->size.height())));
     //Draw on pick_surface the rectangle  with frame's pick_color.
     pick_color.alpha=ALPHA_MAX;
     //draw_polygon(pick_surface,list_frame,pick_color,clipper);
@@ -94,7 +85,6 @@ void Frame::draw(surface_t surface,
     //Finally draw the frame on the main surface
     //draw_polygon(surface,list_frame,color,clipper);
     draw_rectangle(surface,*content_rect,color,clipper);
-    list_frame.clear();
     if (text)
     {
         Point where = anchor_to_pos(screen_location, text_anchor);

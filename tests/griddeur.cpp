@@ -68,12 +68,6 @@ int ei_main(int argc, char* argv[])
     Toplevel* toplevel = new Toplevel(app->root_widget());
     toplevel->configure(&window_size, &window_color, &window_border_width, &window_title, &closable, &window_resizable, NULL);
 
-//    Toplevel* toplevel2 = new Toplevel(app->root_widget());
-//    toplevel2->configure(&window_size, &window_color, &window_border_width, &window_title, &closable, &window_resizable, NULL);
-
-//    Placer* p5 = new Placer();
-//    p5->configure(toplevel2, NULL, &(window_position.x()), &(window_position.y()), NULL, NULL, NULL, NULL, NULL, NULL);
-
     Button* button_ok = new Button(toplevel);
     button_ok->configure (&button_size, &button_color, &button_border_width, NULL, &relief, &button_title_ok, NULL, &text_color, NULL, NULL, NULL, NULL);
 
@@ -89,8 +83,11 @@ int ei_main(int argc, char* argv[])
     p2->configure(button_ok, &button_anchor, &button_x, &button_y, NULL,NULL, &button_rel_x, &button_rel_y, &button_rel_size_x, NULL);
     Placer* p3 = new Placer();
     p3->configure(button_cancel, &button_anchor_2, &button_x2, &button_y, NULL,NULL, &button_rel_x2, &button_rel_y, &button_rel_size_x, NULL);
-    Placer* p4 = new Placer();
-    p4->configure(button_cut, &button_anchor, &button_x2, &button_y2, NULL,NULL, &button_rel_x, &button_rel_y, &button_rel_size_x, NULL);
+    Griddeur* g1 = new Griddeur(toplevel, new int(30), new int(30));
+    g1->addWidget(button_cut, new int(0), new int(0), new int(2), new int(3));
+    g1->addWidget(button_ok, new int(2), new int(0), new int(1), new int(3));
+    g1->addWidget(button_cancel, new int(3), new int(0), new int(1), new int(3));
+    g1->run_all();
 
     EventManager::getInstance().bind(ei_ev_keydown, NULL, "all", process_key, app);
     EventManager::getInstance().bind(ei_ev_display, NULL, "all", process_display, app);
@@ -104,8 +101,7 @@ int ei_main(int argc, char* argv[])
     delete p1;
     delete p2;
     delete p3;
-    delete p4;
-    //delete p5;
+    delete g1;
 
     return (EXIT_SUCCESS);
 }

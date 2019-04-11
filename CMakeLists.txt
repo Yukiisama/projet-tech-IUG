@@ -65,6 +65,7 @@ set(EI_SRC
         src/ei_frame.cpp
         src/ei_toplevel.cpp
 	src/ei_placer.cpp
+	src/ei_griddeur.cpp
 	src/ei_radio_button.cpp
 	src/ei_entry.cpp
         )
