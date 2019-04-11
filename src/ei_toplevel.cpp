@@ -39,6 +39,8 @@ bool_t resize_button_callback(Widget* widget, Event* event, void* user_param){
         MouseEvent* e = static_cast<MouseEvent*>(event);
         top->setResize_button_pressed(EI_TRUE);
         top->setMouse_pos(e->where);
+        top->setFixScreen(EI_FALSE);
+        top->setFix_screen_released(EI_FALSE);
         return EI_TRUE;
     }else if(event->type==ei_ev_mouse_move){
         if(top->getResize_button_pressed()){
@@ -92,7 +94,7 @@ bool_t topbar_move_callback(Widget* widget, Event* event, void* user_param){
     MouseEvent* e = static_cast<MouseEvent*>(event);
     if(top->getTop_bar_clicked()&& event->type==ei_ev_mouse_buttonup){
         top->setTop_bar_clicked(EI_FALSE);
-        top->setHalfScreen(EI_FALSE);
+        if(top->getFixScreen()) top->setFix_screen_released(EI_TRUE);
         return EI_TRUE;
     }else if(event->type==ei_ev_mouse_buttondown &&
              Application::getInstance()->widget_pick(e->where)->getPick_id()==top->getPick_id()){
@@ -104,9 +106,10 @@ bool_t topbar_move_callback(Widget* widget, Event* event, void* user_param){
              }
             return EI_FALSE;
         }
-    }else if(top->getTop_bar_clicked() && event->type==ei_ev_mouse_move && Application::getInstance()->inside_root(e->where)){
-        if(e->where.x()==top->getParent()->getContent_rect()->top_left.x() &&!top->getHalfScreen()){
-            top->setHalfScreen(EI_TRUE);
+    }else if(top->getTop_bar_clicked() && event->type==ei_ev_mouse_move ){
+        //left side halfscreen
+        if(e->where.x()<=top->getParent()->getContent_rect()->top_left.x() &&!top->getFixScreen()){
+            top->setFixScreen(EI_TRUE);
             top->setPre_pos(top->getScreen_location().top_left);
             top->setPre_size(top->getContent_rect()->size);
             if (top->getGeom_manager()->getName() == "placer"){
@@ -114,13 +117,15 @@ bool_t topbar_move_callback(Widget* widget, Event* event, void* user_param){
                 geo->setX(top->getParent()->getContent_rect()->top_left.x());
                 geo->setY(top->getParent()->getContent_rect()->top_left.y());
             }
-            Size *new_size = new Size(top->getParent()->getContent_rect()->size.width()/2,top->getParent()->getContent_rect()->size.height()-top->getTop_bar_height()-top->getBorder_width());
+            Size *new_size = new Size(top->getParent()->getContent_rect()->size.width()/2-top->getBorder_width()*2,top->getParent()->getContent_rect()->size.height()-top->getTop_bar_height()-top->getBorder_width());
             top->configure(new_size,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr);
             delete(new_size);
             return EI_TRUE;
-        }else if(e->where.x()==top->getParent()->getContent_rect()->top_left.x()+top->getParent()->getContent_rect()->size.width()
-                 && !top->getHalfScreen()){
-            top->setHalfScreen(EI_TRUE);
+        }
+        //right side halfscreen
+        else if(e->where.x()>=top->getParent()->getContent_rect()->top_left.x()+top->getParent()->getContent_rect()->size.width()
+                 && !top->getFixScreen()){
+            top->setFixScreen(EI_TRUE);
             top->setPre_pos(top->getScreen_location().top_left);
             top->setPre_size(top->getContent_rect()->size);
             if (top->getGeom_manager()->getName() == "placer"){
@@ -128,41 +133,83 @@ bool_t topbar_move_callback(Widget* widget, Event* event, void* user_param){
                 geo->setX(top->getParent()->getContent_rect()->top_left.x()+top->getParent()->getContent_rect()->size.width()/2);
                 geo->setY(top->getParent()->getContent_rect()->top_left.y());
             }
-            Size *new_size = new Size(top->getParent()->getContent_rect()->size.width()/2,top->getParent()->getContent_rect()->size.height()-top->getTop_bar_height()-top->getBorder_width());
+            Size *new_size = new Size(top->getParent()->getContent_rect()->size.width()/2-top->getBorder_width()*2,top->getParent()->getContent_rect()->size.height()-top->getTop_bar_height()-top->getBorder_width());
             top->configure(new_size,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr);
             delete(new_size);
             return EI_TRUE;
-        }else if(top->getHalfScreen() && e->where.x()>top->getParent()->getContent_rect()->top_left.x()+top->getTop_bar_height()
-                 && e->where.x()<top->getParent()->getContent_rect()->top_left.x()+top->getParent()->getContent_rect()->size.width()-top->getTop_bar_height()){
-            top->setHalfScreen(EI_FALSE);
+        }
+        //full screen
+        else if(e->where.y()<=top->getParent()->getContent_rect()->top_left.y() && !top->getFixScreen()){
+            top->setFixScreen(EI_TRUE);
+            top->setPre_pos(top->getScreen_location().top_left);
+            top->setPre_size(top->getContent_rect()->size);
             if (top->getGeom_manager()->getName() == "placer"){
                 Placer * geo = (Placer *)top->getGeom_manager();
-                geo->setX(top->getPre_pos().x());
-                geo->setY(top->getPre_pos().y());
+                geo->setX(top->getParent()->getContent_rect()->top_left.x());
+                geo->setY(top->getParent()->getContent_rect()->top_left.y());
             }
+            Size *new_size = new Size(top->getParent()->getContent_rect()->size.width()-top->getBorder_width(),top->getParent()->getContent_rect()->size.height()-top->getTop_bar_height()-top->getBorder_width());
+            top->configure(new_size,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr);
+            delete(new_size);
+            return EI_TRUE;
+        }
+        //remove halfscreen and become previous screen
+        else if(top->getFixScreen() && e->where.x()>top->getParent()->getContent_rect()->top_left.x()
+                 && e->where.x()<top->getParent()->getContent_rect()->top_left.x()+top->getParent()->getContent_rect()->size.width()
+                && e->where.y()>top->getParent()->getContent_rect()->top_left.y()){
+            top->setFixScreen(EI_FALSE);
+            //case where halfscreen is display after mouse up
+            if(top->getFix_screen_released()&& Application::getInstance()->inside_root(e->where)){
+                int move_x = e->where.x()-top->getScreen_location().top_left.x()-top->getPre_size().width()/2;
+                int move_y = (e->where.y())-(top->getMouse_pos().y());
+                top->setFix_screen_released(EI_FALSE);
+                if (top->getGeom_manager()->getName() == "placer"){
+                    Placer * geo = (Placer *)top->getGeom_manager();
+                    geo->setX(int(top->getScreen_location().top_left.x()+move_x));
+                    geo->setY(int(top->getScreen_location().top_left.y()+move_y));
+                }
+            }
+            //case halfscreen display while mouse is moving
+            else{
+                if (top->getGeom_manager()->getName() == "placer"){
+                    Placer * geo = (Placer *)top->getGeom_manager();
+                    geo->setX(top->getPre_pos().x());
+                    geo->setY(top->getPre_pos().y());
+                }
+            }
+
             Size *new_size = new Size(top->getPre_size().width(),top->getPre_size().height());
             top->configure(new_size,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr);
             delete(new_size);
             top->setPre_pos(Point(0,0));
             top->setPre_size(Size(0,0));
             return EI_TRUE;
-        }else{
-            int move_x = (e->where.x())-(top->getMouse_pos().x());
-            int move_y = (e->where.y())-(top->getMouse_pos().y());
-            //we return if the movement result is 0 or just incredibly insignifiant
-            if(move_x==0.0 && move_y==0.0)return EI_FALSE;
-            if(move_x!= 0.0 && (move_x * move_x)/2<1) return EI_FALSE;
-            if(move_y!= 0.0 && (move_y * move_y)/2<1) return EI_FALSE;
-            //Update geom_manager x & y to update the position of toplevel
-            if (top->getGeom_manager()->getName() == "placer"){
-                Placer * geo = (Placer *)top->getGeom_manager();
-                geo->setX(int(top->getScreen_location().top_left.x()+move_x));
-                geo->setY(int(top->getScreen_location().top_left.y()+move_y));
+        }
+        //normale moving
+        else{
+            if(Application::getInstance()->inside_root(e->where)){
+                int move_x = (e->where.x())-(top->getMouse_pos().x());
+                int move_y = (e->where.y())-(top->getMouse_pos().y());
+                //we return if the movement result is 0 or just incredibly insignifiant
+                if(move_x==0.0 && move_y==0.0)return EI_FALSE;
+                if(move_x!= 0.0 && (move_x * move_x)/2<1) return EI_FALSE;
+                if(move_y!= 0.0 && (move_y * move_y)/2<1) return EI_FALSE;
+                //Update geom_manager x & y to update the position of toplevel
+                if (top->getGeom_manager()->getName() == "placer"){
+                    Placer * geo = (Placer *)top->getGeom_manager();
+                    geo->setX(int(top->getScreen_location().top_left.x()+move_x));
+                    if(top->getScreen_location().top_left.y()+move_y<=top->getParent()->getContent_rect()->top_left.y()){
+                        geo->setY(int(top->getParent()->getContent_rect()->top_left.y()));
+                    }else{
+                        geo->setY(int(top->getScreen_location().top_left.y()+move_y));
+                    }
+                }
+                //finally run the geom_manager that will result in updating the position
+                top->getGeom_manager()->run(top);
+                top->setMouse_pos(e->where);
+                return EI_TRUE;
             }
-            //finally run the geom_manager that will result in updating the position
-            top->getGeom_manager()->run(top);
-            top->setMouse_pos(e->where);
-            return EI_TRUE;
+
         }
 
     }
@@ -639,17 +686,26 @@ void Toplevel::setPre_size(const Size &value)
     pre_size = value;
 }
 
-bool_t Toplevel::getHalfScreen() const
+bool_t Toplevel::getFixScreen() const
 {
-    return halfScreen;
+    return fixScreen;
 }
 
-void Toplevel::setHalfScreen(const bool_t &value)
+void Toplevel::setFixScreen(const bool_t &value)
 {
-    halfScreen = value;
+    fixScreen = value;
 }
 
 
+bool_t Toplevel::getFix_screen_released() const
+{
+    return fix_screen_released;
+}
+
+void Toplevel::setFix_screen_released(const bool_t &value)
+{
+    fix_screen_released = value;
+}
 
 
 

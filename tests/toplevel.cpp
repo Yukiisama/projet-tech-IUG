@@ -68,6 +68,12 @@ int ei_main(int argc, char* argv[])
     Toplevel* toplevel = new Toplevel(app->root_widget());
     toplevel->configure(&window_size, &window_color, &window_border_width, &window_title, &closable, &window_resizable, NULL);
 
+//    Toplevel* toplevel2 = new Toplevel(app->root_widget());
+//    toplevel2->configure(&window_size, &window_color, &window_border_width, &window_title, &closable, &window_resizable, NULL);
+
+//    Placer* p5 = new Placer();
+//    p5->configure(toplevel2, NULL, &(window_position.x()), &(window_position.y()), NULL, NULL, NULL, NULL, NULL, NULL);
+
     Button* button_ok = new Button(toplevel);
     button_ok->configure (&button_size, &button_color, &button_border_width, NULL, &relief, &button_title_ok, NULL, &text_color, NULL, NULL, NULL, NULL);
 
@@ -99,6 +105,7 @@ int ei_main(int argc, char* argv[])
     delete p2;
     delete p3;
     delete p4;
+    //delete p5;
 
     return (EXIT_SUCCESS);
 }
