@@ -56,6 +56,13 @@ public:
      * \brief Returns the name of the Geometry Manager type.
      */
     virtual string getName() = 0;
+
+    Widget *getWidget() const;
+
+    void setWidget(Widget *value);
+
+private:
+    Widget* widget;
 };
 
 
@@ -113,10 +120,6 @@ public:
 
     virtual string getName();
 
-    Widget *getWidget() const;
-
-    void setWidget(Widget *value);
-
     anchor_t getAnchor() const;
 
     void setAnchor(const anchor_t &value);
@@ -154,7 +157,6 @@ public:
     void setY(int value);
     
 private:
-    Widget*   widget;
     anchor_t  anchor;
     int       x;
     int       y;
@@ -223,6 +225,8 @@ public:
                     int* height);
 
 private:
+    int cell_width;
+    int cell_height;
     vector <struct widget_in_grid>Widgets;
 };
 

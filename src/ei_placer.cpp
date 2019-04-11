@@ -219,16 +219,6 @@ void Placer::release (Widget* widget){
 
 string Placer::getName(){ return "placer"; }
 
-Widget *Placer::getWidget() const
-{
-    return widget;
-}
-
-void Placer::setWidget(Widget *value)
-{
-    widget = value;
-}
-
 anchor_t Placer::getAnchor() const
 {
     return anchor;

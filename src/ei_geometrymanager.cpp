@@ -12,3 +12,14 @@ GeometryManager::GeometryManager(){ }
  * @brief Destructor of GeometryManager
  */
 GeometryManager::~GeometryManager(){ }
+
+Widget *GeometryManager::getWidget() const
+{
+    return widget;
+}
+
+void GeometryManager::setWidget(Widget *value)
+{
+    widget = value;
+}
+
