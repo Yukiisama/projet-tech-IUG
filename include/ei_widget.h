@@ -155,7 +155,7 @@ namespace ei {
     public:
         Frame();
         Frame(Widget* parent);
-
+        Frame(Widget *parent,const widgetclass_name_t &class_name);
         virtual ~Frame();
         virtual string to_string();
         virtual void draw (surface_t surface,
@@ -513,6 +513,38 @@ namespace ei {
                         surface_t*       img,
                         Rect**           img_rect,
                         anchor_t*        img_anchor);
+
+
+
+
+    };
+    class Entry : public Frame
+    {
+    public:
+        Entry();
+        Entry(Widget * parent);
+        virtual ~Entry();
+        virtual void draw (surface_t surface,
+                           surface_t pick_surface,
+                           Rect*     clipper);
+        void configure (Size*   requested_size,
+                        const color_t*  color,
+                        int*            border_width,
+                        relief_t*       relief,
+                        const char**          text,
+                        font_t*         text_font,
+                        color_t*        text_color,
+                        anchor_t*       text_anchor,
+                        surface_t*      img,
+                        Rect**          img_rect,
+                        anchor_t*       img_anchor);
+        bool_t get_is_clicked();
+        void set_is_clicked(bool_t click);
+        bool get_done();
+        void set_done(bool done);
+    private:
+        bool_t is_clicked = EI_FALSE;
+        bool done = false;
 
 
 

@@ -29,6 +29,21 @@ Frame::Frame(Widget *parent):Widget(FRAME_NAME,parent){
     //Tag for later used if event called with tag Frame
     addTag(FRAME_NAME);
 }
+Frame::Frame(Widget *parent,const widgetclass_name_t &class_name):Widget(class_name,parent){
+    //Initialiaze defaults value
+    relief=ei_relief_none;
+    //Initialiaze defaults text value and text is nullptr by default (no text)
+    text=nullptr;
+    text_font=hw_text_font_create(default_font_filename, font_default_size);
+    text_color=font_default_color;
+    text_anchor=ei_anc_center;
+    //Initialiaze defaults img value and img is nullptr by default (no img)
+    img=nullptr;
+    img_rect=nullptr;
+    img_anchor = ei_anc_center;
+    //Tag for later used if event called with tag Frame
+    addTag(class_name);
+}
 /**
      * \brief   Frame deconstructor.
 **/
