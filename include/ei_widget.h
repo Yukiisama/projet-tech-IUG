@@ -300,7 +300,8 @@ namespace ei {
     anchor_t get_img_anchor();
     void set_img_anchor(anchor_t img_anchor);
 
-
+    //Methode
+    void updateText_Container(Rect clipper);
 
 
     private:
@@ -313,6 +314,7 @@ namespace ei {
         surface_t  img;
         Rect*       img_rect;
         anchor_t   img_anchor;
+        Rect       text_container;
     };
 
 
