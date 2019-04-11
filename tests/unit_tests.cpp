@@ -376,7 +376,7 @@ TEST_CASE("Button class","[unit]"){
         REQUIRE(button->getColor().green == default_background_color.green);
         REQUIRE(button->getColor().blue == default_background_color.blue);
         REQUIRE(button->get_corner_radius() == default_button_corner_radius);
-        REQUIRE(button->getBorder_width() == 0);
+        REQUIRE(button->getBorder_width() == default_button_border_width);
         REQUIRE(button->get_relief() == ei_relief_none);
         REQUIRE(button->get_text() == nullptr);
         REQUIRE(button->get_text_color().alpha == font_default_color.alpha);

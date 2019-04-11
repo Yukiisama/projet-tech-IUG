@@ -157,8 +157,8 @@ void Placer::run (Widget* widget){
     // Sizing
     int temp_width = getWidth(), temp_height = getHeight();
 
-    if(getRel_width()>0) temp_width = contect_rect.size.width() * getRel_width();
-    if(getRel_height()>0)temp_height = contect_rect.size.height() * getRel_height();
+    temp_width += contect_rect.size.width() * getRel_width();
+    temp_height += contect_rect.size.height() * getRel_height();
 
     if (temp_width < 0 || temp_height < 0){
         fprintf(stderr, "We won't be able to draw something with a negative width/height!\n");
