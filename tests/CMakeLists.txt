@@ -17,6 +17,9 @@ target_link_libraries(toplevel ei eibase ${Allegro_LIBRARIES} m)
 add_executable(radiobutton radiobutton.cpp)
 target_link_libraries(radiobutton ei eibase ${Allegro_LIBRARIES} m)
 
+add_executable(griddeur griddeur.cpp)
+target_link_libraries(griddeur ei eibase ${Allegro_LIBRARIES} m)
+
 # Unit tests
 add_executable(unit_tests unit_tests.cpp)
 target_link_libraries(unit_tests ei eibase ${Allegro_LIBRARIES} m)

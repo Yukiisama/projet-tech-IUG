@@ -183,7 +183,7 @@ struct widget_in_grid{
 class Griddeur : public GeometryManager
 {
 public:
-    Griddeur();
+    Griddeur(Widget* parent, int* cell_width, int* cell_height);
     virtual ~Griddeur();
     /**
      * \brief Configures the geometry of a widget using the "griddeur" geometry manager.
@@ -210,6 +210,8 @@ public:
 
     virtual string getName();
 
+    void run_all();
+
     /**
      * @brief Adds a widget on the grid of his father. Simply returns if the given widget is not a son of the widget this grid applies on.
      * @param widget The widget we wanna place of the grid
@@ -223,6 +225,18 @@ public:
                     int* y,
                     int* width,
                     int* height);
+
+    int getCell_width();
+
+    void setCell_width(int cell_width);
+
+    int getCell_height();
+
+    void setCell_height(int cell_height);
+
+    vector <struct widget_in_grid> getWidgets();
+
+    void setWidgets(vector <struct widget_in_grid>Widgets);
 
 private:
     int cell_width;
