@@ -38,6 +38,7 @@ public:
         Widget *widget;
         ei_callback_t callback;
         void *user_param;
+        bool_t exc_on_widget=EI_TRUE;
     } param_callback;
     // Declaring umap to be of <ei_eventtype_t,std::vector<param_callback> type
     // key will be of ei_eventtype_t type and mapped value will
@@ -92,7 +93,9 @@ public:
      */
     void deleteWidget(Widget * widget);
 
-    void totalCallback();
+
+    void setExc_On_Widget(ei_eventtype_t eventtype,Widget* widget,ei_callback_t callback,void * user_param);
+
 
 
 };

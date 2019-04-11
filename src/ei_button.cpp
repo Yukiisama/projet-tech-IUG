@@ -26,7 +26,7 @@ bool_t button_click_down(Widget* widget, Event* event, void* user_param)
     Button* button = static_cast<Button*>(widget);
     if(Application::getInstance()->widget_pick(e->where)->getPick_id()==button->getPick_id()){
         button->set_relief(ei_relief_sunken);
-        //return EI_TRUE;
+        Application::getInstance()->invalidate_rect(*widget->getContent_rect());
     }
     return EI_FALSE;
 }
@@ -40,11 +40,11 @@ bool_t button_click_down(Widget* widget, Event* event, void* user_param)
      */
 bool_t button_click_up(Widget* widget, Event* event, void* user_param)
 {
-//    Button* button = static_cast<Button*>(widget);
-//    if(button->get_relief()==ei_relief_sunken){
-//        button->set_relief(ei_relief_raised);
-//        //return EI_TRUE;
-//    }
+    Button* button = static_cast<Button*>(widget);
+    if(button->get_relief()==ei_relief_sunken){
+        button->set_relief(ei_relief_raised);
+        Application::getInstance()->invalidate_rect(*widget->getContent_rect());
+    }
     return EI_FALSE;
 }
 /**
@@ -71,6 +71,8 @@ Button::Button(Widget *parent) : Widget(BUTTON_NAME, parent){
     //Bind relief button function
     EventManager::getInstance().bind(ei_ev_mouse_buttondown, this, "", button_click_down, NULL);
     EventManager::getInstance().bind(ei_ev_mouse_buttonup, this, "", button_click_up, NULL);
+    EventManager::getInstance().setExc_On_Widget(ei_ev_mouse_buttonup,this,button_click_up,NULL);
+
 }
 
 Button::Button(Widget *parent, const widgetclass_name_t &class_name) : Widget(class_name, parent){

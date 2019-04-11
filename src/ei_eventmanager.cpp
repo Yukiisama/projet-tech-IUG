@@ -8,6 +8,7 @@
 namespace ei
 {
 EventManager::EventManager() {}
+
 /**
      * \brief	Binds a callback to an event type and a widget or a tag.
      * Bind tags :
@@ -200,42 +201,30 @@ void EventManager::eventHandler(Event *event)
                         break;
                     }
                 }
-                //use for update button sunken, because button click down callback return false.
-                if(Application::getInstance()->widget_pick(me->where)->getPick_id()==it->widget->getPick_id()
-                        && !it->widget->getName().compare("Button")){
-                    Application::getInstance()->invalidate_rect((*it->widget->getContent_rect()));
-                }
-            }else if(event->type==ei_ev_mouse_buttonup && !it->widget->getName().compare("Button") ){
-                Button* button = static_cast<Button*>(it->widget);
-                //use for update button raised, because button click up callback return false.
-                if(button->get_relief()==ei_relief_sunken){
-                    button->set_relief(ei_relief_raised);
-                    Application::getInstance()->invalidate_rect((*it->widget->getContent_rect()));
-                }
-                if(!button->getParent()->getName().compare("Toplevel")){
-                    Toplevel* toplevel = static_cast<Toplevel*>(button->getParent());
-                    toplevel->setResize_button_pressed(EI_FALSE);
-                }
+            }else if(event->type==ei_ev_mouse_buttonup){
                 MouseEvent * me= static_cast<MouseEvent*>(event);
-
-                if(Application::getInstance()->inside_root(me->where) && Application::getInstance()->widget_pick(me->where)->getPick_id()==it->widget->getPick_id()){
+                //can be excute outside the widget
+                if(it->exc_on_widget==EI_FALSE){
                     if(it->callback(it->widget, event, it->user_param)){
                         Application::getInstance()->invalidate_rect((*it->widget->getContent_rect()));
                         break;
                     }
                 }
-
+                //can only excute on the widget
+                else{
+                    if(Application::getInstance()->inside_root(me->where) && Application::getInstance()->widget_pick(me->where)->getPick_id()==it->widget->getPick_id()){
+                        if(it->callback(it->widget, event, it->user_param)){
+                            Application::getInstance()->invalidate_rect((*it->widget->getContent_rect()));
+                            break;
+                        }
+                    }
+                }
             }else{
                 if(it->callback(it->widget, event, it->user_param)){
                     Application::getInstance()->invalidate_rect((*it->widget->getContent_rect()));
                     break;
                 }
-
-
             }
-
-
-
         }
     }
 
@@ -258,17 +247,18 @@ void EventManager::deleteWidget(Widget* widget){
 
 }
 
-void EventManager::totalCallback()
-{
-    int count =0;
-    for(std::unordered_map<ei_eventtype_t,std::vector<param_callback>>::iterator it = hashMap.begin(); it!= hashMap.end(); ++it){
-
-        std::vector<param_callback> p_list = it->second;
-        for(std::vector<param_callback>::iterator itt = p_list.begin(); itt != p_list.end();++itt){
-            count++;
-        }
+void EventManager::setExc_On_Widget(ei_eventtype_t eventtype,Widget* widget,ei_callback_t callback,void * user_param){
+    param_callback &cal = hashMap[eventtype].back();
+    if(cal.widget->getPick_id()== widget->getPick_id()
+            &&cal.user_param==user_param
+            &&cal.callback.target<bool_t(Widget *, Event *, void *)>() == callback.target<bool_t(Widget *, Event *, void *)>()){
+        cal.exc_on_widget=EI_FALSE;
+    }else{
+        exit(EXIT_FAILURE);
     }
-    cout<<count<<endl;
+
+
 }
+
 
 } // namespace ei
