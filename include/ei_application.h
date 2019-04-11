@@ -120,8 +120,8 @@ public:
     void set_running(bool running);
     double get_update_time();
     void set_update_time(double update_time);
-    void set_who_click(int x);
-    int get_who_click();
+    void set_who_click(uint32_t x);
+    uint32_t get_who_click();
     // *** End Getter & Setter ***
 private:
     static Application *instance;

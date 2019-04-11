@@ -192,10 +192,10 @@ double Application::get_update_time(){
 void Application::set_update_time(double update_time){
     this->update_time =update_time;
 }
-void Application::set_who_click(int x){
+void Application::set_who_click(uint32_t x){
     this->who_click = x;
 }
-int Application::get_who_click(){
+uint32_t Application::get_who_click(){
     return this->who_click;
 }
 
