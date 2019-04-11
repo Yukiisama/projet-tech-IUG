@@ -40,11 +40,11 @@ bool_t button_click_down(Widget* widget, Event* event, void* user_param)
      */
 bool_t button_click_up(Widget* widget, Event* event, void* user_param)
 {
-    Button* button = static_cast<Button*>(widget);
-    if(button->get_relief()==ei_relief_sunken){
-        button->set_relief(ei_relief_raised);
-        //return EI_TRUE;
-    }
+//    Button* button = static_cast<Button*>(widget);
+//    if(button->get_relief()==ei_relief_sunken){
+//        button->set_relief(ei_relief_raised);
+//        //return EI_TRUE;
+//    }
     return EI_FALSE;
 }
 /**
@@ -69,7 +69,6 @@ Button::Button(Widget *parent) : Widget(BUTTON_NAME, parent){
     //Tag for later used if event called with tag Button
     addTag(BUTTON_NAME);
     //Bind relief button function
-    cout<<getPick_id()<<endl;
     EventManager::getInstance().bind(ei_ev_mouse_buttondown, this, "", button_click_down, NULL);
     EventManager::getInstance().bind(ei_ev_mouse_buttonup, this, "", button_click_up, NULL);
 }
@@ -78,9 +77,12 @@ Button::Button(Widget *parent) : Widget(BUTTON_NAME, parent){
     * @brief   Destructor of Button widget
  */
 Button::~Button()
-{   EventManager::getInstance().deleteWidget(this);
+{
+    EventManager::getInstance().unbind(ei_ev_mouse_buttondown, this, "", button_click_down, NULL);
+    EventManager::getInstance().unbind(ei_ev_mouse_buttonup, this, "", button_click_up, NULL);
+    EventManager::getInstance().deleteWidget(this);
     if(getParent()){
-        getParent()->removeChildren(this);
+        //getParent()->removeChildren(this);
         Application::getInstance()->invalidate_rect(*getParent()->getContent_rect());
     }
     hw_text_font_free(text_font);
@@ -109,15 +111,13 @@ void Button::draw(surface_t surface,
     }
 
     //The Rect of the button.
-    Rect button_rect = Rect(screen_location.top_left,requested_size);
+    Rect button_rect = Rect(content_rect->top_left,content_rect->size);
     //Draw on pick_surface the forme of button with button's pick_color.
-    hw_surface_lock(pick_surface);
     //The list of points to draw the button
     linked_point_t list_frame = rounded_frame(button_rect, corner_radius, BT_FULL);
     pick_color.alpha=ALPHA_MAX;
     //Draw button polygon on pick_surface with color pick_color
     draw_polygon(pick_surface, list_frame, pick_color, clipper);
-    hw_surface_unlock(pick_surface);
     //Draw button on the main surface
     draw_button(surface,&button_rect,color,corner_radius,border_width,clipper,relief);
 
@@ -126,7 +126,7 @@ void Button::draw(surface_t surface,
         Size text_size=Size(0,0);
         //Register the size that the text will take in text_size
         hw_text_compute_size(text,text_font,text_size);
-        Point where = text_anchor_to_pos(screen_location, text_anchor,text_size,border_width);
+        Point where = text_anchor_to_pos(*content_rect, text_anchor,text_size,border_width);
         //Finally draw the text at the where position
         draw_text(surface, &where, text, text_font, &text_color);
     }
@@ -153,9 +153,13 @@ void Button::draw(surface_t surface,
     }
 
     //Recursive method that draw all children of current button.
-    for(std::list<Widget*>::iterator it = children.begin();it!= children.end();it++)
+    for(std::list<Widget*>::iterator it = children.begin();it!= children.end();it++){
+
+
         //Children should be display inside the content_rect of his parent.
-        (*it)->draw(surface,pick_surface,content_rect);
+        std::cout<<(*it)->getPick_id()<<std::endl;
+        (*it)->draw(surface,pick_surface,clipper);
+    }
 
 }
 

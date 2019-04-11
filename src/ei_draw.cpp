@@ -97,6 +97,28 @@ void draw_polyline(surface_t surface,
     }
 }
 
+void draw_arrow(surface_t surface, const Point where, int dimension, Rect* clipper){
+    int size = dimension/3;
+    Point diagonal_start = Point(where.x(),where.y()+size);
+    Point diagonal_end = Point(where.x()+((dimension-size)/2+0.5),where.y()+((dimension-size)/2+0.5+size));
+
+    color_t color = {255,0,0,255};
+
+    for(;diagonal_start.y()>where.y();){
+        draw_line(surface,diagonal_start,diagonal_end,color,clipper);
+        diagonal_start.x()+=1;diagonal_end.x()+=1;
+        draw_line(surface,diagonal_start,diagonal_end,color,clipper);
+        diagonal_start.y()-=1;diagonal_end.y()-=1;
+    }
+
+    Point start = Point(where.x(),where.y()+dimension);
+    Point end = Point(where.x()+dimension,where.y()+dimension);
+
+    for(;start.x()<end.x();start.x()+=1,start.y()-=1,end.y()-=1){
+        draw_line(surface,start,end,color,clipper);
+    }
+}
+
 static inline color_t alpha_blend(const color_t in_pixel, const color_t dst_pixel)
 {
     color_t blended;
@@ -443,6 +465,13 @@ void draw_text(surface_t surface, const Point* where,
     ei_copy_surface(surface, s_text, where, EI_TRUE);
 
     hw_surface_free(s_text);
+}
+void draw_rectangle(surface_t surface, Rect r,const color_t color,  Rect * clipper){
+    hw_surface_lock(surface);
+    for(int i = r.top_left.y();i<=r.top_left.y()+r.size.height();i++){
+        draw_line(surface,Point(r.top_left.x(),i),Point(r.top_left.x()+r.size.width(),i),color,clipper);
+    }
+    hw_surface_unlock(surface);
 }
 
 void fill(surface_t surface, const color_t* color, const bool_t use_alpha)

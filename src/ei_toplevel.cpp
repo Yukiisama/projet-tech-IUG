@@ -20,6 +20,98 @@
 #define TOPLEVEL_NAME "Toplevel"
 using namespace std;
 namespace ei {
+
+/**
+ * @brief resize_button_callback callback called when a user clicks on the resize button.
+ * @param widget
+ * @param event
+ * @param user_param
+ * @return
+ */
+bool_t resize_button_callback(Widget* widget, Event* event, void* user_param){
+    Toplevel* top = static_cast<Toplevel*>(user_param);
+    if(event->type==ei_ev_mouse_buttonup){
+        if(top->resizing()) {
+            top->set_resize_button_pressed(EI_FALSE);
+            return EI_TRUE;
+        }
+    }else if(event->type==ei_ev_mouse_buttondown){
+        MouseEvent* e = static_cast<MouseEvent*>(event);
+        top->set_resize_button_pressed(EI_TRUE);
+        top->setMouse_pos(e->where);
+        return EI_TRUE;
+    }else if(event->type==ei_ev_mouse_move){
+        if(top->resizing()){
+            MouseEvent* e = static_cast<MouseEvent*>(event);
+            if(Application::getInstance()->inside_root(e->where)){
+                int dx = e->where.x()-top->getMouse_pos().x();
+                int dy = e->where.y()-top->getMouse_pos().y();
+                int new_width = top->getRequested_size().width()+dx-top->getBorder_width()*2;
+                int new_height = top->getRequested_size().height()+dy-top->getBorder_width()-top->getTop_bar_height();
+                //Limit the top level to a minimal size
+                if(new_width < top->getMin_size().width())new_width = top->getMin_size().width();
+                if(new_height < top->getMin_size().height())new_height = top->getMin_size().height();
+                //finally update the new size of the top level
+                Size *new_size = new Size(new_width,new_height);
+                top->configure(new_size,NULL,NULL,NULL,NULL,NULL,NULL);
+                delete(new_size);
+                //update the last position of the mouse
+                top->setMouse_pos(e->where);
+                return EI_TRUE;
+            }
+        }
+    }
+    return EI_FALSE;
+}
+
+bool_t button_close_callback(Widget* widget, Event* event, void* user_param){
+    Toplevel* top = static_cast<Toplevel*>(user_param);
+    MouseEvent* e = static_cast<MouseEvent*>(event);
+    if(top->closing()){
+        if(event->type==ei_ev_mouse_buttonup &&
+                Application::getInstance()->widget_pick(e->where)->getPick_id()==top->getButton_close()->getPick_id()){
+            top->getGeom_manager()->release(top);
+            delete top;
+            return EI_TRUE;
+        }
+        top->set_button_close_pressed(EI_FALSE);//optimization
+    }else if(event->type==ei_ev_mouse_buttondown &&
+             Application::getInstance()->widget_pick(e->where)->getPick_id()==top->getButton_close()->getPick_id()){
+        top->set_button_close_pressed(EI_TRUE);
+        return EI_TRUE;
+    }
+    return EI_FALSE;
+}
+
+bool_t topbar_move_callback(Widget* widget, Event* event, void* user_param){
+    Toplevel* top = static_cast<Toplevel*>(user_param);
+    MouseEvent* e = static_cast<MouseEvent*>(event);
+    if(top->moving()&& event->type==ei_ev_mouse_buttonup){
+        top->set_top_bar_clicked(EI_FALSE);
+        return EI_FALSE;
+    }else if(event->type==ei_ev_mouse_buttondown &&
+             Application::getInstance()->widget_pick(e->where)->getPick_id()==top->getPick_id()){
+        if(top->inside_top_bar(e->where)){
+            //Tells the toplevel that its top_bar is clicked
+            top->set_top_bar_clicked(EI_TRUE);
+            top->setMouse_pos(e->where);
+            return EI_FALSE;
+        }
+    }else if(top->moving() && event->type==ei_ev_mouse_move && Application::getInstance()->inside_root(e->where)){
+        //if(inside_right_bottom_corner(e->where))top->set_show_arrow(EI_TRUE)
+        double move_x = (e->where.x())-(top->getMouse_pos().x());
+        double move_y = (e->where.y())-(top->getMouse_pos().y());
+        //Update geom_manager x & y to update the position of toplevel
+        top->getGeom_manager()->setX(int(top->getScreen_location().top_left.x()+move_x));
+        top->getGeom_manager()->setY(int(top->getScreen_location().top_left.y()+move_y));
+        //finally run the geom_manager that will result in updating the position
+        top->getGeom_manager()->run(top);
+        top->setMouse_pos(e->where);
+        return EI_TRUE;
+    }
+    return EI_FALSE;
+}
+
 /**
  * @brief Toplevel Constructor
  * @param parent of the toplevel widget
@@ -43,17 +135,33 @@ Toplevel::Toplevel(Widget *parent) : Widget(TOPLEVEL_NAME, parent){
     resize_button = new Button(this);
     resize_button_window_size = Size(RESIZE_DIM,RESIZE_DIM);
     resize_button->configure(&resize_button_window_size,&color,
-                             nullptr,&radius,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr);
+                             NULL,&radius,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
     p_resize_button= new Placer();
     addTag(TOPLEVEL_NAME);
 
     //update Toplevel's own content rect which is now depending on container
     setContent_rect(&container);
-
+    //bind resize button
+    EventManager::getInstance().bind(ei_ev_mouse_buttonup, this, "",resize_button_callback , NULL);
+    EventManager::getInstance().bind(ei_ev_mouse_buttondown, this, "",resize_button_callback , NULL);
+    EventManager::getInstance().bind(ei_ev_mouse_move, this, "",resize_button_callback , NULL);
+    //bind topbar mov
+    EventManager::getInstance().bind(ei_ev_mouse_buttonup, this, "",topbar_move_callback , NULL);
+    EventManager::getInstance().bind(ei_ev_mouse_buttondown, this, "",topbar_move_callback , NULL);
+    EventManager::getInstance().bind(ei_ev_mouse_move, this, "",topbar_move_callback , NULL);
 }
 
 Toplevel::~Toplevel(){
-    std::list<Widget*>c_list =children;
+    //unbind resize button
+    EventManager::getInstance().unbind(ei_ev_mouse_buttonup, this, "",resize_button_callback , NULL);
+    EventManager::getInstance().unbind(ei_ev_mouse_buttondown, this, "",resize_button_callback , NULL);
+    EventManager::getInstance().unbind(ei_ev_mouse_move, this, "",resize_button_callback , NULL);
+    //unbind topbar mov
+    EventManager::getInstance().unbind(ei_ev_mouse_buttonup, this, "",topbar_move_callback , NULL);
+    EventManager::getInstance().unbind(ei_ev_mouse_buttondown, this, "",topbar_move_callback , NULL);
+    EventManager::getInstance().unbind(ei_ev_mouse_move, this, "",topbar_move_callback , NULL);
+    EventManager::getInstance().deleteWidget(this);
+    std::list<Widget*>&c_list =children;
     for(std::list<Widget*>::iterator it = c_list.begin();it!= c_list.end();it++){
         //delete button close only if it exist
         if((*it)->getPick_id()==button_close->getPick_id()){
@@ -71,14 +179,12 @@ Toplevel::~Toplevel(){
     //TODO update pick surface with parant's pick color
     //remove from parent's child list
     if(getParent()){
-        getParent()->removeChildren(this);
+        //getParent()->removeChildren(this);
 //        getParent()->draw(Application::getInstance()->get_root_window(),
 //                          Application::getInstance()->get_offscreen(),getParent()->getContent_rect());
         Application::getInstance()->invalidate_rect(*getParent()->getContent_rect());
     }
-    //EventManager::getInstance().totalCallback();
-    EventManager::getInstance().deleteWidget(this);
-    //EventManager::getInstance().totalCallback();
+
 }
 
 
@@ -92,6 +198,23 @@ bool_t Toplevel::inside_top_bar(Point where) const{
             && where.x()<=screen_location.top_left.x()+requested_size.width()
             && where.y()>=screen_location.top_left.y()
             && where.y()<=screen_location.top_left.y()+top_bar_height){
+        return EI_TRUE;
+    }
+    else{
+        return EI_FALSE;
+    }
+}
+
+/**
+ * @brief Toplevel::inside_right_bottom_corner : Check if inside the right bottom corner of the top level
+ * @param where the given position
+ * @return boolean state ( true if inside else false)
+ */
+bool_t Toplevel::inside_right_bottom_corner(Point where) const{
+    if(where.x()>=content_rect->top_left.x()+content_rect->size.width()
+            && where.x()<=content_rect->top_left.x()+content_rect->size.width()+border_width
+            && where.y()>=content_rect->top_left.y()+content_rect->size.height()
+            && where.y()<=content_rect->top_left.y()+content_rect->size.height()+border_width){
         return EI_TRUE;
     }
     else{
@@ -128,6 +251,11 @@ void Toplevel::draw (surface_t surface,
 
     //draw outside the basic toplevel
     drawBasic_toplevel(surface,pick_surface,clipper);
+
+
+    if(resize_button_pressed)draw_arrow(surface,Point(screen_location.top_left.x()+content_rect->size.width()/2,screen_location.top_left.y()+content_rect->size.height()/2),border_width*5,NULL);
+
+
     //recursive draw
     for(std::list<Widget*>::iterator it = children.begin();it!= children.end();it++){
         //donc apply content rect to button close because it display on the top bar which is not belong to content rect
@@ -135,7 +263,7 @@ void Toplevel::draw (surface_t surface,
                 ||(*it)->getPick_id()==resize_button->getPick_id())
             (*it)->draw(surface,pick_surface,clipper);
         else
-            (*it)->draw(surface,pick_surface,content_rect);
+            (*it)->draw(surface,pick_surface,clipper);
 
     }
     return;
@@ -194,10 +322,8 @@ void Toplevel::drawBasic_toplevel(surface_t surface, surface_t pick_surface, Rec
     draw_polygon(surface,list_point,color,clipper);
 
     //Draw pick_surface outside the container
-    hw_surface_lock(pick_surface);
     pick_color.alpha=ALPHA_MAX;
     draw_polygon(pick_surface,list_point,pick_color,clipper);
-    hw_surface_unlock(pick_surface);
 
     color_t color_white = {255,255,255,ALPHA_MAX};
     //Draw toplevel background
@@ -210,11 +336,13 @@ void Toplevel::drawBasic_toplevel(surface_t surface, surface_t pick_surface, Rec
                                    content_rect->top_left.y()+int(content_rect->size.height())));
     list_point_bgr.push_back(Point(content_rect->top_left.x()+int(content_rect->size.width()),
                                    content_rect->top_left.y()));
-    draw_polygon(surface,list_point_bgr,color_white,clipper);
+//    /draw_polygon(surface,list_point_bgr,color_white,clipper);
+    draw_rectangle(surface,*content_rect,color_white,clipper);
     //Draw pick_surface outside the container
     hw_surface_lock(pick_surface);
     pick_color.alpha=ALPHA_MAX;
-    draw_polygon(pick_surface,list_point_bgr,pick_color,clipper);
+//    draw_polygon(pick_surface,list_point_bgr,pick_color,clipper);
+    draw_rectangle(pick_surface,*content_rect,pick_color,clipper);
     hw_surface_unlock(pick_surface);
 
 
@@ -271,7 +399,7 @@ void Toplevel::configure (Size*           requested_size,
     if(min_size)  this->min_size = *min_size;
 
     //Button close (closable done == true if it has already be done)
-    if(this->closable && !closable_done) {
+    if(this->closable && closable_done==EI_FALSE) {
         button_close = new Button(this);
         color_t button_color = {255,0,0,ALPHA_MAX};
         int button_close_radius =BUTTON_RADIUS;
@@ -280,6 +408,9 @@ void Toplevel::configure (Size*           requested_size,
         //Assign placer to the new button created
         p_button_close=new Placer();
         closable_done=EI_TRUE;
+        //bind button close
+        EventManager::getInstance().bind(ei_ev_mouse_buttonup, this, "",button_close_callback , NULL);
+        EventManager::getInstance().bind(ei_ev_mouse_buttondown, this, "",button_close_callback , NULL);
     }
     //Finally run the geometry manager in order to place the toplevel and the buttons
     if(geom_manager)geom_manager->run(this);

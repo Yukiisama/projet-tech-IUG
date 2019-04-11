@@ -120,6 +120,8 @@ public:
      */
     void optimizedRect();
 
+    bool isIntersect(Rect rect1, Rect rect2);
+
     Application(Application const&)     = delete; // prevents  this  method  to be used
     void operator=(Application const&)  = delete; // prevents  this  method  to be used
 

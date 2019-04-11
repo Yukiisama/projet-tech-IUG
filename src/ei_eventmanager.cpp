@@ -117,7 +117,6 @@ void EventManager::unbind(ei_eventtype_t eventtype,
                           ei_callback_t callback,
                           void *user_param)
 {
-    totalCallback();
     //Unbind with tags
     if (!widget && !tag.empty())
     {
@@ -167,7 +166,6 @@ void EventManager::unbind(ei_eventtype_t eventtype,
                 it = hashMap[eventtype].erase(it);
         }
     }
-    totalCallback();
 }
 /**
      * \brief	Handle the events and add invalid rects into the singleton Application
@@ -176,21 +174,68 @@ void EventManager::unbind(ei_eventtype_t eventtype,
 **/
 void EventManager::eventHandler(Event *event)
 {
+
+    if( event->type == ei_ev_keydown ){
+        KeyEvent * ev_key= static_cast<KeyEvent*>  (event);
+        if(ev_key->key_sym == ALLEGRO_KEY_Q){
+            Application::getInstance()->quit_request();
+        }
+
+    }
+
     //Iterate and callback the associated function to the event
     for (std::vector<param_callback>::iterator it = hashMap[event->type].begin(); it != hashMap[event->type].end(); ++it)
     {
         if (it->widget)
         {
-            //Application::getInstance()->invalidate_rect((*it->widget->getContent_rect()));
-            if(it->callback(it->widget, event, it->user_param)){
-                Application::getInstance()->invalidate_rect((*it->widget->getContent_rect()));
-                break;
+            if(event->type==ei_ev_mouse_buttondown){
+                MouseEvent * me= static_cast<MouseEvent*>(event);
+                uint32_t mouse_id =  Application::getInstance()->widget_pick(me->where)->getPick_id();
+                if(!it->widget->getName().compare("Toplevel")){
+                    Toplevel * top= static_cast<Toplevel*>(it->widget);
+                    if(mouse_id == top->getButton_close()->getPick_id()
+                            || mouse_id == top->getResize_button()->getPick_id()
+                            || mouse_id == top->getPick_id()){
+                        if(it->callback(it->widget, event, it->user_param)){
+                            Application::getInstance()->invalidate_rect((it->widget->getScreen_location()));
+                            break;
+                        }
+                    }
+                }
+                else if(mouse_id==it->widget->getPick_id()){
+                    if(it->callback(it->widget, event, it->user_param)){
+                        Application::getInstance()->invalidate_rect((*it->widget->getContent_rect()));
+                        break;
+                    }
+                }
+                //use for update button sunken, because button click down callback return false.
+                if(Application::getInstance()->widget_pick(me->where)->getPick_id()==it->widget->getPick_id()
+                        && !it->widget->getName().compare("Button")){
+                    Application::getInstance()->invalidate_rect((*it->widget->getContent_rect()));
+                }
+            }else if(event->type==ei_ev_mouse_buttonup && !it->widget->getName().compare("Button") ){
+                Button* button = static_cast<Button*>(it->widget);
+                //use for update button raised, because button click up callback return false.
+                if(button->get_relief()==ei_relief_sunken){
+                    button->set_relief(ei_relief_raised);
+                    Application::getInstance()->invalidate_rect((*it->widget->getContent_rect()));
+                }
+                if(it->callback(it->widget, event, it->user_param)){
+                    Application::getInstance()->invalidate_rect((*it->widget->getContent_rect()));
+                    break;
+                }
+
+            }else{
+                if(it->callback(it->widget, event, it->user_param)){
+                    if(!it->widget->getName().compare("Toplevel"))
+                        Application::getInstance()->invalidate_rect((it->widget->getScreen_location()));
+                    else
+                        Application::getInstance()->invalidate_rect((*it->widget->getContent_rect()));
+                    break;
+                }
             }
-            if(!it->widget->getName().compare("Button"))
-                Application::getInstance()->invalidate_rect((*it->widget->getContent_rect()));
         }
     }
-
 }
 
 void EventManager::deleteWidget(Widget* widget){
@@ -202,7 +247,6 @@ void EventManager::deleteWidget(Widget* widget){
             for(std::vector<param_callback>::iterator itt = p_list.begin(); itt != p_list.end();){
                 if(itt->widget->getPick_id() == widget->getPick_id()){
                     itt = p_list.erase(itt);
-                    cout<<"erased"<<endl;
                 }
                 else ++itt;
             }

@@ -81,9 +81,9 @@ void Placer::configure (Widget*    widget,
     setWidget(widget);
     widget->setGeom_manager(this);
     //Assign values
-    if (anchor) setAnchor(*anchor);
-    if (x) setX(*x);
-    if (y) setY(*y);
+    (anchor) ? setAnchor(*anchor) : setAnchor(ei_anc_northwest);
+    (x) ? setX(*x) : setX(0);
+    (y) ? setY(*y) : setY(0);
     (width) ? setWidth(*width) : setWidth(widget->getRequested_size().width());
     (height) ? setHeight(*height) : setHeight(widget->getRequested_size().height());
     (rel_x) ? setRel_x(*rel_x) : setRel_x(0.0);
@@ -98,7 +98,8 @@ void Placer::configure (Widget*    widget,
  * @param widget the widget we want to place
  */
 void Placer::run (Widget* widget){
-    if (!widget || !this->getWidget() ) return;
+    if (!widget ) return;
+    if(!widget->getParent()) return;
 
     // Creating the new rectangle and setting the right values into it
     Rect new_rect = Rect();
