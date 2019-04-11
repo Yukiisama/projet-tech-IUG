@@ -249,6 +249,7 @@ namespace ei {
     {
     public:
         Button(Widget* parent);
+        Button(Widget *parent,const widgetclass_name_t& class_name);
 
         virtual ~Button();
 
@@ -323,21 +324,9 @@ namespace ei {
 
         virtual ~Toplevel();
 
-        Button* getButton_close() const;
-        Button* getResize_button() const;
-        Frame* getIn_window() const;
-        Point getMouse_pos() const;
-        Size getMin_size() const;
-        void setMouse_pos(Point point);
         bool_t inside_top_bar(Point where) const;
         bool_t inside_right_bottom_corner(Point where) const;
-        bool_t moving() const;
-        bool_t resizing() const;
-        bool_t closing() const;
-        void set_top_bar_clicked(bool_t clicking);
-        void set_resize_button_pressed(bool_t pressed);
-        void set_button_close_pressed(bool_t pressed);
-
+        
         virtual void draw (surface_t surface,
                            surface_t pick_surface,
                            Rect*     clipper);
@@ -371,36 +360,108 @@ namespace ei {
                         axis_set_t*     resizable,
                         Size*           min_size);
     //Getter & Setter
-    int get_border_width();
-    void set_border_width(int border_width);
-    double getTop_bar_height() const;
-    void set_top_bar_height( double top_bar_height);
-    const char * get_title();
-    void set_title(const char * title);
-    bool_t get_closable();
-    void set_closable(bool_t closable);
-    axis_set_t get_resizable();
-    void set_resizable(axis_set_t resizable);
-    Size get_min_size();
-    void set_min_size( Size min_size);
-    Button * get_button_close();
-    void set_button_close(Button * button_close);
-    Placer * get_p_button_close();
-    void set_p_button_close(Placer * p_button_close);
-    Button * get_resize_button();
-    void set_resize_button(Button * resize_button);
-    Placer * get_p_resize_button();
-    void set_p_resize_button(Placer * p_resize_button);
-    Placer * get_p_in_window();
-    void set_p_in_window(Placer * p_in_window);
-    //End Getter & Setter
+
     int getBorder_width() const;
-    void setContainer_topleft(Point contopleft);
+    void setBorder_width(int value);
 
+    double getTop_bar_height() const;
 
+    void setTop_bar_height(double value);
 
+    const char *getTitle() const;
+
+    void setTitle(const char *value);
+
+    bool_t getClosable() const;
+
+    void setClosable(const bool_t &value);
+
+    axis_set_t getResizable() const;
+
+    void setResizable(const axis_set_t &value);
+
+    Size getMin_size() const;
+
+    void setMin_size(const Size &value);
+
+    Size getButton_size() const;
+
+    void setButton_size(const Size &value);
+
+    Button* getButton_close() const;
+
+    void setButton_close(Button *value);
+
+    Size getResize_button_window_size() const;
+
+    void setResize_button_window_size(const Size &value);
+
+    Placer *getP_button_close() const;
+
+    void setP_button_close(Placer *value);
+
+    Button* getResize_button() const;
+
+    void setResize_button(Button *value);
+
+    Placer *getP_resize_button() const;
+
+    void setP_resize_button(Placer *value);
 
     Rect getContainer() const;
+
+    void setContainer(const Rect &value);
+
+    Placer *getP_in_window() const;
+
+    void setP_in_window(Placer *value);
+
+    bool_t getTop_bar_clicked() const;
+
+    void setTop_bar_clicked(const bool_t &value);
+
+    bool_t getResize_button_pressed() const;
+
+    void setResize_button_pressed( bool_t value);
+
+    bool_t getButton_close_pressed() const;
+
+    void setButton_close_pressed(const bool_t &value);
+
+    Point getMouse_pos() const;
+
+    void setMouse_pos(Point point);
+
+    bool_t getClosable_done() const;
+
+    void setClosable_done(const bool_t &value);
+
+    bool_t getTo_forget() const;
+
+    void setTo_forget(const bool_t &value);
+
+    void setContainer_topleft(Point contopleft);
+
+    Point getPre_pos() const;
+
+    void setPre_pos(const Point &value);
+
+    Size getPre_size() const;
+
+    void setPre_size(const Size &value);
+
+    bool_t getFixScreen() const;
+
+    void setFixScreen(const bool_t &value);
+
+    bool_t getFix_screen_released() const;
+
+    void setFix_screen_released(const bool_t &value);
+
+    //End Getter & Setter
+
+
+
 
     private:
     int             border_width;
@@ -421,7 +482,42 @@ namespace ei {
     bool_t          resize_button_pressed=EI_FALSE;
     bool_t          button_close_pressed=EI_FALSE;
     Point           mouse_pos;
-    bool_t closable_done = EI_FALSE;
+    bool_t          closable_done = EI_FALSE; //to prevent recreate button close
+    bool_t          to_forget =EI_FALSE;
+    //Bonus resize to half screen
+    Point           pre_pos;
+    Size            pre_size;
+    bool_t          fixScreen=EI_FALSE;
+    bool_t          fix_screen_released=EI_FALSE;
+    };
+
+
+
+    class RadioButton : public Button
+    {
+    public:
+        RadioButton();
+        RadioButton(Widget * parent);
+        virtual ~RadioButton();
+        virtual void draw (surface_t surface,
+                           surface_t pick_surface,
+                           Rect*     clipper);
+        void configure (Size*            requested_size,
+                        const color_t*   color,
+                        int*             border_width,
+                        int*             corner_radius,
+                        relief_t*        relief,
+                        const char       **text,
+                        font_t*          text_font,
+                        color_t*         text_color,
+                        anchor_t*        text_anchor,
+                        surface_t*       img,
+                        Rect**           img_rect,
+                        anchor_t*        img_anchor);
+
+
+
+
     };
 
 }

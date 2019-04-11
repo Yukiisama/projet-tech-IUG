@@ -73,16 +73,34 @@ Button::Button(Widget *parent) : Widget(BUTTON_NAME, parent){
     EventManager::getInstance().bind(ei_ev_mouse_buttonup, this, "", button_click_up, NULL);
 }
 
+Button::Button(Widget *parent, const widgetclass_name_t &class_name) : Widget(class_name, parent){
+    //Initialiaze defaults value
+    border_width = default_button_border_width;
+    corner_radius = default_button_corner_radius;
+    relief=ei_relief_raised;
+    //Initialiaze defaults text value and text is nullptr by default (no text)
+    text=nullptr;
+    text_font= hw_text_font_create(default_font_filename, font_default_size);
+    text_color=font_default_color;
+    text_anchor=ei_anc_center;
+    //Initialiaze defaults img value and img is nullptr by default (no img)
+    img=nullptr;
+    img_rect=nullptr;
+    img_anchor =ei_anc_center;
+    //Tag for later used if event called with tag Button
+    addTag(class_name);
+    //Bind relief button function
+    EventManager::getInstance().bind(ei_ev_mouse_buttondown, this, "", button_click_down, NULL);
+    EventManager::getInstance().bind(ei_ev_mouse_buttonup, this, "", button_click_up, NULL);
+}
 /**
     * @brief   Destructor of Button widget
  */
 Button::~Button()
 {
-    EventManager::getInstance().unbind(ei_ev_mouse_buttondown, this, "", button_click_down, NULL);
-    EventManager::getInstance().unbind(ei_ev_mouse_buttonup, this, "", button_click_up, NULL);
     EventManager::getInstance().deleteWidget(this);
     if(getParent()){
-        //getParent()->removeChildren(this);
+        getParent()->removeChildren(this);
         Application::getInstance()->invalidate_rect(*getParent()->getContent_rect());
     }
     hw_text_font_free(text_font);
@@ -112,12 +130,12 @@ void Button::draw(surface_t surface,
 
     //The Rect of the button.
     Rect button_rect = Rect(content_rect->top_left,content_rect->size);
-    //Draw on pick_surface the forme of button with button's pick_color.
     //The list of points to draw the button
     linked_point_t list_frame = rounded_frame(button_rect, corner_radius, BT_FULL);
     pick_color.alpha=ALPHA_MAX;
     //Draw button polygon on pick_surface with color pick_color
     draw_polygon(pick_surface, list_frame, pick_color, clipper);
+    list_frame.clear();
     //Draw button on the main surface
     draw_button(surface,&button_rect,color,corner_radius,border_width,clipper,relief);
 
@@ -128,7 +146,7 @@ void Button::draw(surface_t surface,
         hw_text_compute_size(text,text_font,text_size);
         Point where = text_anchor_to_pos(*content_rect, text_anchor,text_size,border_width);
         //Finally draw the text at the where position
-        draw_text(surface, &where, text, text_font, &text_color);
+        draw_text(surface, &where, text, text_font, &text_color,content_rect);
     }
     if(img){
         //Case where only subpart of img should be display.
@@ -186,20 +204,43 @@ void Button::configure(Size *requested_size,
                        surface_t        *img,
                        Rect             **img_rect,
                        anchor_t         *img_anchor){
+    //Call the configure function of herited class widget
+    if (!requested_size){
+        if (img && img_rect){
+            requested_size = (new Size((**img_rect).top_left.x() + (**img_rect).size.width(), (**img_rect).top_left.y() + (**img_rect).size.height()));
+        }
+        else if (text && text_font){
+            Size* size = new Size(0,0);
+            hw_text_compute_size(*text, *text_font, *size);
+            requested_size = size;
+        }
+        else if (!img && !text){
+            requested_size = new Size(0,0);
+        }
+        else{
+            fprintf(stderr, "Informations are invalid you either gave frame::configure() an image without img_rect, or a text without a font!\n");
+            return;
+        }
+    }
+    if (!color){
+        const color_t c = default_background_color;
+        color = &c;
+    }
+
     if(img && text) fprintf(stderr,"Only one of the parameter \"text\" and \"img\" should be used (i.e. non-NULL).");
     //Call the configure function of herited class widget
     Widget::configure(requested_size,color);
     //Assign values and run the geometry manager
-    if(border_width) this->border_width = *border_width;
-    if(corner_radius) this->corner_radius = *corner_radius;
-    if(relief) this->relief = *relief;
+    (corner_radius) ? this->corner_radius = *corner_radius : this->corner_radius = default_button_corner_radius;
+    (border_width) ? this->border_width = *border_width : this->border_width = default_button_border_width;
+    (relief) ? this->relief = *relief : this->relief = ei_relief_none;
     if(text && !img) this->text = *text;
-    if(text_font) this->text_font = *text_font;
-    if(text_color) this->text_color = *text_color;
-    if(text_anchor) this->text_anchor = *text_anchor;
-    if(img && !text) this->img = img;
-    if(img_rect) this->img_rect = *img_rect;
-    if(img_anchor)this->img_anchor = *img_anchor;
+    (text_color) ? this->text_color = *text_color : this->text_color = font_default_color;
+    (text_anchor) ? this->text_anchor=*text_anchor : this->text_anchor = ei_anc_center;
+    if (text_font) this->text_font = *text_font;
+    if (img && !text) this->img = *img;
+    if (img_rect) this->img_rect = *img_rect;
+    (img_anchor) ? this->img_anchor = *img_anchor : this->img_anchor = ei_anc_center;
     if(geom_manager)geom_manager->run(this);
 }
 //GETTER & SETTER

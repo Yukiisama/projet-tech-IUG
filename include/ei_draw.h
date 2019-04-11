@@ -115,7 +115,7 @@ void draw_button(surface_t surface, Rect *rect, const color_t color, int radius,
  */
 void draw_text(surface_t surface, const Point *where,
                const char *text, const font_t font,
-               const color_t *color);
+               const color_t *color,Rect *clipper);
 
 /**
  * @brief draw_rectangle

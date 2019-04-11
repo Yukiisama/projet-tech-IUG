@@ -13,7 +13,6 @@ namespace ei {
 Placer::Placer():GeometryManager(){
     //No widget at initialization
     setWidget(nullptr);
-    setPlacer(true);
     //Set default values
     setAnchor(ei_anc_northwest);
     setX(0);
@@ -155,12 +154,10 @@ void Placer::run (Widget* widget){
         top->setContainer_topleft(topsl);
     }
     // Sizing
-    int temp_width = 0, temp_height = 0;
+    int temp_width = getWidth(), temp_height = getHeight();
 
     temp_width += contect_rect.size.width() * getRel_width();
     temp_height += contect_rect.size.height() * getRel_height();
-    temp_width += getWidth();
-    temp_height += getHeight();
 
     if (temp_width < 0 || temp_height < 0){
         fprintf(stderr, "We won't be able to draw something with a negative width/height!\n");
@@ -218,6 +215,98 @@ void Placer::release (Widget* widget){
         }
 
 
+}
+
+string Placer::getName(){ return "placer"; }
+
+anchor_t Placer::getAnchor() const
+{
+    return anchor;
+}
+
+void Placer::setAnchor(const anchor_t &value)
+{
+    anchor = value;
+}
+
+float Placer::getRel_width() const
+{
+    return rel_width;
+}
+
+void Placer::setRel_width(float value)
+{
+    rel_width = value;
+}
+
+float Placer::getRel_height() const
+{
+    return rel_height;
+}
+
+void Placer::setRel_height(float value)
+{
+    rel_height = value;
+}
+
+float Placer::getWidth() const
+{
+    return width;
+}
+
+void Placer::setWidth(float value)
+{
+    width = value;
+}
+
+float Placer::getHeight() const
+{
+    return height;
+}
+
+void Placer::setHeight(float value)
+{
+    height = value;
+}
+
+float Placer::getRel_x() const
+{
+    return rel_x;
+}
+
+void Placer::setRel_x(float value)
+{
+    rel_x = value;
+}
+
+float Placer::getRel_y() const
+{
+    return rel_y;
+}
+
+void Placer::setRel_y(float value)
+{
+    rel_y = value;
+}
+
+int Placer::getX() const
+{
+    return x;
+}
+
+void Placer::setX(int value)
+{
+    x = value;
+}
+
+int Placer::getY() const
+{
+    return y;
+}
+
+void Placer::setY(int value)
+{
+    y = value;
 }
 
 }

@@ -210,7 +210,8 @@ void Widget::addTag(string newTag){
 
 void Widget::removeChildren(Widget *widget)
 {
-   std::list<Widget*> &c_list =widget->getParent()->getChildren();
+    cout<<widget->getParent()->getName()<<endl;
+   std::list<Widget*>& c_list =widget->getParent()->getChildren();
    for(std::list<Widget*>::iterator it = c_list.begin(); it!=c_list.end();){
        if((*it)->getPick_id()== widget->getPick_id()){
            it=c_list.erase(it);
@@ -228,6 +229,10 @@ void Widget::removeChildren(Widget *widget)
      *                      (i.e., = widget->screen_location).
      */
 void Widget::geomnotify (Rect rect){
+    if(rect.size.width() < 0 || rect.size.height() <0) {
+        cout << "Negatives inside rect (geomnotify) nothing to do " << endl;
+        return;
+    }
     this->screen_location.size.width() = rect.size.width();
     this->screen_location.size.height() = rect.size.height();
     this->screen_location.top_left.x() = rect.top_left.x();
@@ -303,16 +308,9 @@ string Widget::to_string()
    return stream.str();
 }
 
-//Getter & Setter
-int Toplevel::getBorder_width() const
-{
-    return border_width;
-}
 
-Rect Toplevel::getContainer() const
-{
-    return container;
-}
+//Getter & Setter
+
 
 widgetclass_name_t Widget::getName(){
     if(!name.empty()) return name ;
@@ -328,7 +326,7 @@ Widget* Widget::getParent() {
     return parent;
 }
 
-std::list<Widget*> & Widget::getChildren(){
+std::list<Widget*>& Widget::getChildren(){
     return children;
 }
 
@@ -384,6 +382,16 @@ void Widget::setColor(color_t color){
 void Widget::setBorder_width(int border_width){
     this->border_width=border_width;
 }
+
+
+
+
+
+
+
+
+
+
 //End Getter Setter
 
 }

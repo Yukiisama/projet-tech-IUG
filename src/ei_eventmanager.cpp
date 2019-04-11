@@ -161,9 +161,12 @@ void EventManager::unbind(ei_eventtype_t eventtype,
     {
         for (std::vector<param_callback>::iterator it = hashMap[eventtype].begin(); it != hashMap[eventtype].end();++it)
         {
-            if (it->widget->getPick_id() == widget->getPick_id() && it->user_param == user_param
-                    && it->callback.target<bool_t(Widget *, Event *, void *)>() == callback.target<bool_t(Widget *, Event *, void *)>())
-                it = hashMap[eventtype].erase(it);
+
+                if (it->widget->getPick_id() == widget->getPick_id() && it->user_param == user_param
+                        && it->callback.target<bool_t(Widget *, Event *, void *)>() == callback.target<bool_t(Widget *, Event *, void *)>())
+                    it = hashMap[eventtype].erase(it);
+
+
         }
     }
 }
@@ -220,9 +223,17 @@ void EventManager::eventHandler(Event *event)
                     button->set_relief(ei_relief_raised);
                     Application::getInstance()->invalidate_rect((*it->widget->getContent_rect()));
                 }
-                if(it->callback(it->widget, event, it->user_param)){
-                    Application::getInstance()->invalidate_rect((*it->widget->getContent_rect()));
-                    break;
+                if(!button->getParent()->getName().compare("Toplevel")){
+                    Toplevel* toplevel = static_cast<Toplevel*>(button->getParent());
+                    toplevel->setResize_button_pressed(EI_FALSE);
+                }
+                MouseEvent * me= static_cast<MouseEvent*>(event);
+
+                if(Application::getInstance()->inside_root(me->where) && Application::getInstance()->widget_pick(me->where)->getPick_id()==it->widget->getPick_id()){
+                    if(it->callback(it->widget, event, it->user_param)){
+                        Application::getInstance()->invalidate_rect((*it->widget->getContent_rect()));
+                        break;
+                    }
                 }
 
             }else{

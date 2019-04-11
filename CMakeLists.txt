@@ -64,7 +64,9 @@ set(EI_SRC
         src/ei_button.cpp
         src/ei_frame.cpp
         src/ei_toplevel.cpp
-		src/ei_placer.cpp
+	src/ei_placer.cpp
+	src/ei_griddeur.cpp
+	src/ei_radio_button.cpp
         )
 add_library(ei ${EI_SRC})
 

@@ -3,6 +3,7 @@
 
 #include "ei_application.h"
 #include "ei_eventmanager.h"
+#include "ei_types.h"
 #include <iostream>
 #include <stdlib.h>
 
@@ -154,10 +155,10 @@ TEST_CASE("Placer class", "[unit]"){
     button->configure (&button_size, &button_color,
                        &button_border_width, &button_corner_radius, &button_relief, &button_title, NULL, &button_text_color, NULL,
                        NULL, NULL, NULL);
+    anchor_t button_anchor   = ei_anc_southeast;
     Placer* p1 = new Placer();
     SECTION("Constructor"){
         REQUIRE(p1->getWidget() == nullptr);
-        REQUIRE(p1->getPlacer() == true);
         REQUIRE(p1->getAnchor() == ei_anc_northwest);
         REQUIRE(p1->getX() == 0);
         REQUIRE(p1->getY() == 0);
@@ -169,11 +170,8 @@ TEST_CASE("Placer class", "[unit]"){
         REQUIRE(p1->getRel_height() == 0.0);
     }
     SECTION("Configure"){
-        anchor_t button_anchor   = ei_anc_southeast;
         float   button_rel_x    = 1.5;
         float   button_rel_y    = 1.5;
-        int     button_x    = -10;
-        int     button_y    = -10;
         float   button_rel_size_x = 0.45;
         p1->configure(button, &button_anchor, &button_x, &button_y, NULL, NULL, &button_rel_x, &button_rel_y, &button_rel_size_x, NULL);
         REQUIRE(p1->getWidget() == button);
@@ -199,23 +197,222 @@ TEST_CASE("Placer class", "[unit]"){
         REQUIRE(p1->getRel_height() == 0.0);
         p1->configure(button, &button_anchor, &button_x, &button_y, NULL, NULL, &button_rel_x, &button_rel_y, &button_rel_size_x, NULL);
     }
-    SECTION("Run"){
-        cout << "button->getContent_rect()->size.height() : " << button->getContent_rect()->size.height() << endl;
-        cout << "button->getContent_rect()->size.width() : " << button->getContent_rect()->size.width() << endl;
-        cout << "button->getContent_rect()->top_left.x() : " << button->getContent_rect()->top_left.x() << endl;
-        cout << "button->getContent_rect()->top_left.y() : " << button->getContent_rect()->top_left.y() << endl;
-        Size      * new_screen_size = new Size(2000, 1000);
-        cout << "app->root_widget()->configure(&new_screen_size, &root_bgcol, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL) :D" << endl;
+    SECTION("Run on button son"){
+        float   button_rel_x    = 1.5;
+        float   button_rel_y    = 1.5;
+        float   button_rel_size_x = 0.45;
+        p1->configure(button, &button_anchor, &button_x, &button_y, NULL, NULL, &button_rel_x, &button_rel_y, &button_rel_size_x, NULL);
+        REQUIRE(button->getContent_rect()->size.height() == 200);
+        REQUIRE(button->getContent_rect()->size.width() == 570);
+        REQUIRE(button->getContent_rect()->top_left.x() == 750);
+        REQUIRE(button->getContent_rect()->top_left.y() == 900);
+        Size* new_screen_size = new Size(2000, 1000);
         app->root_widget()->configure(new_screen_size, &root_bgcol, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-        cout << "p1->run(button) :D" << endl;
         p1->run(button);
-        cout<<app->root_widget()->getContent_rect()->size.height()<<endl;
-        cout << "button->getContent_rect()->size.height() : " << button->getContent_rect()->size.height() << endl;
-        cout << "button->getContent_rect()->size.width() : " << button->getContent_rect()->size.width() << endl;
-        cout << "button->getContent_rect()->top_left.x() : " << button->getContent_rect()->top_left.x() << endl;
-        cout << "button->getContent_rect()->top_left.y() : " << button->getContent_rect()->top_left.y() << endl;
+        REQUIRE(button->getContent_rect()->size.height() == 200);
+        REQUIRE(button->getContent_rect()->size.width() == 1200);
+        REQUIRE(button->getContent_rect()->top_left.x() == 2850);
+        REQUIRE(button->getContent_rect()->top_left.y() == 1500);
     }
+    SECTION("Run on frame son"){
+        Size frame_size = Size(300, 200);
+        int frame_x = 150;
+        int frame_y = 200;
+        float rel_width = 0.75;
+        float rel_height = 0.1;
+        float rel_x = 0.15;
+        float rel_y = 0.8;
+        color_t frame_color = { 0x88, 0x88, 0x88, 0xff };
+        const char* button_title        = "Test text on frame";
+        color_t  button_text_color   = {0x00, 0x00, 0x00, 0xff};
+        relief_t frame_relief = ei_relief_raised;
+        int frame_border_width = 6;
+        Frame* frame = new Frame(app->root_widget());
+        frame->configure(&frame_size, &frame_color, &frame_border_width,
+                         &frame_relief, &button_title, NULL, &button_text_color, NULL, NULL, NULL, NULL);
+        p1->configure(frame, NULL, &frame_x, &frame_y, NULL, NULL, &rel_x, &rel_y, &rel_width, &rel_height);
+        REQUIRE(frame->getContent_rect()->size.height() == 260);
+        REQUIRE(frame->getContent_rect()->size.width() == 750);
+        REQUIRE(frame->getContent_rect()->top_left.x() == 240);
+        REQUIRE(frame->getContent_rect()->top_left.y() == 680);
+        Size* new_screen_size = new Size(2000, 1000);
+        app->root_widget()->configure(new_screen_size, &root_bgcol, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+        p1->run(frame);
+        REQUIRE(frame->getContent_rect()->size.height() == 300);
+        REQUIRE(frame->getContent_rect()->size.width() == 1800);
+        REQUIRE(frame->getContent_rect()->top_left.x() == 450);
+        REQUIRE(frame->getContent_rect()->top_left.y() == 1000);
+    }
+    SECTION("Release"){
+        p1->release(button);
+        REQUIRE(p1->getWidget() == nullptr);
+        REQUIRE(button->getGeom_manager() == nullptr);
+        REQUIRE(button->getScreen_location().size.width() == -1);
+        REQUIRE(button->getScreen_location().size.height() == -1);
+        REQUIRE(button->getScreen_location().top_left.x() == -1);
+        REQUIRE(button->getScreen_location().top_left.y() == -1);
+    }
+
     delete p1;
+}
+
+TEST_CASE("Frame class","[unit]"){
+
+    Size       screen_size = Size(600, 600);
+    Application* app = new Application(&screen_size);
+
+    Frame* frame;
+
+
+    SECTION("Constructor"){
+        frame = new Frame(app->root_widget());
+
+        REQUIRE(frame->get_relief() == ei_relief_none);
+        REQUIRE(frame->get_text() == nullptr);
+        REQUIRE(frame->get_text_color().alpha == font_default_color.alpha);
+        REQUIRE(frame->get_text_color().red == font_default_color.red);
+        REQUIRE(frame->get_text_color().green == font_default_color.green);
+        REQUIRE(frame->get_text_color().blue == font_default_color.blue);
+        REQUIRE(frame->get_text_anchor() == ei_anc_center);
+        REQUIRE(frame->get_img() == nullptr);
+        REQUIRE(frame->get_img_rect() == nullptr);
+        REQUIRE(frame->get_img_anchor() == ei_anc_center);
+    }
+
+    SECTION("Configure"){
+        frame = new Frame(app->root_widget());
+        Size frame_size = Size(300, 200);
+        color_t frame_color = { 0x88, 0x88, 0x88, 0xff };
+        color_t  button_text_color   = {0x00, 0x00, 0x00, 0xff};
+        surface_t img_a = hw_image_load(DATA_DIR"img.jpg");
+        relief_t frame_relief = ei_relief_raised;
+        int frame_border_width = 6;
+
+        frame->configure(NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+
+        REQUIRE(frame->getRequested_size().width() == 0);
+        REQUIRE(frame->getRequested_size().height() == 0);
+        REQUIRE(frame->getColor().alpha == default_background_color.alpha);
+        REQUIRE(frame->getColor().red == default_background_color.red);
+        REQUIRE(frame->getColor().green == default_background_color.green);
+        REQUIRE(frame->getColor().blue == default_background_color.blue);
+        REQUIRE(frame->getBorder_width() == 0);
+        REQUIRE(frame->get_relief() == ei_relief_none);
+        REQUIRE(frame->get_text() == nullptr);
+        REQUIRE(frame->get_text_color().alpha == font_default_color.alpha);
+        REQUIRE(frame->get_text_color().red == font_default_color.red);
+        REQUIRE(frame->get_text_color().green == font_default_color.green);
+        REQUIRE(frame->get_text_color().blue == font_default_color.blue);
+        REQUIRE(frame->get_text_anchor() == ei_anc_center);
+        REQUIRE(frame->get_img() == nullptr);
+        REQUIRE(frame->get_img_anchor() == ei_anc_center);
+        REQUIRE(frame->get_img_rect() == nullptr);
+
+        frame->configure(&frame_size, &frame_color, &frame_border_width,
+                         &frame_relief, NULL, NULL, &button_text_color, NULL, &img_a, NULL, NULL);
+
+        REQUIRE(frame->getRequested_size().width() == frame_size.width());
+        REQUIRE(frame->getRequested_size().height() == frame_size.height());
+        REQUIRE(frame->getColor().alpha == frame_color.alpha);
+        REQUIRE(frame->getColor().red == frame_color.red);
+        REQUIRE(frame->getColor().green == frame_color.green);
+        REQUIRE(frame->getColor().blue == frame_color.blue);
+        REQUIRE(frame->getBorder_width() == frame_border_width);
+        REQUIRE(frame->get_relief() == frame_relief);
+        REQUIRE(frame->get_text() == nullptr);
+        REQUIRE(frame->get_text_color().alpha == button_text_color.alpha);
+        REQUIRE(frame->get_text_color().red == button_text_color.red);
+        REQUIRE(frame->get_text_color().green == button_text_color.green);
+        REQUIRE(frame->get_text_color().blue == button_text_color.blue);
+        REQUIRE(frame->get_text_anchor() == ei_anc_center);
+        REQUIRE(frame->get_img() == img_a);
+        REQUIRE(frame->get_img_anchor() == ei_anc_center);
+        REQUIRE(frame->get_img_rect() == nullptr);
+    }
+}
+
+TEST_CASE("Button class","[unit]"){
+
+    Size       screen_size = Size(600, 600);
+    Application* app = new Application(&screen_size);
+
+    Button* button;
+
+    SECTION("Constructor"){
+        button = new Button(app->root_widget());
+
+        REQUIRE(button->getBorder_width() == default_button_border_width);
+        REQUIRE(button->get_corner_radius() == default_button_corner_radius);
+        REQUIRE(button->get_relief() == ei_relief_raised);
+        REQUIRE(button->get_text() == nullptr);
+        REQUIRE(button->get_text_color().alpha == font_default_color.alpha);
+        REQUIRE(button->get_text_color().red == font_default_color.red);
+        REQUIRE(button->get_text_color().green == font_default_color.green);
+        REQUIRE(button->get_text_color().blue == font_default_color.blue);
+        REQUIRE(button->get_text_anchor() == ei_anc_center);
+        REQUIRE(button->get_img() == nullptr);
+        REQUIRE(button->get_img_rect() == nullptr);
+        REQUIRE(button->get_img_anchor() == ei_anc_center);
+    }
+
+    SECTION("Configure"){
+        button = new Button(app->root_widget());
+
+        Size    button_size = Size(300,200);
+        color_t  button_color        = {0x88, 0x88, 0x88, 0xff};
+        const char* button_title        = "Mon premier Bouton !";
+        color_t  button_text_color   = {0x00, 0x00, 0x00, 0xff};
+        int button_corner_radius        = 20;
+        relief_t button_relief       = ei_relief_raised;
+        int button_border_width      = 6;
+
+        button->configure (NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+
+        REQUIRE(button->getRequested_size().width() == 0);
+        REQUIRE(button->getRequested_size().height() == 0);
+        REQUIRE(button->getColor().alpha == default_background_color.alpha);
+        REQUIRE(button->getColor().red == default_background_color.red);
+        REQUIRE(button->getColor().green == default_background_color.green);
+        REQUIRE(button->getColor().blue == default_background_color.blue);
+        REQUIRE(button->get_corner_radius() == default_button_corner_radius);
+        REQUIRE(button->getBorder_width() == default_button_border_width);
+        REQUIRE(button->get_relief() == ei_relief_none);
+        REQUIRE(button->get_text() == nullptr);
+        REQUIRE(button->get_text_color().alpha == font_default_color.alpha);
+        REQUIRE(button->get_text_color().red == font_default_color.red);
+        REQUIRE(button->get_text_color().green == font_default_color.green);
+        REQUIRE(button->get_text_color().blue == font_default_color.blue);
+        REQUIRE(button->get_text_anchor() == ei_anc_center);
+        REQUIRE(button->get_img() == nullptr);
+        REQUIRE(button->get_img_anchor() == ei_anc_center);
+        REQUIRE(button->get_img_rect() == nullptr);
+
+
+
+        button->configure (&button_size, &button_color,
+                           &button_border_width, &button_corner_radius, &button_relief, &button_title, NULL, &button_text_color, NULL,
+                           NULL, NULL, NULL);
+
+        REQUIRE(button->getRequested_size().width() == button_size.width());
+        REQUIRE(button->getRequested_size().height() == button_size.height());
+        REQUIRE(button->getColor().alpha == button_color.alpha);
+        REQUIRE(button->getColor().red == button_color.red);
+        REQUIRE(button->getColor().green == button_color.green);
+        REQUIRE(button->getColor().blue == button_color.blue);
+        REQUIRE(button->get_corner_radius() == button_corner_radius);
+        REQUIRE(button->getBorder_width() == button_border_width);
+        REQUIRE(button->get_relief() == button_relief);
+        REQUIRE(button->get_text() == button_title);
+        REQUIRE(button->get_text_color().alpha == button_text_color.alpha);
+        REQUIRE(button->get_text_color().red == button_text_color.red);
+        REQUIRE(button->get_text_color().green == button_text_color.green);
+        REQUIRE(button->get_text_color().blue == button_text_color.blue);
+        REQUIRE(button->get_text_anchor() == ei_anc_center);
+        REQUIRE(button->get_img() == nullptr);
+        REQUIRE(button->get_img_anchor() == ei_anc_center);
+        REQUIRE(button->get_img_rect() == nullptr);
+
+    }
 }
 
 int ei_main(int argc, char* argv[])

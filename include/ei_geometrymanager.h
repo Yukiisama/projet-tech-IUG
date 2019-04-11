@@ -12,6 +12,7 @@
 #define EI_GEOMETRYMANAGER_H
 
 #include <string>
+#include <vector>
 
 #include "ei_types.h"
 #include "ei_widget.h"
@@ -51,69 +52,17 @@ public:
      */
     virtual void release (Widget* widget) = 0;
 
-    virtual string to_string();
-    
-
-    //GETTERS AND SETTERS
-
-    bool getPlacer() const;
-
-    void setPlacer(bool value);
+    /**
+     * \brief Returns the name of the Geometry Manager type.
+     */
+    virtual string getName() = 0;
 
     Widget *getWidget() const;
 
     void setWidget(Widget *value);
 
-    anchor_t getAnchor() const;
-
-    void setAnchor(const anchor_t &value);
-
-    int getX() const;
-
-    void setX(int value);
-
-    int getY() const;
-
-    void setY(int value);
-
-    float getWidth() const;
-
-    void setWidth(float value);
-
-    float getHeight() const;
-
-    void setHeight(float value);
-
-    float getRel_x() const;
-
-    void setRel_x(float value);
-
-    float getRel_y() const;
-
-    void setRel_y(float value);
-
-    float getRel_width() const;
-
-    void setRel_width(float value);
-
-    float getRel_height() const;
-
-    void setRel_height(float value);
-
-
-
 private:
-     bool placer = false;
-     Widget*    widget;
-     anchor_t  anchor;
-     int       x;
-     int       y;
-     float     width;
-     float     height;
-     float     rel_x;
-     float     rel_y;
-     float     rel_width;
-     float     rel_height;
+    Widget* widget;
 };
 
 
@@ -168,8 +117,117 @@ public:
     virtual void run (Widget* widget);
 
     virtual void release (Widget* widget);
+
+    virtual string getName();
+
+    anchor_t getAnchor() const;
+
+    void setAnchor(const anchor_t &value);
+
+    float getWidth() const;
+
+    void setWidth(float value);
+
+    float getHeight() const;
+
+    void setHeight(float value);
+
+    float getRel_x() const;
+
+    void setRel_x(float value);
+
+    float getRel_y() const;
+
+    void setRel_y(float value);
+
+    float getRel_width() const;
+
+    void setRel_width(float value);
+
+    float getRel_height() const;
+
+    void setRel_height(float value);
+
+    int getX() const;
+
+    void setX(int value);
+
+    int getY() const;
+
+    void setY(int value);
     
+private:
+    anchor_t  anchor;
+    int       x;
+    int       y;
+    float     rel_x;
+    float     rel_y;
+    float     rel_width;
+    float     rel_height;
+    float     width;
+    float     height;
     
+};
+
+struct widget_in_grid{
+    Widget* widget;
+    int x;
+    int y;
+    int width;
+    int height;
+};
+
+/**
+ * @brief The Placer class
+ */
+class Griddeur : public GeometryManager
+{
+public:
+    Griddeur();
+    virtual ~Griddeur();
+    /**
+     * \brief Configures the geometry of a widget using the "griddeur" geometry manager.
+     *    If the widget was already managed by another geometry manager, then it is first
+     *    removed from the previous geometry manager.
+     *    If the widget was already managed by the "griddeur", then this calls simply updates
+     *    the placer parameters: arguments that are not NULL replace previous values.
+     *    When the arguments are passed as NULL, the placer uses default values (detailed in
+     *    the argument descriptions below). If no size is provided (either absolute or
+     *    relative), then the requested size of the widget is used, i.e., the minimal size
+     *    required to display its content.
+     *
+     * @param widget    The widget on which the grid applies.
+     * @param cell_width   The width of each cell (default to 10)
+     * @param cell_height   The height of each cell (default to 10)
+     */
+    void configure (Widget*    widget,
+                    int*     cell_width,
+                    int*     cell_height);
+
+    virtual void run (Widget* widget);
+
+    virtual void release (Widget* widget);
+
+    virtual string getName();
+
+    /**
+     * @brief Adds a widget on the grid of his father. Simply returns if the given widget is not a son of the widget this grid applies on.
+     * @param widget The widget we wanna place of the grid
+     * @param x      The x position we want for the widget (in cells)
+     * @param y      The y position we want for the widget (in cells)
+     * @param width  The width we want for the widget (in cells)
+     * @param height The height we want for the widget (in cells)
+     */
+    void addWidget (Widget * widget,
+                    int* x,
+                    int* y,
+                    int* width,
+                    int* height);
+
+private:
+    int cell_width;
+    int cell_height;
+    vector <struct widget_in_grid>Widgets;
 };
 
 }

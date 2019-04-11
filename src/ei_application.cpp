@@ -44,7 +44,7 @@ Application::Application(Size* main_window_size){
 Application::~Application(){
     hw_surface_free(this->offscreen);
     hw_quit();
-    delete widget_root;
+    delete (widget_root);
 }
 
 bool Application::isIntersect(Rect rect1, Rect rect2){
@@ -219,24 +219,29 @@ void Application::run(){
         if(hw_now()-update_time>FPS_MAX){
             //Screen need to be update , draw the widgets then update rects
             if(!to_clear_rectangle_list.empty()){
-                std::cout<<"\nrect nb at first :"<<to_clear_rectangle_list.size()<<endl;
+                /*std::cout<<"\nrect nb at first :"<<to_clear_rectangle_list.size()<<endl;
                 for(linked_rect_t::iterator it = to_clear_rectangle_list.begin(); it!=to_clear_rectangle_list.end();++it){
                    std::cout<<"rect position : "<<it->top_left.x()<<","<<it->top_left.y()<<" and size : "<<it->size.width()<<","<<it->size.height()<<endl;
-                }
+                }*/
                 optimizedRect();
-                std::cout<<"rect nb after :"<<to_clear_rectangle_list.size()<<endl;
+                /*std::cout<<"rect nb after :"<<to_clear_rectangle_list.size()<<endl;
                 for(linked_rect_t::iterator it = to_clear_rectangle_list.begin(); it!=to_clear_rectangle_list.end();++it){
                    std::cout<<"rect position : "<<it->top_left.x()<<","<<it->top_left.y()<<" and size : "<<it->size.width()<<","<<it->size.height()<<endl;
-                }
-                for(linked_rect_t::iterator it = to_clear_rectangle_list.begin(); it!=to_clear_rectangle_list.end();++it){
+                }*/
+                /*for(linked_rect_t::iterator it = to_clear_rectangle_list.begin(); it!=to_clear_rectangle_list.end();++it){
                     widget_root->draw(root_window,offscreen,&(*it));
                     hw_surface_update_rects(to_clear_rectangle_list);
-                }
+                }*/
+
+                widget_root->draw(root_window,offscreen,widget_root->getContent_rect());
+                //Dont delete hw_surface_update_rects , it will not work outside of cremi
+                hw_surface_update_rects(to_clear_rectangle_list);
             }
             //next step is to clear the rectangle list.
             to_clear_rectangle_list.clear();
             update_time  = hw_now();
         }
+
         delete ev;
     }
     return;
@@ -250,7 +255,7 @@ void Application::run(){
      *        A copy is made, so it is safe to release the rectangle on return.
      */
 void Application::invalidate_rect(const Rect &rect){
-    to_clear_rectangle_list.push_back(rect);
+    to_clear_rectangle_list.push_front(rect);
 }
 
 /**
