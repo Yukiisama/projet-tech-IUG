@@ -4,6 +4,7 @@
 #include <iostream>
 #include <stdio.h>
 #include <stack>
+#include<omp.h>
 namespace ei
 {
 EventManager::EventManager() {}
@@ -185,7 +186,7 @@ void EventManager::eventHandler(Event *event)
         }
 
     }
-
+    #pragma omp parallel for
     //Iterate and callback the associated function to the event
     for (std::vector<param_callback>::iterator it = hashMap[event->type].begin(); it != hashMap[event->type].end(); ++it)
     {
