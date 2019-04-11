@@ -12,6 +12,7 @@
 #define EI_GEOMETRYMANAGER_H
 
 #include <string>
+#include <vector>
 
 #include "ei_types.h"
 #include "ei_widget.h"
@@ -166,6 +167,14 @@ private:
     
 };
 
+struct widget_in_grid{
+    Widget* widget;
+    int x;
+    int y;
+    int width;
+    int height;
+};
+
 /**
  * @brief The Placer class
  */
@@ -185,26 +194,11 @@ public:
      *    relative), then the requested size of the widget is used, i.e., the minimal size
      *    required to display its content.
      *
-     * @param widget    The widget to place.
-     * @param anchor    How to anchor the widget to the position defined by the placer
-     *        (defaults to ei_anc_northwest).
-     * @param x   The absolute x position of the widget (defaults to 0).
-     * @param y   The absolute y position of the widget (defaults to 0).
-     * @param width   The absolute width for the widget (defaults to the requested width
-     *        of the widget).
-     * @param height    The absolute height for the widget (defaults to the requested height
-     *        of the widget).
-     * @param cell_width   The relative x position of the widget: 0.0 corresponds to the left
-     *        side of the master, 1.0 to the right side (defaults to 0.0).
-     * @param cell_height   The relative y position of the widget: 0.0 corresponds to the top
-     *        side of the master, 1.har 0 to the bottom side (defaults to 0.0).
+     * @param widget    The widget on which the grid applies.
+     * @param cell_width   The width of each cell (default to 10)
+     * @param cell_height   The height of each cell (default to 10)
      */
     void configure (Widget*    widget,
-                    anchor_t*  anchor,
-                    int*       x,
-                    int*       y,
-                    int*     width,
-                    int*     height,
                     int*     cell_width,
                     int*     cell_height);
 
@@ -214,8 +208,22 @@ public:
 
     virtual string getName();
 
-private:
+    /**
+     * @brief Adds a widget on the grid of his father. Simply returns if the given widget is not a son of the widget this grid applies on.
+     * @param widget The widget we wanna place of the grid
+     * @param x      The x position we want for the widget (in cells)
+     * @param y      The y position we want for the widget (in cells)
+     * @param width  The width we want for the widget (in cells)
+     * @param height The height we want for the widget (in cells)
+     */
+    void addWidget (Widget * widget,
+                    int* x,
+                    int* y,
+                    int* width,
+                    int* height);
 
+private:
+    vector <struct widget_in_grid>Widgets;
 };
 
 }

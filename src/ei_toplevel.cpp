@@ -109,8 +109,11 @@ bool_t topbar_move_callback(Widget* widget, Event* event, void* user_param){
             top->setHalfScreen(EI_TRUE);
             top->setPre_pos(top->getScreen_location().top_left);
             top->setPre_size(top->getContent_rect()->size);
-            top->getGeom_manager()->setX(top->getParent()->getContent_rect()->top_left.x());
-            top->getGeom_manager()->setY(top->getParent()->getContent_rect()->top_left.y());
+            if (top->getGeom_manager()->getName() == "placer"){
+                Placer * geo = (Placer *)top->getGeom_manager();
+                geo->setX(top->getParent()->getContent_rect()->top_left.x());
+                geo->setY(top->getParent()->getContent_rect()->top_left.y());
+            }
             Size *new_size = new Size(top->getParent()->getContent_rect()->size.width()/2,top->getParent()->getContent_rect()->size.height()-top->getTop_bar_height()-top->getBorder_width());
             top->configure(new_size,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr);
             delete(new_size);
@@ -120,8 +123,11 @@ bool_t topbar_move_callback(Widget* widget, Event* event, void* user_param){
             top->setHalfScreen(EI_TRUE);
             top->setPre_pos(top->getScreen_location().top_left);
             top->setPre_size(top->getContent_rect()->size);
-            top->getGeom_manager()->setX(top->getParent()->getContent_rect()->top_left.x()+top->getParent()->getContent_rect()->size.width()/2);
-            top->getGeom_manager()->setY(top->getParent()->getContent_rect()->top_left.y());
+            if (top->getGeom_manager()->getName() == "placer"){
+                Placer * geo = (Placer *)top->getGeom_manager();
+                geo->setX(top->getParent()->getContent_rect()->top_left.x()+top->getParent()->getContent_rect()->size.width()/2);
+                geo->setY(top->getParent()->getContent_rect()->top_left.y());
+            }
             Size *new_size = new Size(top->getParent()->getContent_rect()->size.width()/2,top->getParent()->getContent_rect()->size.height()-top->getTop_bar_height()-top->getBorder_width());
             top->configure(new_size,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr);
             delete(new_size);
@@ -129,8 +135,11 @@ bool_t topbar_move_callback(Widget* widget, Event* event, void* user_param){
         }else if(top->getHalfScreen() && e->where.x()>top->getParent()->getContent_rect()->top_left.x()+top->getTop_bar_height()
                  && e->where.x()<top->getParent()->getContent_rect()->top_left.x()+top->getParent()->getContent_rect()->size.width()-top->getTop_bar_height()){
             top->setHalfScreen(EI_FALSE);
-            top->getGeom_manager()->setX(top->getPre_pos().x());
-            top->getGeom_manager()->setY(top->getPre_pos().y());
+            if (top->getGeom_manager()->getName() == "placer"){
+                Placer * geo = (Placer *)top->getGeom_manager();
+                geo->setX(top->getPre_pos().x());
+                geo->setY(top->getPre_pos().y());
+            }
             Size *new_size = new Size(top->getPre_size().width(),top->getPre_size().height());
             top->configure(new_size,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr);
             delete(new_size);
@@ -145,8 +154,11 @@ bool_t topbar_move_callback(Widget* widget, Event* event, void* user_param){
             if(move_x!= 0.0 && (move_x * move_x)/2<1) return EI_FALSE;
             if(move_y!= 0.0 && (move_y * move_y)/2<1) return EI_FALSE;
             //Update geom_manager x & y to update the position of toplevel
-            top->getGeom_manager()->setX(int(top->getScreen_location().top_left.x()+move_x));
-            top->getGeom_manager()->setY(int(top->getScreen_location().top_left.y()+move_y));
+            if (top->getGeom_manager()->getName() == "placer"){
+                Placer * geo = (Placer *)top->getGeom_manager();
+                geo->setX(int(top->getScreen_location().top_left.x()+move_x));
+                geo->setY(int(top->getScreen_location().top_left.y()+move_y));
+            }
             //finally run the geom_manager that will result in updating the position
             top->getGeom_manager()->run(top);
             top->setMouse_pos(e->where);
