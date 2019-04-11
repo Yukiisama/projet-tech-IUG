@@ -71,7 +71,7 @@ Button::Button(Widget *parent) : Widget(BUTTON_NAME, parent){
     //Bind relief button function
     EventManager::getInstance().bind(ei_ev_mouse_buttondown, this, "", button_click_down, NULL);
     EventManager::getInstance().bind(ei_ev_mouse_buttonup, this, "", button_click_up, NULL);
-    EventManager::getInstance().setExc_On_Widget(ei_ev_mouse_buttonup,this,button_click_up,NULL);
+    EventManager::getInstance().setExc_Outside_Widget(ei_ev_mouse_buttonup,this,button_click_up,NULL);
 
 }
 

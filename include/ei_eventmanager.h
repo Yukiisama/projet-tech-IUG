@@ -94,7 +94,7 @@ public:
     void deleteWidget(Widget * widget);
 
 
-    void setExc_On_Widget(ei_eventtype_t eventtype,Widget* widget,ei_callback_t callback,void * user_param);
+    void setExc_Outside_Widget(ei_eventtype_t eventtype,Widget* widget,ei_callback_t callback,void * user_param);
 
 
 

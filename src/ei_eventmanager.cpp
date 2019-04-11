@@ -247,7 +247,7 @@ void EventManager::deleteWidget(Widget* widget){
 
 }
 
-void EventManager::setExc_On_Widget(ei_eventtype_t eventtype,Widget* widget,ei_callback_t callback,void * user_param){
+void EventManager::setExc_Outside_Widget(ei_eventtype_t eventtype,Widget* widget,ei_callback_t callback,void * user_param){
     param_callback &cal = hashMap[eventtype].back();
     if(cal.widget->getPick_id()== widget->getPick_id()
             &&cal.user_param==user_param
@@ -256,8 +256,6 @@ void EventManager::setExc_On_Widget(ei_eventtype_t eventtype,Widget* widget,ei_c
     }else{
         exit(EXIT_FAILURE);
     }
-
-
 }
 
 
