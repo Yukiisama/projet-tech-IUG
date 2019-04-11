@@ -148,7 +148,8 @@ void Button::draw(surface_t surface,
         hw_text_compute_size(text,text_font,text_size);
         Point where = text_anchor_to_pos(*content_rect, text_anchor,text_size,border_width);
         //Finally draw the text at the where position
-        draw_text(surface, &where, text, text_font, &text_color,content_rect);
+        updateText_Container(*clipper);
+        draw_text(surface, &where, text, text_font, &text_color,&text_container);
     }
     if(img){
         //Case where only subpart of img should be display.
@@ -302,4 +303,21 @@ void Button::set_img_anchor(anchor_t img_anchor){
     this->img_anchor=img_anchor;
 }
 //END GETTER & SETTER
+
+//Methode
+void Button::updateText_Container(Rect clipper){
+    text_container=*content_rect;
+    if(text_container.top_left.x()>=clipper.top_left.x()&& text_container.top_left.y()>=clipper.top_left.y()
+            && text_container.top_left.x()+text_container.size.width()<=clipper.top_left.x()+clipper.size.width()
+            && text_container.top_left.y()+text_container.size.height()<=clipper.top_left.y()+clipper.size.height())
+        return;
+
+    text_container.top_left.x()=max(text_container.top_left.x(),clipper.top_left.x());
+    text_container.top_left.y()=max(text_container.top_left.y(),clipper.top_left.y());
+    text_container.size.width()=min(text_container.top_left.x()+text_container.size.width(),
+                                    clipper.top_left.x()+clipper.size.width())-text_container.top_left.x();
+    text_container.size.height()=min(text_container.top_left.y()+text_container.size.height(),
+                                    clipper.top_left.y()+clipper.size.height())-text_container.top_left.y();
+}
+
 }

@@ -148,6 +148,7 @@ Widget* Application::widget_pick (const Point& where){
      * @return      True if inside_root else False
      */
 bool_t Application::inside_root (const Point& where){
+
     if((where.x() < 0 || where.x() > hw_surface_get_size(this->root_window).width())
             || (where.y() < 0 || where.y() > hw_surface_get_size(this->root_window).height())){
         return EI_FALSE;
@@ -191,6 +192,13 @@ double Application::get_update_time(){
 void Application::set_update_time(double update_time){
     this->update_time =update_time;
 }
+void Application::set_who_click(int x){
+    this->who_click = x;
+}
+int Application::get_who_click(){
+    return this->who_click;
+}
+
 // *** End Getter & Setter ***
 
 

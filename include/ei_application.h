@@ -120,6 +120,8 @@ public:
     void set_running(bool running);
     double get_update_time();
     void set_update_time(double update_time);
+    void set_who_click(int x);
+    int get_who_click();
     // *** End Getter & Setter ***
 private:
     static Application *instance;
@@ -129,6 +131,7 @@ private:
     linked_rect_t   to_clear_rectangle_list;
     bool running = false;
     double update_time = 0;
+    int who_click = 0;
 };
 
 }

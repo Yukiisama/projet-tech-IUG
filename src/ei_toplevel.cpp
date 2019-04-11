@@ -53,7 +53,7 @@ bool_t resize_button_callback(Widget* widget, Event* event, void* user_param){
                 float deltaX = top->getContent_rect()->size.width()-new_width;
                 float deltaY = top->getContent_rect()->size.height()-new_height;
                 //we return if the delta is 0 or just incredibly insignifiant
-                if((deltaX * deltaX)/2 <15.0f || (deltaY * deltaY)/2 <15.0f) return EI_FALSE;
+                if((deltaX * deltaX)/2 <2.0f || (deltaY * deltaY)/2 <2.0f) return EI_FALSE;
                 //Limit the top level to a minimal size
                 if(new_width < top->getMin_size().width())new_width = top->getMin_size().width();
                 if(new_height < top->getMin_size().height())new_height = top->getMin_size().height();
