@@ -183,7 +183,7 @@ struct widget_in_grid{
 class Griddeur : public GeometryManager
 {
 public:
-    Griddeur(Widget* parent, int* cell_width, int* cell_height);
+    Griddeur(Widget* parent, int* cell_width, int* cell_height, bool pourcentage);
     virtual ~Griddeur();
     /**
      * \brief Configures the geometry of a widget using the "griddeur" geometry manager.
@@ -201,8 +201,9 @@ public:
      * @param cell_height   The height of each cell (default to 10)
      */
     void configure (Widget*    widget,
-                    int*     cell_width,
-                    int*     cell_height);
+                    int*       cell_width,
+                    int*       cell_height,
+                    bool       pourcentage);
 
     virtual void run (Widget* widget);
 
@@ -226,6 +227,10 @@ public:
                     int* width,
                     int* height);
 
+    bool isPourcentage();
+
+    void setPourcentage(bool pourcentage);
+
     int getCell_width();
 
     void setCell_width(int cell_width);
@@ -239,6 +244,7 @@ public:
     void setWidgets(list <struct widget_in_grid>Widgets);
 
 private:
+    bool pourcentage;
     int cell_width;
     int cell_height;
     list <struct widget_in_grid>Widgets;

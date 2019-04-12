@@ -61,6 +61,9 @@ int ei_main(int argc, char* argv[])
     Button* button_ok = new Button(toplevel);
     button_ok->configure (&button_size, &button_color, &button_border_width, NULL, &relief, &button_title_ok, NULL, &text_color, &text_anchor, NULL, NULL, NULL);
 
+    Button* button_ok2 = new Button(toplevel);
+    button_ok2->configure (&button_size, &button_color, &button_border_width, NULL, &relief, &button_title_ok, NULL, &text_color, &text_anchor, NULL, NULL, NULL);
+
     Button* button_cancel = new Button(toplevel);
     button_cancel->configure (&button_size, &button_color, &button_border_width, NULL, &relief, &button_title_cancel, NULL, &text_color, &text_anchor, NULL, NULL, NULL);
 
@@ -70,13 +73,25 @@ int ei_main(int argc, char* argv[])
     Button* button_cut = new Button(toplevel);
     button_cut->configure (&button_size, &button_color, &button_border_width, NULL, &relief, &button_title_cut, NULL, &text_color, &text_anchor, NULL, NULL, NULL);
 
+    Button* button_cut2 = new Button(toplevel);
+    button_cut2->configure (&button_size, &button_color, &button_border_width, NULL, &relief, &button_title_cut, NULL, &text_color, &text_anchor, NULL, NULL, NULL);
+
+    Button* button_cut3 = new Button(toplevel);
+    button_cut3->configure (&button_size, &button_color, &button_border_width, NULL, &relief, &button_title_cut, NULL, &text_color, &text_anchor, NULL, NULL, NULL);
+
     Placer* p1 = new Placer();
     p1->configure(toplevel, NULL, &(window_position.x()), &(window_position.y()), NULL, NULL, NULL, NULL, NULL, NULL);
-    Griddeur* g1 = new Griddeur(toplevel, new int(50), new int(35));
+    Griddeur* g1 = new Griddeur(toplevel, new int(18), new int(18), EI_TRUE);
     g1->addWidget(button_cut, new int(0), new int(0), new int(1), new int(1));
-    g1->addWidget(button_ok, new int(1), new int(1), new int(5), new int(1));
-    g1->addWidget(button_cancel, new int(1), new int(2), new int(6), new int(1));
-    g1->addWidget(button_cancel2, new int(1), new int(3), new int(7), new int(1));
+    g1->addWidget(button_ok, new int(1), new int(1), new int(3), new int(1));
+    g1->addWidget(button_cancel, new int(1), new int(2), new int(3), new int(1));
+    g1->addWidget(button_cancel2, new int(1), new int(3), new int(3), new int(1));
+    g1->addWidget(button_ok2, new int(4), new int(0), new int(1), new int(3));
+    g1->addWidget(button_cut2, new int(0), new int(4), new int(3), new int(1));
+    g1->addWidget(button_cut3, new int(4), new int(4), new int(1), new int(1));
+    g1->run_all();
+    g1->addWidget(button_cancel2, new int(0), new int(0), new int(1), new int(1));
+    g1->addWidget(button_cut, new int(1), new int(3), new int(3), new int(1));
     g1->run_all();
 
     EventManager::getInstance().bind(ei_ev_keydown, NULL, "all", process_key, app);
