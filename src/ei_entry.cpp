@@ -20,26 +20,18 @@ namespace ei {
      * @param   Parent of the frame widget
 **/
 Entry::Entry():Entry(Application::getInstance()->root_widget()){}
+
 Entry::Entry(Widget * parent):Frame(parent,"Entry"){}
 Entry::~Entry(){}
+
 void Entry::draw (surface_t surface,
                    surface_t pick_surface,
                   Rect*     clipper){
 
     Frame::draw(surface,pick_surface,clipper);
 }
-bool_t Entry::get_is_clicked(){
-    return is_clicked;
-}
-void Entry::set_is_clicked(bool_t click){
-    is_clicked=click;
-}
-bool Entry::get_done(){
-    return done;
-}
-void Entry::set_done(bool done){
-    this->done=done;
-}
+
+
 //Defaults color ( if null) is parent color
 char * convert_unicode(int x){
     cout<<x<<endl;
@@ -188,7 +180,7 @@ void Entry::configure (Size*           requested_size,
 
     anchor_t anc = ei_anc_northwest;
     color_t colr;
-    (!color) ? colr = getParent()->getColor() : colr = *color;
+    (!color) ? colr = (color_t){0,0,0,0} : colr = *color;
     Frame::configure(requested_size,&colr,border_width,relief,text,text_font,text_color,&anc,img,img_rect,img_anchor);
     if(!done){
         EventManager::getInstance().bind(ei_ev_keychar,NULL, "Entry", process_key, NULL);
@@ -198,7 +190,21 @@ void Entry::configure (Size*           requested_size,
     done = true;
 
 }
+bool_t Entry::get_is_clicked(){
+    return is_clicked;
+}
 
+void Entry::set_is_clicked(bool_t click){
+    is_clicked=click;
+}
+
+bool Entry::get_done(){
+    return done;
+}
+
+void Entry::set_done(bool done){
+    this->done=done;
+}
 
 //todo event to get keyboard --> configure if this widget has been pressed earlier
 //END GETTER & SETTER
