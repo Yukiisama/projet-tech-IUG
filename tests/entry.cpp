@@ -21,7 +21,7 @@ int ei_main(int argc, char** argv)
     Size screen_size = Size(600, 600);
     color_t root_bgcol = { 0x52, 0x7f, 0xb4, 0xff };
     hw_init();
-    Size frame_size = Size(300, 100);
+    Size frame_size = Size(250, 30);
     int frame_x = 150;
     int frame_y = 200;
     color_t frame_color = { 0x88, 0x88, 0x88, 0xff };
