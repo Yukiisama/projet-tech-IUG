@@ -20,26 +20,18 @@ namespace ei {
      * @param   Parent of the frame widget
 **/
 Entry::Entry():Entry(Application::getInstance()->root_widget()){}
+
 Entry::Entry(Widget * parent):Frame(parent,"Entry"){}
 Entry::~Entry(){}
+
 void Entry::draw (surface_t surface,
                    surface_t pick_surface,
                   Rect*     clipper){
 
     Frame::draw(surface,pick_surface,clipper);
 }
-bool_t Entry::get_is_clicked(){
-    return is_clicked;
-}
-void Entry::set_is_clicked(bool_t click){
-    is_clicked=click;
-}
-bool Entry::get_done(){
-    return done;
-}
-void Entry::set_done(bool done){
-    this->done=done;
-}
+
+
 //Defaults color ( if null) is parent color
 char * convert_unicode(int x){
     cout<<x<<endl;
@@ -102,7 +94,7 @@ bool_t move_mouse(Widget* widget, Event* event, void* user_param){
 
 
             }
-    }
+        }
     }
     Entry* entry = static_cast<Entry*>(widget);
 
@@ -113,7 +105,7 @@ bool_t move_mouse(Widget* widget, Event* event, void* user_param){
             cout <<entry->getName()<<endl;
             Application::getInstance()->set_who_click(widget->getPick_id());
 
-            }
+        }
 
         //top->setMouse_pos(e->where);
         return EI_TRUE;
@@ -124,51 +116,56 @@ bool_t move_mouse(Widget* widget, Event* event, void* user_param){
 bool_t process_key(Widget* widget, Event* event, void* user_param)
 {
     if(widget->getName()=="Entry"){
-    Entry * e = static_cast<Entry*>(widget);
-    if(event->type == ei_ev_keychar && e->get_is_clicked() ){
-        Size s = e->getRequested_size();
-        color_t c = e->getColor();
-        color_t c_txt = e->get_text_color();
-        anchor_t anc = e->get_text_anchor();
-        relief_t rel = e->get_relief();
-        const char * txt = e->get_text();
-        anchor_t img_anc = e->get_img_anchor();
-        Rect * img_r = e->get_img_rect();
-        int bd_width = e->getBorder_width();
-        font_t font = e->get_text_font();
-        surface_t  img = e->get_img();
-        char* concatString = new char[strlen(txt)+2];
-        strcpy( concatString, e->get_text() );
-        //not Back space
-        if(static_cast<KeyEvent*>(event)->unichar!=8){
-        char * b;
-        b= convert_unicode(static_cast<KeyEvent*>(event)->unichar);
-        strcat( concatString,b);
-        }
-        else{
-            int a = strlen(concatString);
-            char * c = concatString;
-            c[a-1] = '\0';
-        }
-        Size *size_text = new Size(0,0);
-        hw_text_compute_size((const char *)concatString,font,*size_text);
-        if(size_text->width()>=widget->getParent()->getContent_rect()->size.width())
-            return EI_FALSE;
-        e->set_text(concatString);
-        if(strlen(concatString)<2) size_text->width() = 20; size_text->height()=25;
-        //ADD MARGIN
-        size_text->height()+=5;size_text->width()+=20;
-        Placer * geo = (Placer *) e->getGeom_manager();
-        int x = geo->getX();
-        int y = geo->getY();
-        geo->configure(e, nullptr, &x, &y, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr);
-        e->configure(size_text,&c,&bd_width,&rel
-                    ,const_cast<const char **>(&concatString),&font,&c_txt,&anc
-                    ,&img,&img_r,&img_anc);
+        Entry * e = static_cast<Entry*>(widget);
+        if(event->type == ei_ev_keychar && e->get_is_clicked() ){
+            //Variables that are private we need
+            Size s = e->getRequested_size();
+            color_t c = e->getColor();
+            color_t c_txt = e->get_text_color();
+            anchor_t anc = e->get_text_anchor();
+            relief_t rel = e->get_relief();
+            const char * txt = e->get_text();
+            anchor_t img_anc = e->get_img_anchor();
+            Rect * img_r = e->get_img_rect();
+            int bd_width = e->getBorder_width();
+            font_t font = e->get_text_font();
+            surface_t  img = e->get_img();
+            //Concat the old string with the new character the user used
+            char* concatString = new char[strlen(txt)+2];
+            strcpy( concatString, e->get_text() );
+            //If backspace erase last character
+            if(static_cast<KeyEvent*>(event)->unichar!=8){
+                char * b;
+                b= convert_unicode(static_cast<KeyEvent*>(event)->unichar);
+                strcat( concatString,b);
+            }
+            else{
+                int a = strlen(concatString);
+                char * c = concatString;
+                c[a-1] = '\0';
+            }
+            //Always re_compute the size of text as paint does
+            Size *size_text = new Size(0,0);
+            hw_text_compute_size((const char *)concatString,font,*size_text);
+            if(size_text->width()>=widget->getParent()->getContent_rect()->size.width())
+                return EI_FALSE;
+            e->set_text(concatString);
+            //Minimal size
+            if(strlen(concatString)<2) size_text->width() = 20; size_text->height()=25;
+            //Add a margin
+            size_text->height()+=5;size_text->width()+=20;
+            //Finally place the text frame
+            Placer * geo = (Placer *) e->getGeom_manager();
+            int x = geo->getX();
+            int y = geo->getY();
+            geo->configure(e, nullptr, &x, &y, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr);
+            e->configure(size_text,&c,&bd_width,&rel
+                         ,const_cast<const char **>(&concatString),&font,&c_txt,&anc
+                         ,&img,&img_r,&img_anc);
 
 
-        return EI_TRUE;
-    }
+            return EI_TRUE;
+        }
     }
 
     return EI_FALSE;
@@ -188,7 +185,8 @@ void Entry::configure (Size*           requested_size,
 
     anchor_t anc = ei_anc_northwest;
     color_t colr;
-    (!color) ? colr = getParent()->getColor() : colr = *color;
+    //if null true transparency
+    (!color) ? colr = (color_t){0,0,0,0} : colr = *color;
     Frame::configure(requested_size,&colr,border_width,relief,text,text_font,text_color,&anc,img,img_rect,img_anchor);
     if(!done){
         EventManager::getInstance().bind(ei_ev_keychar,NULL, "Entry", process_key, NULL);
@@ -198,7 +196,21 @@ void Entry::configure (Size*           requested_size,
     done = true;
 
 }
+bool_t Entry::get_is_clicked(){
+    return is_clicked;
+}
 
+void Entry::set_is_clicked(bool_t click){
+    is_clicked=click;
+}
+
+bool Entry::get_done(){
+    return done;
+}
+
+void Entry::set_done(bool done){
+    this->done=done;
+}
 
 //todo event to get keyboard --> configure if this widget has been pressed earlier
 //END GETTER & SETTER
