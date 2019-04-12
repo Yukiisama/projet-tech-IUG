@@ -363,8 +363,12 @@ void Widget::setGeom_manager(GeometryManager *geom_manager){
 }
 
 void Widget::setRequested_size(Size  requested_size){
+    std::cout<<"To update Top SIZE : "<<" and size : "<<requested_size.width()
+            <<","<<requested_size.height()<<endl;
     this->requested_size=requested_size;
     screen_location.size=requested_size;
+    std::cout<<"updated Top SIZE : "<<" and size : "<<screen_location.size.width()
+            <<","<<screen_location.size.height()<<endl;
 }
 
 void Widget::setScreen_location(Rect screen_location){

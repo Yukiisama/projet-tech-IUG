@@ -328,6 +328,8 @@ namespace ei {
 
         bool_t inside_top_bar(Point where) const;
 
+        bool_t inside_right_bottom_corner(Point where) const;
+        
         virtual void draw (surface_t surface,
                            surface_t pick_surface,
                            Rect*     clipper);
@@ -401,14 +403,6 @@ namespace ei {
 
     void setP_button_close(Placer *value);
 
-    Button* getResize_button() const;
-
-    void setResize_button(Button *value);
-
-    Placer *getP_resize_button() const;
-
-    void setP_resize_button(Placer *value);
-
     Rect getContainer() const;
 
     void setContainer(const Rect &value);
@@ -459,6 +453,10 @@ namespace ei {
 
     void setFix_screen_released(const bool_t &value);
 
+    bool_t get_show_arrow() const;
+
+    void set_show_arrow(bool_t show);
+
     //End Getter & Setter
 
 
@@ -475,8 +473,6 @@ namespace ei {
     Size            resize_button_window_size;
     Button*         button_close;//The button that close the window
     Placer*         p_button_close;
-    Button*         resize_button;//The button at the right bottom to resize the window
-    Placer*         p_resize_button;
     Rect            container;      //use to store toplevel's own content rec.
     Placer*         p_in_window;
     bool_t          top_bar_clicked=EI_FALSE;
@@ -490,6 +486,7 @@ namespace ei {
     Size            pre_size;
     bool_t          fixScreen=EI_FALSE;
     bool_t          fix_screen_released=EI_FALSE;
+    bool_t          show_arrow = EI_FALSE;
     };
 
 

@@ -166,6 +166,7 @@ void Placer::run (Widget* widget){
 
     new_rect.size.width() = temp_width;
     new_rect.size.height() = temp_height;
+    cout<< "temp size :"<< temp_width<<","<<temp_height<<endl;
     // Setting new positioning and sizing rectangle to the widget
     widget->geomnotify(new_rect);
 

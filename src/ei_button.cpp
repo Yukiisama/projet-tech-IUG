@@ -130,6 +130,8 @@ void Button::draw(surface_t surface,
         exit(EXIT_FAILURE);
     }
 
+    if(!Application::getInstance()->isIntersect(*content_rect,*clipper))return;
+
     //The Rect of the button.
     Rect button_rect = Rect(content_rect->top_left,content_rect->size);
     //The list of points to draw the button
@@ -179,7 +181,7 @@ void Button::draw(surface_t surface,
 
         //Children should be display inside the content_rect of his parent.
         std::cout<<(*it)->getPick_id()<<std::endl;
-        (*it)->draw(surface,pick_surface,content_rect);
+        (*it)->draw(surface,pick_surface,clipper);
     }
 
 }

@@ -195,7 +195,18 @@ void EventManager::eventHandler(Event *event)
         {
             if(event->type==ei_ev_mouse_buttondown){
                 MouseEvent * me= static_cast<MouseEvent*>(event);
-                if(Application::getInstance()->widget_pick(me->where)->getPick_id()==it->widget->getPick_id()){
+                uint32_t mouse_id =  Application::getInstance()->widget_pick(me->where)->getPick_id();
+                if(!it->widget->getName().compare("Toplevel")){
+                    Toplevel * top= static_cast<Toplevel*>(it->widget);
+                    if(mouse_id == top->getButton_close()->getPick_id()
+                            || mouse_id == top->getPick_id()){
+                        if(it->callback(it->widget, event, it->user_param)){
+                            Application::getInstance()->invalidate_rect((it->widget->getScreen_location()));
+                            break;
+                        }
+                    }
+                }
+                else if(mouse_id==it->widget->getPick_id()){
                     if(it->callback(it->widget, event, it->user_param)){
                         Application::getInstance()->invalidate_rect((*it->widget->getContent_rect()));
                         break;
@@ -221,13 +232,15 @@ void EventManager::eventHandler(Event *event)
                 }
             }else{
                 if(it->callback(it->widget, event, it->user_param)){
-                    Application::getInstance()->invalidate_rect((*it->widget->getContent_rect()));
+                    if(!it->widget->getName().compare("Toplevel"))
+                        Application::getInstance()->invalidate_rect((it->widget->getScreen_location()));
+                    else
+                        Application::getInstance()->invalidate_rect((*it->widget->getContent_rect()));
                     break;
                 }
             }
         }
     }
-
 }
 
 void EventManager::deleteWidget(Widget* widget){

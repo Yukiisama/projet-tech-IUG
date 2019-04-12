@@ -116,7 +116,7 @@ void Frame::draw(surface_t surface,
         std::list<Widget *>&c_list =children;
         for (std::list<Widget *>::iterator it = c_list.begin(); it != c_list.end(); it++)
             //Children should be display inside the content_rect of his parent.
-            (*it)->draw(surface, pick_surface, content_rect);
+            (*it)->draw(surface, pick_surface, clipper);
     }
 
 
