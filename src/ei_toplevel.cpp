@@ -60,26 +60,20 @@ bool_t resize_button_callback(Widget* widget, Event* event, void* user_param){
                 float deltaY = top->getContent_rect()->size.height()-new_height;
                 //we return if the delta is 0 or just incredibly insignifiant
                 if((deltaX * deltaX)/2 <2.0f || (deltaY * deltaY)/2 <2.0f) return EI_FALSE;
+                Application::getInstance()->invalidate_rect((top->getScreen_location()));
                 //Limit the top level to a minimal size
                 if(new_width < top->getMin_size().width())new_width = top->getMin_size().width();
                 if(new_height < top->getMin_size().height())new_height = top->getMin_size().height();
                 //finally update the new size of the top level
                 Size *new_size = new Size(new_width,new_height);
-                std::cout<<"Top position send to update : "<<top->getScreen_location().top_left.x()<<","<<top->getScreen_location().top_left.y()<<" and size : "<<new_size->width()
-                        <<","<<new_size->height()<<endl;
                 Placer * geo = (Placer *)top->getGeom_manager();
-                geo->setWidth(new_width);
-                geo->setHeight(new_height);
+                geo->setWidth(new_width+top->getBorder_width()*2);
+                geo->setHeight(new_height+top->getTop_bar_height()+top->getBorder_width());
                 top->configure(new_size,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr);
                 delete(new_size);
                 //update the last position of the mouse
                 top->setMouse_pos(e->where);
-
-                std::cout<<"Top size send to invalideREc : "<<" and size : "<<top->getScreen_location().size.width()
-                        <<","<<top->getScreen_location().size.height()<<endl;
-                Application::getInstance()->invalidate_rect((top->getScreen_location()));
-
-                return EI_FALSE;
+                return EI_TRUE;
             }
         }
     }
@@ -131,11 +125,13 @@ bool_t topbar_move_callback(Widget* widget, Event* event, void* user_param){
     MouseEvent* e = static_cast<MouseEvent*>(event);
     if(top->getTop_bar_clicked()&& event->type==ei_ev_mouse_buttonup){
         top->setTop_bar_clicked(EI_FALSE);
+        Application::getInstance()->invalidate_rect((top->getScreen_location()));
         if(top->getFixScreen()) top->setFix_screen_released(EI_TRUE);
-        return EI_TRUE;
+        return EI_FALSE;
     }else if(event->type==ei_ev_mouse_buttondown &&
              Application::getInstance()->widget_pick(e->where)->getPick_id()==top->getPick_id()){
         if(top->inside_top_bar(e->where)){
+
             //Tells the toplevel that its top_bar is clicked
             if(!top->getTop_bar_clicked()){
                 top->setTop_bar_clicked(EI_TRUE);
@@ -149,12 +145,14 @@ bool_t topbar_move_callback(Widget* widget, Event* event, void* user_param){
             top->setFixScreen(EI_TRUE);
             top->setPre_pos(top->getScreen_location().top_left);
             top->setPre_size(top->getContent_rect()->size);
+            Size *new_size = new Size(top->getParent()->getContent_rect()->size.width()/2-top->getBorder_width()*2,top->getParent()->getContent_rect()->size.height()-top->getTop_bar_height()-top->getBorder_width());
             if (top->getGeom_manager()->getName() == "placer"){
                 Placer * geo = (Placer *)top->getGeom_manager();
                 geo->setX(top->getParent()->getContent_rect()->top_left.x());
                 geo->setY(top->getParent()->getContent_rect()->top_left.y());
+                geo->setWidth(new_size->width()+top->getBorder_width()*2);
+                geo->setHeight(new_size->height()+top->getTop_bar_height()+top->getBorder_width());
             }
-            Size *new_size = new Size(top->getParent()->getContent_rect()->size.width()/2-top->getBorder_width()*2,top->getParent()->getContent_rect()->size.height()-top->getTop_bar_height()-top->getBorder_width());
             top->configure(new_size,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr);
             delete(new_size);
             return EI_TRUE;
@@ -165,12 +163,14 @@ bool_t topbar_move_callback(Widget* widget, Event* event, void* user_param){
             top->setFixScreen(EI_TRUE);
             top->setPre_pos(top->getScreen_location().top_left);
             top->setPre_size(top->getContent_rect()->size);
+            Size *new_size = new Size(top->getParent()->getContent_rect()->size.width()/2-top->getBorder_width()*2,top->getParent()->getContent_rect()->size.height()-top->getTop_bar_height()-top->getBorder_width());
             if (top->getGeom_manager()->getName() == "placer"){
                 Placer * geo = (Placer *)top->getGeom_manager();
                 geo->setX(top->getParent()->getContent_rect()->top_left.x()+top->getParent()->getContent_rect()->size.width()/2);
                 geo->setY(top->getParent()->getContent_rect()->top_left.y());
+                geo->setWidth(new_size->width()+top->getBorder_width()*2);
+                geo->setHeight(new_size->height()+top->getTop_bar_height()+top->getBorder_width());
             }
-            Size *new_size = new Size(top->getParent()->getContent_rect()->size.width()/2-top->getBorder_width()*2,top->getParent()->getContent_rect()->size.height()-top->getTop_bar_height()-top->getBorder_width());
             top->configure(new_size,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr);
             delete(new_size);
             return EI_TRUE;
@@ -180,12 +180,14 @@ bool_t topbar_move_callback(Widget* widget, Event* event, void* user_param){
             top->setFixScreen(EI_TRUE);
             top->setPre_pos(top->getScreen_location().top_left);
             top->setPre_size(top->getContent_rect()->size);
+            Size *new_size = new Size(top->getParent()->getContent_rect()->size.width()-top->getBorder_width(),top->getParent()->getContent_rect()->size.height()-top->getTop_bar_height()-top->getBorder_width());
             if (top->getGeom_manager()->getName() == "placer"){
                 Placer * geo = (Placer *)top->getGeom_manager();
                 geo->setX(top->getParent()->getContent_rect()->top_left.x());
                 geo->setY(top->getParent()->getContent_rect()->top_left.y());
+                geo->setWidth(new_size->width()+top->getBorder_width()*2);
+                geo->setHeight(new_size->height()+top->getTop_bar_height()+top->getBorder_width());
             }
-            Size *new_size = new Size(top->getParent()->getContent_rect()->size.width()-top->getBorder_width(),top->getParent()->getContent_rect()->size.height()-top->getTop_bar_height()-top->getBorder_width());
             top->configure(new_size,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr);
             delete(new_size);
             return EI_TRUE;
@@ -195,6 +197,7 @@ bool_t topbar_move_callback(Widget* widget, Event* event, void* user_param){
                  && e->where.x()<top->getParent()->getContent_rect()->top_left.x()+top->getParent()->getContent_rect()->size.width()
                 && e->where.y()>top->getParent()->getContent_rect()->top_left.y()){
             top->setFixScreen(EI_FALSE);
+            Application::getInstance()->invalidate_rect((top->getScreen_location()));
             //case where halfscreen is display after mouse up
             if(top->getFix_screen_released()&& Application::getInstance()->inside_root(e->where)){
                 int move_x = e->where.x()-top->getScreen_location().top_left.x()-top->getPre_size().width()/2;
@@ -225,6 +228,7 @@ bool_t topbar_move_callback(Widget* widget, Event* event, void* user_param){
         //normale moving
         else{
             if(Application::getInstance()->inside_root(e->where)){
+                Application::getInstance()->invalidate_rect((top->getScreen_location()));
                 int move_x = (e->where.x())-(top->getMouse_pos().x());
                 int move_y = (e->where.y())-(top->getMouse_pos().y());
                 //we return if the movement result is 0 or just incredibly insignifiant
@@ -285,6 +289,7 @@ Toplevel::Toplevel(Widget *parent) : Widget(TOPLEVEL_NAME, parent){
     EventManager::getInstance().bind(ei_ev_mouse_move, this, "",resize_button_callback , NULL);
     //bind topbar mov
     EventManager::getInstance().bind(ei_ev_mouse_buttonup, this, "",topbar_move_callback , NULL);
+    EventManager::getInstance().setExc_Outside_Widget(ei_ev_mouse_buttonup,this,topbar_move_callback,NULL);
     EventManager::getInstance().bind(ei_ev_mouse_buttondown, this, "",topbar_move_callback , NULL);
     EventManager::getInstance().bind(ei_ev_mouse_move, this, "",topbar_move_callback , NULL);
     //bind show arrow
@@ -368,7 +373,15 @@ void Toplevel::draw (surface_t surface,
     //case when button close has been trigged
     if(to_forget) return;
 
-    if(!Application::getInstance()->isIntersect(*content_rect,*clipper))return;
+    Rect new_clipper = *clipper;
+    Rect new_container =container;
+    if(clipper!=NULL){
+       new_clipper=Application::getInstance()->intersectedRect(screen_location,*clipper);
+        if(new_clipper.size.width()==-1)return;
+
+        new_container=Application::getInstance()->intersectedRect(container,*clipper);
+        if(new_container.size.width()==-1)return;
+     }
 
     if(!surface){
         fprintf(stderr,"Error occured for Frame::draw - surface is not valid\n");
@@ -383,7 +396,7 @@ void Toplevel::draw (surface_t surface,
     }
 
     //draw outside the basic toplevel
-    drawBasic_toplevel(surface,pick_surface,clipper);
+    drawBasic_toplevel(surface,pick_surface,&new_clipper);
 
     if(show_arrow || resize_button_pressed)
         draw_arrow(surface,
@@ -397,9 +410,9 @@ void Toplevel::draw (surface_t surface,
     for(std::list<Widget*>::iterator it = children.begin();it!= children.end();it++){
         //donc apply content rect to button close because it display on the top bar which is not belong to content rect
         if((*it)->getPick_id()==button_close->getPick_id())
-            (*it)->draw(surface,pick_surface,clipper);
+            (*it)->draw(surface,pick_surface,&new_clipper);
         else
-            (*it)->draw(surface,pick_surface,clipper);
+            (*it)->draw(surface,pick_surface,&new_container);
     }
     return;
 }
@@ -421,6 +434,7 @@ void Toplevel::drawBasic_toplevel(surface_t surface, surface_t pick_surface, Rec
 
     int LR_height = requested_size.height()-top_bar_height-border_width;
     pick_color.alpha=ALPHA_MAX;
+    color.alpha=ALPHA_MAX;
     //Top bar rectangle
     Rect topbar_rec= Rect(screen_location.top_left,Size(requested_size.width(),top_bar_height));
     draw_rectangle(pick_surface,topbar_rec,pick_color,clipper);

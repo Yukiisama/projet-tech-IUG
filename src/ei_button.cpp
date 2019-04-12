@@ -129,8 +129,11 @@ void Button::draw(surface_t surface,
         fprintf(stderr,"Error occured for Frame::draw - pick_surface is not vaild\n");
         exit(EXIT_FAILURE);
     }
-
-    if(!Application::getInstance()->isIntersect(*content_rect,*clipper))return;
+    Rect new_clipper = *clipper;
+    if(clipper!=NULL){
+       new_clipper=Application::getInstance()->intersectedRect(*content_rect,*clipper);
+        if(new_clipper.size.width()==-1)return;
+     }
 
     //The Rect of the button.
     Rect button_rect = Rect(content_rect->top_left,content_rect->size);
@@ -138,10 +141,10 @@ void Button::draw(surface_t surface,
     linked_point_t list_frame = rounded_frame(button_rect, corner_radius, BT_FULL);
     pick_color.alpha=ALPHA_MAX;
     //Draw button polygon on pick_surface with color pick_color
-    draw_polygon(pick_surface, list_frame, pick_color, clipper);
+    draw_polygon(pick_surface, list_frame, pick_color, &new_clipper);
     list_frame.clear();
     //Draw button on the main surface
-    draw_button(surface,&button_rect,color,corner_radius,border_width,clipper,relief);
+    draw_button(surface,&button_rect,color,corner_radius,border_width,&new_clipper,relief);
 
     if (text)
     {
@@ -181,7 +184,7 @@ void Button::draw(surface_t surface,
 
         //Children should be display inside the content_rect of his parent.
         std::cout<<(*it)->getPick_id()<<std::endl;
-        (*it)->draw(surface,pick_surface,clipper);
+        (*it)->draw(surface,pick_surface,&new_clipper);
     }
 
 }

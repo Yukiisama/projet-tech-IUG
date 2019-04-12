@@ -8,8 +8,7 @@
 #include <iostream>
 #include <algorithm>
 #include <cctype>
-#include <functional>
-
+#include<omp.h>
 #define FPS_MAX (1.0/60.0)
 namespace ei {
 Application *Application::instance = nullptr;
@@ -62,12 +61,36 @@ bool Application::isIntersect(Rect rect1, Rect rect2){
     int end_x = x + rect2.size.width();
     int y = rect2.top_left.y();
     int end_y = y + rect2.size.height();
-
+    if(rect1.top_left.x()==rect2.top_left.x() && rect1.top_left.y()==rect2.top_left.y()
+            && rect1.size.width()==rect2.size.width() && rect1.size.height()==rect2.size.height()) return true;
     for(linked_point_t::iterator it = rect1_points.begin(); it!=rect1_points.end(); ++it){
-        if(it->x()>x && it->x()<end_x && it->y()>y && it->y()<end_y)
+        if(it->x()>=x && it->x()<=end_x && it->y()>=y && it->y()<=end_y)
             return true;
     }
     return false;
+}
+
+Rect Application::intersectedRect(Rect rect1, Rect rect2)
+{
+    Rect newR;
+    if(!Application::getInstance()->isIntersect(rect1,rect2)){
+        newR.size.width()=-1;
+        newR.size.height()=-1;
+        return newR;
+    }
+
+    int x,y,width,height;
+    int x1=rect1.top_left.x(),y1 = rect1.top_left.y(),w1=rect1.size.width(),h1=rect1.size.height();
+    int x2=rect2.top_left.x(),y2 = rect2.top_left.y(),w2=rect2.size.width(),h2=rect2.size.height();
+
+    x=max(x1,x2);
+    y=max(y1,y2);
+    width=min(x1+w1,x2+w2)-x;
+    height=min(y1+h1,y2+h2)-y;
+    newR.top_left.x()=x;newR.top_left.y()=y;
+    newR.size.width()=width;newR.size.height()=height;
+    return newR;
+
 }
 
 bool_t Application::rectFusion(Rect* rect1, Rect* rect2){
@@ -100,6 +123,7 @@ bool_t Application::rectFusion(Rect* rect1, Rect* rect2){
 
     rect1->top_left=Point(x,y);
     rect1->size=Size(width,height);
+    cout<<"union okkkkkkkkkkkkkk"<<endl;
     return EI_TRUE;
 }
 
@@ -115,7 +139,17 @@ bool compareRectsByPositionY(const ei::Rect& rect1,const ei::Rect& rect2){
 
 void Application::optimizedRect(){
     if(to_clear_rectangle_list.size()>1){
+        for(linked_rect_t::iterator it = to_clear_rectangle_list.begin(); it!=to_clear_rectangle_list.end();){
+            cout<<(*it).top_left.x()<<" ";
+            it++;
+        }
+        cout<<"\n"<<endl;
         to_clear_rectangle_list.sort(compareRectsByPositionX);
+        for(linked_rect_t::iterator it = to_clear_rectangle_list.begin(); it!=to_clear_rectangle_list.end();){
+            cout<<(*it).top_left.x()<<" ";
+            it++;
+        }
+        cout<<"\n"<<endl;
         for(linked_rect_t::iterator it = to_clear_rectangle_list.begin(), next_it = ++to_clear_rectangle_list.begin(); next_it!=to_clear_rectangle_list.end();){
             if(rectFusion(&(*it),&(*next_it))){
                 next_it = to_clear_rectangle_list.erase(next_it);
@@ -126,6 +160,7 @@ void Application::optimizedRect(){
         }
         if(to_clear_rectangle_list.size()>1){
             to_clear_rectangle_list.sort(compareRectsByPositionY);
+
             for(linked_rect_t::iterator it = to_clear_rectangle_list.begin(), next_it = ++to_clear_rectangle_list.begin(); next_it!=to_clear_rectangle_list.end();){
                 if(rectFusion(&(*it),&(*next_it))){
                     next_it = to_clear_rectangle_list.erase(next_it);
@@ -135,6 +170,39 @@ void Application::optimizedRect(){
                 }
             }
         }
+
+
+        to_clear_rectangle_list.sort(compareRectsByPositionX);
+        for(linked_rect_t::iterator it = to_clear_rectangle_list.begin(); it!=to_clear_rectangle_list.end();){
+            cout<<(*it).top_left.x()<<" ";
+            it++;
+        }
+        cout<<"\n"<<endl;
+        for(linked_rect_t::iterator it = to_clear_rectangle_list.begin(), next_it = ++to_clear_rectangle_list.begin(); next_it!=to_clear_rectangle_list.end();){
+            if(rectFusion(&(*it),&(*next_it))){
+                next_it = to_clear_rectangle_list.erase(next_it);
+            }
+            else{
+                ++next_it;++it;
+            }
+        }
+        if(to_clear_rectangle_list.size()>1){
+            to_clear_rectangle_list.sort(compareRectsByPositionY);
+
+            for(linked_rect_t::iterator it = to_clear_rectangle_list.begin(), next_it = ++to_clear_rectangle_list.begin(); next_it!=to_clear_rectangle_list.end();){
+                if(rectFusion(&(*it),&(*next_it))){
+                    next_it = to_clear_rectangle_list.erase(next_it);
+                }
+                else{
+                    ++next_it;++it;
+                }
+            }
+        }
+
+
+
+
+
     }
 }
 
@@ -157,6 +225,12 @@ void Application::run(){
         Event *ev=hw_event_wait_next();
         EventManager::getInstance().eventHandler(ev);
 
+        if(to_clear_rectangle_list.size()>20){
+            std::cout<<"\nrect nb at first outside fps:"<<to_clear_rectangle_list.size()<<endl;
+            optimizedRect();
+            std::cout<<"rect nb after outside fps:"<<to_clear_rectangle_list.size()<<endl;
+
+        }
         if(hw_now()-update_time>FPS_MAX){
 
             //Screen need to be update , draw the widgets then update rects
@@ -167,17 +241,15 @@ void Application::run(){
                 }
                 optimizedRect();
                 std::cout<<"rect nb after :"<<to_clear_rectangle_list.size()<<endl;
-                for(linked_rect_t::iterator it = to_clear_rectangle_list.begin(); it!=to_clear_rectangle_list.end();++it){
-                   std::cout<<"rect position : "<<it->top_left.x()<<","<<it->top_left.y()<<" and size : "<<it->size.width()<<","<<it->size.height()<<endl;
-                }
+//                for(linked_rect_t::iterator it = to_clear_rectangle_list.begin(); it!=to_clear_rectangle_list.end();++it){
+//                   std::cout<<"rect position : "<<it->top_left.x()<<","<<it->top_left.y()<<" and size : "<<it->size.width()<<","<<it->size.height()<<endl;
+//                }
                 for(linked_rect_t::iterator it = to_clear_rectangle_list.begin(); it!=to_clear_rectangle_list.end();++it){
                     widget_root->draw(root_window,offscreen,&(*it));
                     hw_surface_update_rects(to_clear_rectangle_list);
                 }
 
-//                Rect r = Rect(Point(0,0),Size(800,800));
-//                widget_root->draw(root_window,offscreen,&r);
-//                hw_surface_update_rects(to_clear_rectangle_list);
+
 //                widget_root->draw(root_window,offscreen,widget_root->getContent_rect());
 //                //Dont delete hw_surface_update_rects , it will not work outside of cremi
 //                hw_surface_update_rects(to_clear_rectangle_list);
@@ -200,7 +272,6 @@ void Application::run(){
      *        A copy is made, so it is safe to release the rectangle on return.
      */
 void Application::invalidate_rect(const Rect &rect){
-    cout<<"Rec to add in invalidate rec"<<rect.size.width()<<","<<rect.size.height()<<endl;
     to_clear_rectangle_list.push_front(rect);
 }
 

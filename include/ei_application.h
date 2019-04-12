@@ -119,7 +119,7 @@ public:
      * @brief optimizedRect
      */
     void optimizedRect();
-
+    Rect intersectedRect(Rect r1, Rect r2);
     bool isIntersect(Rect rect1, Rect rect2);
 
     Application(Application const&)     = delete; // prevents  this  method  to be used
