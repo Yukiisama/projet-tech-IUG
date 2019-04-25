@@ -6,6 +6,7 @@
 #include <iostream>
 #include <allegro5/allegro5.h>
 #include <allegro5/allegro_primitives.h>
+using namespace std;
 namespace ei {
 
 linked_point_t arc(const Point& center, float radius, int start_angle, int end_angle)
@@ -421,8 +422,26 @@ void draw_button(surface_t surface, Rect *rect, const color_t color, int radius,
     inner_rect->top_left.y() = inner_rect->top_left.y() + border_width;
     inner_rect->size.width() = inner_rect->size.width() - border_width*2;
     inner_rect->size.height() = inner_rect->size.height() - border_width*2;
+    al_set_target_bitmap((ALLEGRO_BITMAP*) surface);
 
-    draw_polygon(surface, rounded_frame(*inner_rect, radius, BT_FULL), color,clipper);
+    float x1;
+    float y1;
+    float x2;
+    float y2;
+    if(clipper){
+         x1 = max(inner_rect->top_left.x(),clipper->top_left.x());
+         y1 = max(inner_rect->top_left.y(),clipper->top_left.y());
+         x2 = min(inner_rect->top_left.x()+inner_rect->size.width(),clipper->top_left.x()+clipper->size.width());
+         y2 = min(inner_rect->top_left.y()+inner_rect->size.height(),clipper->top_left.y()+clipper->size.height());
+    }
+    else{
+        x1 = inner_rect->top_left.x();
+        y1 = inner_rect->top_left.y();
+        x2 = inner_rect->top_left.x()+inner_rect->size.width();
+        y2 = inner_rect->top_left.y()+inner_rect->size.height();
+    }
+    al_draw_filled_rounded_rectangle(x1,y1,x2,y2,radius,radius,al_map_rgba(color.red, color.green, color.blue,color.alpha));
+    //draw_polygon(surface, rounded_frame(*inner_rect, radius, BT_FULL), color,clipper);
 
     
 }
@@ -472,11 +491,25 @@ void draw_text(surface_t surface, const Point* where,
     hw_surface_free(s_text);
 }
 void draw_rectangle(surface_t surface, Rect r,const color_t color,  Rect * clipper){
-    hw_surface_lock(surface);
-    for(int i = r.top_left.y();i<=r.top_left.y()+r.size.height();i++){
-        draw_line(surface,Point(r.top_left.x(),i),Point(r.top_left.x()+r.size.width(),i),color,clipper);
+    //if(!Application::getInstance()->isIntersect(r,*clipper)) return;
+    al_set_target_bitmap((ALLEGRO_BITMAP*) surface);
+    float x1;
+    float y1;
+    float x2;
+    float y2;
+    if(clipper){
+         x1 = max(r.top_left.x(),clipper->top_left.x());
+         y1 = max(r.top_left.y(),clipper->top_left.y());
+         x2 = min(r.top_left.x()+r.size.width(),clipper->top_left.x()+clipper->size.width());
+         y2 = min(r.top_left.y()+r.size.height(),clipper->top_left.y()+clipper->size.height());
     }
-    hw_surface_unlock(surface);
+    else{
+        x1 = r.top_left.x();
+        y1 = r.top_left.y();
+        x2 = r.top_left.x()+r.size.width();
+        y2 = r.top_left.y()+r.size.height();
+    }
+    al_draw_filled_rectangle( x1,  y1,  x2,  y2, al_map_rgba(color.red, color.green, color.blue,color.alpha));
 }
 
 void fill(surface_t surface, const color_t* color, const bool_t use_alpha)
