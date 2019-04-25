@@ -6,7 +6,6 @@
 #include <iostream>
 #include <allegro5/allegro5.h>
 #include <allegro5/allegro_primitives.h>
-#include <omp.h>
 namespace ei {
 
 linked_point_t arc(const Point& center, float radius, int start_angle, int end_angle)
@@ -396,7 +395,6 @@ void draw_polygon(surface_t surface, const linked_point_t &point_list,
 
 void draw_button(surface_t surface, Rect *rect, const color_t color, int radius,int border_width, const Rect *clipper,relief_t relief)
 {
-    #pragma omp parallel
     color_t tint;
     tint.red = color.red + (0.25 * (255-color.red));
     tint.green = color.green + (0.25 * (255 - color.green));
@@ -475,7 +473,6 @@ void draw_text(surface_t surface, const Point* where,
 }
 void draw_rectangle(surface_t surface, Rect r,const color_t color,  Rect * clipper){
     hw_surface_lock(surface);
-    #pragma omp parallel for
     for(int i = r.top_left.y();i<=r.top_left.y()+r.size.height();i++){
         draw_line(surface,Point(r.top_left.x(),i),Point(r.top_left.x()+r.size.width(),i),color,clipper);
     }
