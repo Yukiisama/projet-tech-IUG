@@ -12,7 +12,7 @@
 
 using namespace std;
 namespace ei {
- bool activated = false;
+bool activated = false;
 RadioButton::RadioButton():RadioButton(Application::getInstance()->root_widget()){}
 RadioButton::RadioButton(Widget * parent):Button(parent,"RadioButton")
 {
@@ -23,8 +23,8 @@ RadioButton::~RadioButton()
 
 }
 void RadioButton::draw (surface_t surface,
-                                surface_t pick_surface,
-                                Rect*     clipper)
+                        surface_t pick_surface,
+                        Rect*     clipper)
 {
     if(!surface){
         fprintf(stderr,"Error occured for Frame::draw - surface is not valid\n");
@@ -45,7 +45,7 @@ void RadioButton::draw (surface_t surface,
     draw_polygon(pick_surface, list_frame, pick_color, clipper);
     list_frame.clear();
     //Draw button on the main surface
-    draw_button(surface,&button_rect,color,get_corner_radius(),border_width,clipper,get_relief());
+    draw_button(surface,&button_rect,color,get_corner_radius(),border_width,clipper,getRadio_button_relief());
     // Text
     color_t t = get_text_color();
     surface_t textSurface = hw_text_create_surface(get_text(), this->get_text_font(), &t);
@@ -72,11 +72,11 @@ bool_t button_click_down2(Widget* widget, Event* event, void* user_param)
     RadioButton* button = static_cast<RadioButton*>(widget);
     if(Application::getInstance()->widget_pick(e->where)->getPick_id()==button->getPick_id()){
 
-        button->set_relief(ei_relief_sunken);
+        button->setRadio_button_relief(ei_relief_sunken);
         for(std::list<Widget*>::iterator it =button->getParent()->getChildren().begin();it!= button->getParent()->getChildren().end();it++){
             if(button!=(*it)){
                 RadioButton* iterate_button = static_cast<RadioButton*>((*it));
-                iterate_button->set_relief(ei_relief_raised);
+                iterate_button->setRadio_button_relief(ei_relief_raised);
 
             }
         }
@@ -102,10 +102,22 @@ void RadioButton::configure (Size*            requested_size,
                              Rect**           img_rect,
                              anchor_t*        img_anchor)
 {
-Button::configure(requested_size, color, border_width, corner_radius, relief, text, text_font, text_color, text_anchor, img, img_rect, img_anchor);
-EventManager::getInstance().bind(ei_ev_mouse_buttondown,this, "", button_click_down2, NULL);
-EventManager::getInstance().bind(ei_ev_mouse_buttondown,this, "", button_click_up2, NULL);
+    Button::configure(requested_size, color, border_width, corner_radius, relief, text, text_font, text_color, text_anchor, img, img_rect, img_anchor);
+    EventManager::getInstance().bind(ei_ev_mouse_buttondown,this, "", button_click_down2, NULL);
+    EventManager::getInstance().bind(ei_ev_mouse_buttondown,this, "", button_click_up2, NULL);
 }
+
+//getter and setter
+relief_t RadioButton::getRadio_button_relief() const
+{
+    return radio_button_relief;
+}
+
+void RadioButton::setRadio_button_relief(const relief_t &value)
+{
+    radio_button_relief = value;
+}
+
 
 }
 

@@ -103,6 +103,24 @@ public:
      */
     bool_t inside_root (const Point& where);
 
+    /**
+     * @brief rectFusion    check if the intersection between two rectangles is big enough
+     *                      to merge them. The fusion is done on rect1.
+     *
+     * @param rect1         The first rectangle
+     *
+     * @param rect2         The second rectangle
+     *
+     * @return              True if there were a fusion, else False.
+     */
+    bool_t rectFusion(Rect *rect1, Rect *rect2);
+
+    /**
+     * @brief optimizedRect
+     */
+    void optimizedRect();
+    bool isIntersect(Rect rect1, Rect rect2);
+
     Application(Application const&)     = delete; // prevents  this  method  to be used
     void operator=(Application const&)  = delete; // prevents  this  method  to be used
 

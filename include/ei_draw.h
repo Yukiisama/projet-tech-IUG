@@ -66,6 +66,15 @@ void draw_line(surface_t surface, const Point &start,
 void draw_polyline(surface_t surface,
                    const linked_point_t &point_list,
                    const color_t color, const Rect* clipper);
+/**
+ * @brief draw_arrow
+ * @param surface
+ * @param where
+ * @param size
+ * @param clipper
+ */
+void draw_arrow(surface_t surface, const Point where, int dimension, Rect* clipper);
+
 
 /**
  * \brief Draws a filled polygon.

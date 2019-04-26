@@ -3,6 +3,7 @@
 #include "ei_draw.h"
 #include <string>
 #include <iostream>
+#include "ei_application.h"
 #define ROOT_NAME "root"
 #define DEFAULT_DIM 100
 #define BORDER_WIDTH 0
@@ -221,6 +222,8 @@ void Widget::removeChildren(Widget *widget)
    }
 }
 
+
+
 /**
      * \brief   Method that is called to notify the widget that its geometry has been modified
      *      by its geometry manager.
@@ -382,6 +385,8 @@ void Widget::setColor(color_t color){
 void Widget::setBorder_width(int border_width){
     this->border_width=border_width;
 }
+
+
 
 
 
