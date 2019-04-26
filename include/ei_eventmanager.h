@@ -27,22 +27,24 @@ public:
     static EventManager& getInstance() {
         static EventManager instance;
         return instance;
-    }
-
+    }      
   private:
     EventManager();
-
+    //param_callback : contain essentail datas for callback function.
     typedef struct param_callback
     {
         /* data */
         Widget *widget;
         ei_callback_t callback;
         void *user_param;
-        bool_t exc_on_widget=EI_TRUE;
+        bool_t exc_on_widget=EI_TRUE; //default value is EI_TRUE, callback can excute only on widget.
     } param_callback;
-    // Declaring umap to be of <ei_eventtype_t,std::vector<param_callback> type
-    // key will be of ei_eventtype_t type and mapped value will
-    // be of std::vector<param_callback type
+
+    /**
+     * @brief hashMap key will be of ei_eventtype_t type and mapped value will be of std::vector<param_callback> type
+     * Used by eventHandler to excute callbacks according to ei_eventtype.
+     *
+     */
     std::unordered_map<ei_eventtype_t,std::vector<param_callback>, std::hash<int>> hashMap;
    
 
@@ -80,7 +82,7 @@ public:
                  ei_callback_t  callback,
                  void*          user_param);
     /**
-     * \bref
+     * \brief   Excute callbacks according to ei_eventtype.
      * 
      * @param   eventtype   The type of the event.
      * @param   widget      The callback is only called if the event is related to this widget.    
@@ -88,7 +90,13 @@ public:
     void eventHandler(Event *event);
 
 
-
+    /**
+     * @brief setExc_Outside_Widget allow callback to excute out the widget.
+     * @param eventtype     The type of the event.
+     * @param widget        The callback is only called if the event is related to this widget.
+     * @param callback      The callback (i.e. the function to call) to be modify.
+     * @param user_param    A user parameter that will be passed to the callback when it is called.
+     */
     void setExc_Outside_Widget(ei_eventtype_t eventtype,Widget* widget,ei_callback_t callback,void * user_param);
 
 

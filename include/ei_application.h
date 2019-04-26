@@ -95,36 +95,32 @@ public:
     Widget* widget_pick (const Point& where);
 
     /**
-     * @brief inside_root
+     * @brief inside_root check if the point where is inside the root
      *
      * @param where     The point to check.
      *
-     * @return      true if the point is inside the root window, else false.
+     * @return      EI_TRUE if the point is inside the root window, else EI_FALSE.
      */
     bool_t inside_root (const Point& where);
 
     /**
-     * @brief rectFusion    check if the intersection between two rectangles is big enough
-     *                      to merge them. The fusion is done on rect1.
-     *
-     * @param rect1         The first rectangle
-     *
-     * @param rect2         The second rectangle
-     *
-     * @return              True if there were a fusion, else False.
+     * @brief isIntersect check if two rectangles are overlapping.
+     * @param rect1 The rectangle to check.
+     * @param rect2 The rectangle to check.
+     * @return  true if rectangles are overlapping, false else.
      */
-    bool_t rectFusion(Rect *rect1, Rect *rect2);
-
-    /**
-     * @brief optimizedRect
-     */
-    void optimizedRect();
     bool isIntersect(Rect rect1, Rect rect2);
 
     Application(Application const&)     = delete; // prevents  this  method  to be used
     void operator=(Application const&)  = delete; // prevents  this  method  to be used
 
     //methods
+    /**
+     * @brief intersectedRect Compute the rect that intersect with r1 and r2.
+     * @param r1    The rectangle to use for computing
+     * @param r2    The rectangle to use for computing
+     * @return The rectangle that intersect with r1 and r2
+     */
     Rect intersectedRect(Rect r1, Rect r2);
     // *** Getters & Setter ***
     surface_t get_root_window();
@@ -148,13 +144,13 @@ public:
 
 private:
     static Application *instance;
-    surface_t root_window;
-    surface_t offscreen;
-    Frame* widget_root;
-    linked_rect_t   to_clear_rectangle_list;
+    surface_t root_window;  //main window which display all widget.
+    surface_t offscreen;    //mainly used for eventmanager to pick widget.
+    Frame* widget_root;     //root widget.
+    linked_rect_t   to_clear_rectangle_list;    //list of rectangle for updating both roo_window and offscrenn.
     bool running = false;
     double update_time = 0;
-    int who_click = 0;
+    int who_click = 0;      //The entry which had been clicked.
 };
 
 }

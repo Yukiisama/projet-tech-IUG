@@ -341,6 +341,14 @@ namespace ei {
         virtual void draw (surface_t surface,
                            surface_t pick_surface,
                            Rect*     clipper);
+        /**
+         * @brief drawBasic_toplevel draw basic background and elements for toplevel
+         * @param surface Where to draw the widget. The actual location of the widget in the
+         *                      surface is stored in its "screen_location" field.
+         * @param   pick_surface  Offscreen buffer to draw the widget \ref pick_id
+         * @param   clipper     If not NULL, the drawing is restricted within this rectangle
+         *                      (expressed in the surface reference frame).
+         */
         void drawBasic_toplevel(surface_t surface,
                                 surface_t pick_surface,
                                 Rect*     clipper);
@@ -402,10 +410,6 @@ namespace ei {
 
     void setButton_close(Button *value);
 
-    Size getResize_button_window_size() const;
-
-    void setResize_button_window_size(const Size &value);
-
     Placer *getP_button_close() const;
 
     void setP_button_close(Placer *value);
@@ -413,10 +417,6 @@ namespace ei {
     Rect getContainer() const;
 
     void setContainer(const Rect &value);
-
-    Placer *getP_in_window() const;
-
-    void setP_in_window(Placer *value);
 
     bool_t getTop_bar_clicked() const;
 
@@ -471,26 +471,24 @@ namespace ei {
 
     private:
     int             border_width;
-    double          top_bar_height;//The width of the top bar
+    double          top_bar_height;//The width of the top bar.
     const char*     title;
-    bool_t          closable;
-    axis_set_t      resizable;
-    Size            min_size;
-    Size            button_size;
-    Size            resize_button_window_size;
-    Button*         button_close;//The button that close the window
-    Placer*         p_button_close;
+    bool_t          closable;       //check if toplevel is closable.
+    axis_set_t      resizable;      //check if toplevel is resizable.
+    Size            min_size;       //minimum size of toplevel.
+    Size            button_size;    //button close size
+    Button*         button_close;   //The button that close the window.
+    Placer*         p_button_close; //placer for button close.
     Rect            container;      //use to store toplevel's own content rec.
-    Placer*         p_in_window;
     bool_t          top_bar_clicked=EI_FALSE;
     bool_t          resize_button_pressed=EI_FALSE;
     bool_t          button_close_pressed=EI_FALSE;
     Point           mouse_pos;
-    bool_t          closable_done = EI_FALSE; //to prevent recreate button close
-    bool_t          to_forget =EI_FALSE;
+    bool_t          closable_done = EI_FALSE; //to prevent recreate button close.
+    bool_t          to_forget =EI_FALSE;      //close toplevel, used to stop display toplevel.
     //Bonus resize to half screen
-    Point           pre_pos;
-    Size            pre_size;
+    Point           pre_pos;                  //previous position.
+    Size            pre_size;                 //previous size.
     bool_t          fixScreen=EI_FALSE;
     bool_t          fix_screen_released=EI_FALSE;
     bool_t          show_arrow = EI_FALSE;

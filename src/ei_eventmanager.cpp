@@ -31,7 +31,7 @@ void EventManager::bind(ei_eventtype_t eventtype,
                         ei_callback_t callback,
                         void *user_param)
 {
-
+    //check if arguments meet the condition.
     if ((widget && !tag.empty()) || (!widget && tag.empty()))
     {
         fprintf(stderr, "Please check widget and tag\n");
@@ -148,7 +148,6 @@ void EventManager::unbind(ei_eventtype_t eventtype,
                             else ++it;
                         }
 
-
                     }
 
                 }
@@ -178,7 +177,7 @@ void EventManager::unbind(ei_eventtype_t eventtype,
 **/
 void EventManager::eventHandler(Event *event)
 {
-
+    //default quit application hotkey event.
     if( event->type == ei_ev_keydown ){
         KeyEvent * ev_key= static_cast<KeyEvent*>  (event);
         if(ev_key->key_sym == ALLEGRO_KEY_F4){
@@ -190,10 +189,11 @@ void EventManager::eventHandler(Event *event)
     for (std::vector<param_callback>::iterator it = hashMap[event->type].begin(); it != hashMap[event->type].end(); ++it)
     {
         if (it->widget)
-        {
+        {   //case event type is mouse button down
             if(event->type==ei_ev_mouse_buttondown){
                 MouseEvent * me= static_cast<MouseEvent*>(event);
                 uint32_t mouse_id =  Application::getInstance()->widget_pick(me->where)->getPick_id();
+                //case widget is Toplevel's close button, add screen location to invalidate rect.
                 if(!it->widget->getName().compare("Toplevel")){
                     Toplevel * top= static_cast<Toplevel*>(it->widget);
                     if(mouse_id == top->getButton_close()->getPick_id()
@@ -204,13 +204,16 @@ void EventManager::eventHandler(Event *event)
                         }
                     }
                 }
+                //normale callback excution for mouse button down event.
                 else if(mouse_id==it->widget->getPick_id()){
                     if(it->callback(it->widget, event, it->user_param)){
                         Application::getInstance()->invalidate_rect((*it->widget->getContent_rect()));
                         break;
                     }
                 }
-            }else if(event->type==ei_ev_mouse_buttonup){
+            }
+            //case event type is mouse button up
+            else if(event->type==ei_ev_mouse_buttonup){
                 MouseEvent * me= static_cast<MouseEvent*>(event);
                 //can be excute outside the widget
                 if(it->exc_on_widget==EI_FALSE){
@@ -228,7 +231,9 @@ void EventManager::eventHandler(Event *event)
                         }
                     }
                 }
-            }else{
+            }
+            //other types for event.
+            else{
                 if(it->callback(it->widget, event, it->user_param)){
                     if(!it->widget->getName().compare("Toplevel"))
                         Application::getInstance()->invalidate_rect((it->widget->getScreen_location()));
@@ -242,7 +247,14 @@ void EventManager::eventHandler(Event *event)
 }
 
 
-
+/**
+ * @brief setExc_Outside_Widget allow callback to excute out the widget.
+ * Must be used right after the bind with same params.
+ * @param eventtype     The type of the event.
+ * @param widget        The callback is only called if the event is related to this widget.
+ * @param callback      The callback (i.e. the function to call) to be modify.
+ * @param user_param    A user parameter that will be passed to the callback when it is called.
+ */
 void EventManager::setExc_Outside_Widget(ei_eventtype_t eventtype,Widget* widget,ei_callback_t callback,void * user_param){
     param_callback &cal = hashMap[eventtype].back();
     if(cal.widget->getPick_id()== widget->getPick_id()
@@ -255,4 +267,4 @@ void EventManager::setExc_Outside_Widget(ei_eventtype_t eventtype,Widget* widget
 }
 
 
-} // namespace ei
+}

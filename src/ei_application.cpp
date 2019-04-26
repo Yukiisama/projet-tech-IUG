@@ -46,7 +46,12 @@ Application::~Application(){
     hw_quit();
     delete (widget_root);
 }
-
+/**
+ * @brief Application::isIntersect check if two rectangles are overlapping.
+ * @param rect1 The rectangle to check.
+ * @param rect2 The rectangle to check.
+ * @return true if rectangles are overlapping, false else.
+ */
 bool Application::isIntersect(Rect rect1, Rect rect2){
     // If one rectangle is on left side of other
     if (rect1.top_left.x() > rect2.top_left.x()+rect2.size.width()
@@ -77,18 +82,16 @@ void Application::run(){
     while(running){
         Event *ev=hw_event_wait_next();
         EventManager::getInstance().eventHandler(ev);
-
         if(hw_now()-update_time>FPS_MAX){
-
+            //if there is aleast an rectangle zone to update, then draw the whole screen.
             if(!to_clear_rectangle_list.empty()){
                 widget_root->draw(root_window,offscreen,widget_root->getContent_rect());
                 hw_surface_update_rects(to_clear_rectangle_list);
             }
-            //next step is to clear the rectangle list.
+            //clear list after updated.
             to_clear_rectangle_list.clear();
             update_time  = hw_now();
         }
-
         if(ev)delete ev;
     }
     return;
@@ -155,9 +158,9 @@ Widget* Application::widget_pick (const Point& where){
 /**
      * @brief   Returns if the point where is inside the root
      *
-     * @param   where       The location on screen, expressed in the root window coordinates.
+     * @param   where The location on screen, expressed in the root window coordinates.
      *
-     * @return      True if inside_root else False
+     * @return  EI_TRUE if inside_root, else EI_FALSE
      */
 bool_t Application::inside_root (const Point& where){
 
