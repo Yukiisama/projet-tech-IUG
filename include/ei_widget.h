@@ -231,7 +231,6 @@ namespace ei {
         void set_img_rect(Rect * img_rect);
         anchor_t get_img_anchor();
         void set_img_anchor(anchor_t img_anchor);
-        void updateText_Container(Rect clipper);
         //END GETTER & SETTER
         private:
             relief_t    relief;
@@ -302,10 +301,6 @@ namespace ei {
     void set_img_rect(Rect * img_rect);
     anchor_t get_img_anchor();
     void set_img_anchor(anchor_t img_anchor);
-
-    //Methode
-    void updateText_Container(Rect clipper);
-
 
     relief_t getRelief_for_radio() const;
 

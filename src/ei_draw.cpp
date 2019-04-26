@@ -416,13 +416,13 @@ void draw_polygon(surface_t surface, const linked_point_t &point_list,
     }
     delete[] edge_table;
 }
+
 /**
  * @brief convert_linked_point_to_vertices
- * @param vertex_count
- * @param point_list
- * @param rect
- * @param clipper
- * @return
+ * @param vertex_count  Number of vectices in the end of the function.
+ * @param point_list    A linked list of the points of the polygon.
+ * @param clipper       If not NULL, the drawing is restricted within this rectangle.
+ * @return vertices - Interleaved array of (x, y) vertex coordinates
  */
 float* convert_linked_point_to_vertices(int * vertex_count,linked_point_t point_list,const Rect* clipper){
     int size = point_list.size()*2;
@@ -438,7 +438,16 @@ float* convert_linked_point_to_vertices(int * vertex_count,linked_point_t point_
 
 }
 
-
+/**
+ * @brief draw_button   Where to draw the text. The surface must be *locked* by \ref hw_surface_lock.
+ * @param surface       Where to draw the text. The surface must be *locked* by \ref hw_surface_lock.
+ * @param rect          Rectangle which contains the button's topleft and it's size.
+ * @param color         The color of the button.
+ * @param radius        Radius used to round the button.
+ * @param border_width  Border of the button.
+ * @param clipper       If not NULL, the drawing is restricted within this rectangle.
+ * @param relief        Relief of the button.
+ */
 void draw_button(surface_t surface, Rect *rect, const color_t color, int radius,int border_width, const Rect *clipper,relief_t relief)
 {
     al_set_target_bitmap((ALLEGRO_BITMAP*) surface);
@@ -496,11 +505,27 @@ void draw_button(surface_t surface, Rect *rect, const color_t color, int radius,
     
 }
 
+/**
+ * @brief draw_polygon_pick_surface  use al_draw_filled_polygon to draw polygone on surface
+ * @param surface   surface to draw
+ * @param vertices  Interleaved array of (x, y) vertex coordinates
+ * @param vertex    Number of vertices in the array
+ * @param color     Color of the filled polygon
+ */
 void draw_polygon_pick_surface(surface_t surface,const float* vertices,int vertex,const color_t color){
     al_set_target_bitmap((ALLEGRO_BITMAP*) surface);
     al_draw_filled_polygon(vertices,vertex,al_map_rgba(color.red, color.green, color.blue,color.alpha));
 }
 
+/**
+ * \brief Draws text by calling \ref hw_text_create_surface.
+ *
+ * @param surface   Where to draw the text. The surface must be *locked* by \ref hw_surface_lock.
+ * @param where     Coordinates, in the surface, where to anchor the *top-left corner of the rendered text.
+ * @param text      The string of the text. Can't be NULL.
+ * @param font      The font used to render the text. If NULL, the \ref ei_default_font is used.
+ * @param color     The text color. Can't be NULL. The alpha parameter is not used.
+ */
 void draw_text(surface_t surface, const Point* where,
                   const char* text, const font_t font,
                   const color_t* color,Rect* clipper)
@@ -545,6 +570,13 @@ void draw_text(surface_t surface, const Point* where,
 
     hw_surface_free(s_text);
 }
+/**
+ * @brief draw_rectangle    Draw filled rectangle on the surface.
+ * @param surface           Where to draw the text. The surface must be *locked* by \ref hw_surface_lock.
+ * @param r                 The rectangle postion and size.
+ * @param color             The text color. Can't be NULL. The alpha parameter is not used.
+ * @param clipper           If not NULL, the drawing is restricted within this rectangle.
+ */
 void draw_rectangle(surface_t surface, Rect r,const color_t color,  Rect * clipper){
     //if(!Application::getInstance()->isIntersect(r,*clipper)) return;
     al_set_target_bitmap((ALLEGRO_BITMAP*) surface);

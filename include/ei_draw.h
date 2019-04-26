@@ -67,11 +67,11 @@ void draw_polyline(surface_t surface,
                    const linked_point_t &point_list,
                    const color_t color, const Rect* clipper);
 /**
- * @brief draw_arrow
- * @param surface
- * @param where
- * @param size
- * @param clipper
+ * @brief draw_arrow for resize toplevel
+ * @param surface   Where to draw the line. The surface must be *locked* by \ref hw_surface_lock.
+ * @param where     Where to draw arrow
+ * @param size      Dimension of arrow
+ * @param clipper   If not NULL, the drawing is restricted within this rectangle.
  */
 void draw_arrow(surface_t surface, const Point where, int dimension, Rect* clipper);
 
@@ -93,18 +93,16 @@ void draw_polygon(surface_t surface, const linked_point_t& point_list,
  * @return vertices - Interleaved array of (x, y) vertex coordinates
  */
 float* convert_linked_point_to_vertices(int * vertex_count,linked_point_t point_list, const Rect* clipper);
+
 /**
- * \bref Draws button on a surface 
- *
- *  @param surface   Where to draw the text. The surface must be *locked* by \ref hw_surface_lock.
- *  @param rect      Rectangle which contains the button's topleft and it's size.
- *  @param color     The color of the button.
- *  @param radius    Radius used to round the button.
- *  @param clipper     If not NULL, the drawing is restricted within this rectangle.
- * 
- * convert: original color
- * Shade (rs,gs,bs): rs = r * 0.25, gs = g * 0.25, bs = b * 0.25 (that is a pretty dark shade); 
- * Tint (rt,gt,bt): rt = r + (0.25 * (255 - r)), gt = g + (0.25 * (255 - g)), bt = b + (0.25 * (255 - b))
+ * @brief draw_button   Where to draw the text. The surface must be *locked* by \ref hw_surface_lock.
+ * @param surface       Where to draw the text. The surface must be *locked* by \ref hw_surface_lock.
+ * @param rect          Rectangle which contains the button's topleft and it's size.
+ * @param color         The color of the button.
+ * @param radius        Radius used to round the button.
+ * @param border_width  Border of the button.
+ * @param clipper       If not NULL, the drawing is restricted within this rectangle.
+ * @param relief        Relief of the button.
  */
 void draw_button(surface_t surface, Rect *rect, const color_t color, int radius,int border_width,
                     const Rect *clipper,relief_t relief);
@@ -131,10 +129,11 @@ void draw_text(surface_t surface, const Point *where,
                const color_t *color,Rect *clipper);
 
 /**
- * @brief draw_rectangle
- * @param r
- * @param color
- * @param clipper
+ * @brief draw_rectangle    Draw filled rectangle on the surface.
+ * @param surface           Where to draw the text. The surface must be *locked* by \ref hw_surface_lock.
+ * @param r                 The rectangle postion and size.
+ * @param color             The text color. Can't be NULL. The alpha parameter is not used.
+ * @param clipper           If not NULL, the drawing is restricted within this rectangle.
  */
 void draw_rectangle(surface_t surface,Rect r,const color_t color, Rect * clipper);
 /**
