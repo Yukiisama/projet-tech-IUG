@@ -133,6 +133,13 @@ bool_t topbar_move_callback(Widget* widget, Event* event, void* user_param){
     }else if(event->type==ei_ev_mouse_buttondown &&
              Application::getInstance()->widget_pick(e->where)->getPick_id()==top->getPick_id()){
         if(top->inside_top_bar(e->where)){
+            //Top goes upside the other top if an other one
+            for (list<Widget *>::iterator it = widget->getParent()->getChildren().begin();it!=widget->getParent()->getChildren().end();it++){
+                         if (*it == top){
+                             widget->getParent()->getChildren().push_back(*it);
+                             it = widget->getParent()->getChildren().erase(it);
+                         }
+                     }
             //Tells the toplevel that its top_bar is clicked
             if(!top->getTop_bar_clicked()){
                 top->setTop_bar_clicked(EI_TRUE);
