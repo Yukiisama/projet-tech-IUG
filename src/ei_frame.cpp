@@ -51,7 +51,6 @@ Frame::~Frame(){
     if(getName().compare("root")){
         getParent()->removeChildren(this);
     }
-    EventManager::getInstance().deleteWidget(this);
     hw_text_font_free(text_font);
 }
 /**
@@ -78,22 +77,12 @@ void Frame::draw(surface_t surface,
         fprintf(stderr,"Error occured for Frame::draw - pick_surface is not vaild\n");
         exit(EXIT_FAILURE);
     }
-    Rect new_clipper = *clipper;
-    if(clipper!=NULL){
-       new_clipper=Application::getInstance()->intersectedRect(*content_rect,*clipper);
-        if(new_clipper.size.width()==-1){
-            cout<<"neagative"<<endl;
-            return;
-        }
-     }
 
     //Draw on pick_surface the rectangle  with frame's pick_color.
     pick_color.alpha=ALPHA_MAX;
-    //draw_polygon(pick_surface,list_frame,pick_color,clipper);
-    draw_rectangle(pick_surface,*content_rect,pick_color,&new_clipper);
+    draw_rectangle(pick_surface,*content_rect,pick_color,clipper);
     //Finally draw the frame on the main surface
-    //draw_polygon(surface,list_frame,color,clipper);
-    draw_rectangle(surface,*content_rect,color,&new_clipper);
+    draw_rectangle(surface,*content_rect,color,clipper);
     if (text)
     {
 
@@ -126,6 +115,8 @@ void Frame::draw(surface_t surface,
     //recursive method that draw all the children.
     if(!children.empty()){
         std::list<Widget *>&c_list =children;
+        //update clipper for children
+        Rect new_clipper=Application::getInstance()->intersectedRect(*getContent_rect(),*clipper);
         for (std::list<Widget *>::iterator it = c_list.begin(); it != c_list.end(); it++)
             //Children should be display inside the content_rect of his parent.
             (*it)->draw(surface, pick_surface, &new_clipper);

@@ -87,11 +87,6 @@ public:
      */
     void eventHandler(Event *event);
 
-    /**
-     * @brief deleteWidget
-     * @param widget
-     */
-    void deleteWidget(Widget * widget);
 
 
     void setExc_Outside_Widget(ei_eventtype_t eventtype,Widget* widget,ei_callback_t callback,void * user_param);

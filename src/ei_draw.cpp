@@ -437,6 +437,8 @@ float* convert_linked_point_to_vertices(int * vertex_count,linked_point_t point_
     return vertices;
 
 }
+
+
 void draw_button(surface_t surface, Rect *rect, const color_t color, int radius,int border_width, const Rect *clipper,relief_t relief)
 {
     al_set_target_bitmap((ALLEGRO_BITMAP*) surface);
@@ -494,6 +496,11 @@ void draw_button(surface_t surface, Rect *rect, const color_t color, int radius,
     
 }
 
+void draw_polygon_pick_surface(surface_t surface,const float* vertices,int vertex,const color_t color){
+    al_set_target_bitmap((ALLEGRO_BITMAP*) surface);
+    al_draw_filled_polygon(vertices,vertex,al_map_rgba(color.red, color.green, color.blue,color.alpha));
+}
+
 void draw_text(surface_t surface, const Point* where,
                   const char* text, const font_t font,
                   const color_t* color,Rect* clipper)
@@ -541,10 +548,10 @@ void draw_text(surface_t surface, const Point* where,
 void draw_rectangle(surface_t surface, Rect r,const color_t color,  Rect * clipper){
     //if(!Application::getInstance()->isIntersect(r,*clipper)) return;
     al_set_target_bitmap((ALLEGRO_BITMAP*) surface);
-    float x1;
-    float y1;
-    float x2;
-    float y2;
+    float x1=0;
+    float y1=0;
+    float x2=0;
+    float y2=0;
     if(clipper){
          x1 = max(r.top_left.x(),clipper->top_left.x());
          y1 = max(r.top_left.y(),clipper->top_left.y());

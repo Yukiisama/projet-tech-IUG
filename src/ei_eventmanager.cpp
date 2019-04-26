@@ -140,7 +140,7 @@ void EventManager::unbind(ei_eventtype_t eventtype,
                     if ( it->user_param == user_param
                          && it->callback.target<bool_t(Widget *, Event *, void *)>() == callback.target<bool_t(Widget *, Event *, void *)>())
                     {
-                        //Get tag_list and delete tag that differs with it_tag
+                        //Get tag_list and delete param_callback which tag is different with it_tag
                         linked_tag_t tag_list = it->widget->getTag_list();
                         for(linked_tag_t::iterator it_tag = tag_list.begin(); it_tag!=tag_list.end();++it_tag){
                             if(!tag.compare(*it_tag))
@@ -241,22 +241,7 @@ void EventManager::eventHandler(Event *event)
     }
 }
 
-void EventManager::deleteWidget(Widget* widget){
-    if(widget){
-        int i;
-        for( i= 0;i<=ei_ev_last;++i){
-            ei_eventtype_t in= (ei_eventtype_t)i;
-            std::vector<param_callback> &p_list = hashMap[in];
-            for(std::vector<param_callback>::iterator itt = p_list.begin(); itt != p_list.end();){
-                if(itt->widget->getPick_id() == widget->getPick_id()){
-                    itt = p_list.erase(itt);
-                }
-                else ++itt;
-            }
-        }
-    }
 
-}
 
 void EventManager::setExc_Outside_Widget(ei_eventtype_t eventtype,Widget* widget,ei_callback_t callback,void * user_param){
     param_callback &cal = hashMap[eventtype].back();

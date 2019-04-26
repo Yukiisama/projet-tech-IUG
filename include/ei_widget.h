@@ -515,17 +515,14 @@ namespace ei {
                         Rect**           img_rect,
                         anchor_t*        img_anchor);
 
-        relief_t getRadio_button_relief() const;
+        relief_t getRadio_button_relief();
 
-        void setRadio_button_relief(const relief_t &value);
+        void setRadio_button_relief(relief_t value);
 
     private:
-        relief_t radio_button_relief =ei_relief_raised;
-
-
-
-
+        relief_t radio_button_relief;
     };
+
     class Entry : public Frame
     {
     public:

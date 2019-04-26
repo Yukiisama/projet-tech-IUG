@@ -110,6 +110,14 @@ void draw_button(surface_t surface, Rect *rect, const color_t color, int radius,
                     const Rect *clipper,relief_t relief);
 
 /**
+ * @brief draw_polygon_pick_surface  use al_draw_filled_polygon to draw polygone on surface
+ * @param surface   surface to draw
+ * @param vertices  Interleaved array of (x, y) vertex coordinates
+ * @param vertex    Number of vertices in the array
+ * @param color     Color of the filled polygon
+ */
+void draw_polygon_pick_surface(surface_t surface,const float* vertices,int vertex,const color_t color);
+/**
  * \brief Draws text by calling \ref hw_text_create_surface.
  *
  * @param surface   Where to draw the text. The surface must be *locked* by \ref hw_surface_lock.
