@@ -144,6 +144,8 @@ public:
     // *** End Getter & Setter ***
 
 
+
+
 private:
     static Application *instance;
     surface_t root_window;

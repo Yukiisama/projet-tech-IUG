@@ -307,9 +307,13 @@ namespace ei {
     void updateText_Container(Rect clipper);
 
 
+    relief_t getRelief_for_radio() const;
+
+    void setRelief_for_radio(const relief_t &value);
+
     private:
-        int        corner_radius;
-        relief_t    relief;
+    int        corner_radius;
+    relief_t    relief;
         const char*      text;
         font_t      text_font;
         color_t     text_color;
@@ -318,6 +322,7 @@ namespace ei {
         Rect*       img_rect;
         anchor_t   img_anchor;
         Rect       text_container;
+        relief_t relief_for_radio;
     };
 
 
@@ -514,18 +519,8 @@ namespace ei {
                         surface_t*       img,
                         Rect**           img_rect,
                         anchor_t*        img_anchor);
-
-        relief_t getRadio_button_relief() const;
-
-        void setRadio_button_relief(const relief_t &value);
-
-    private:
-        relief_t radio_button_relief =ei_relief_raised;
-
-
-
-
     };
+
     class Entry : public Frame
     {
     public:

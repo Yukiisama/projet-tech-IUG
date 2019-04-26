@@ -12,7 +12,31 @@
 
 using namespace std;
 namespace ei {
-bool activated = false;
+
+bool_t button_click_down2(Widget* widget, Event* event, void* user_param)
+{
+    MouseEvent* e = static_cast<MouseEvent*>(event);
+    RadioButton* button = static_cast<RadioButton*>(widget);
+    if(Application::getInstance()->widget_pick(e->where)->getPick_id()==button->getPick_id()){
+
+        button->setRelief_for_radio(ei_relief_sunken);
+        for(std::list<Widget*>::iterator it =button->getParent()->getChildren().begin();it!= button->getParent()->getChildren().end();it++){
+            if(button!=(*it)){
+                RadioButton* iterate_button = static_cast<RadioButton*>((*it));
+                iterate_button->setRelief_for_radio(ei_relief_raised);
+
+            }
+        }
+        return EI_TRUE;
+    }
+    return EI_FALSE;
+}
+bool_t button_click_up2(Widget* widget, Event* event, void* user_param)
+{
+
+    return EI_FALSE;
+}
+
 RadioButton::RadioButton():RadioButton(Application::getInstance()->root_widget()){}
 RadioButton::RadioButton(Widget * parent):Button(parent,"RadioButton")
 {
@@ -20,7 +44,8 @@ RadioButton::RadioButton(Widget * parent):Button(parent,"RadioButton")
 }
 RadioButton::~RadioButton()
 {
-
+    EventManager::getInstance().unbind(ei_ev_mouse_buttondown,this, "", button_click_down2, NULL);
+    EventManager::getInstance().unbind(ei_ev_mouse_buttondown,this, "", button_click_up2, NULL);
 }
 void RadioButton::draw (surface_t surface,
                         surface_t pick_surface,
@@ -39,13 +64,14 @@ void RadioButton::draw (surface_t surface,
     Rect button_rect = Rect(content_rect->top_left,content_rect->size);
     //Draw on pick_surface the forme of button with button's pick_color.
     //The list of points to draw the button
-    linked_point_t list_frame = rounded_frame(button_rect, get_corner_radius(), BT_FULL);
     pick_color.alpha=ALPHA_MAX;
     //Draw button polygon on pick_surface with color pick_color
-    draw_polygon(pick_surface, list_frame, pick_color, clipper);
-    list_frame.clear();
+    int vertex_count =0;
+    Rect new_rec = Application::getInstance()->intersectedRect(button_rect,*clipper);
+    float *vertices  = convert_linked_point_to_vertices(&vertex_count,rounded_frame(new_rec,get_corner_radius(), BT_FULL),clipper);
+    draw_polygon_pick_surface(pick_surface,vertices,vertex_count,pick_color);
     //Draw button on the main surface
-    draw_button(surface,&button_rect,color,get_corner_radius(),border_width,clipper,getRadio_button_relief());
+    draw_button(surface,&button_rect,color,get_corner_radius(),border_width,clipper,getRelief_for_radio());
     // Text
     color_t t = get_text_color();
     surface_t textSurface = hw_text_create_surface(get_text(), this->get_text_font(), &t);
@@ -66,29 +92,7 @@ void RadioButton::draw (surface_t surface,
     }
 }
 
-bool_t button_click_down2(Widget* widget, Event* event, void* user_param)
-{
-    MouseEvent* e = static_cast<MouseEvent*>(event);
-    RadioButton* button = static_cast<RadioButton*>(widget);
-    if(Application::getInstance()->widget_pick(e->where)->getPick_id()==button->getPick_id()){
 
-        button->setRadio_button_relief(ei_relief_sunken);
-        for(std::list<Widget*>::iterator it =button->getParent()->getChildren().begin();it!= button->getParent()->getChildren().end();it++){
-            if(button!=(*it)){
-                RadioButton* iterate_button = static_cast<RadioButton*>((*it));
-                iterate_button->setRadio_button_relief(ei_relief_raised);
-
-            }
-        }
-        return EI_TRUE;
-    }
-    return EI_FALSE;
-}
-bool_t button_click_up2(Widget* widget, Event* event, void* user_param)
-{
-
-    return EI_FALSE;
-}
 void RadioButton::configure (Size*            requested_size,
                              const color_t*   color,
                              int*             border_width,
@@ -106,18 +110,6 @@ void RadioButton::configure (Size*            requested_size,
     EventManager::getInstance().bind(ei_ev_mouse_buttondown,this, "", button_click_down2, NULL);
     EventManager::getInstance().bind(ei_ev_mouse_buttondown,this, "", button_click_up2, NULL);
 }
-
-//getter and setter
-relief_t RadioButton::getRadio_button_relief() const
-{
-    return radio_button_relief;
-}
-
-void RadioButton::setRadio_button_relief(const relief_t &value)
-{
-    radio_button_relief = value;
-}
-
 
 }
 

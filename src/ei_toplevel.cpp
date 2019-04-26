@@ -6,6 +6,7 @@
 #include "ei_eventmanager.h"
 #include "ei_application.h"
 #include "hw_interface.h"
+#include <math.h>
 #include <functional>
 #include <iostream>
 #define BD_WIDTH 4
@@ -129,7 +130,7 @@ bool_t topbar_move_callback(Widget* widget, Event* event, void* user_param){
         top->setTop_bar_clicked(EI_FALSE);
         Application::getInstance()->invalidate_rect((top->getScreen_location()));
         if(top->getFixScreen()) top->setFix_screen_released(EI_TRUE);
-        return EI_FALSE;
+        return EI_TRUE;
     }else if(event->type==ei_ev_mouse_buttondown &&
              Application::getInstance()->widget_pick(e->where)->getPick_id()==top->getPick_id()){
         if(top->inside_top_bar(e->where)){
@@ -313,23 +314,14 @@ Toplevel::~Toplevel(){
     EventManager::getInstance().unbind(ei_ev_mouse_buttonup, this, "",topbar_move_callback , NULL);
     EventManager::getInstance().unbind(ei_ev_mouse_buttondown, this, "",topbar_move_callback , NULL);
     EventManager::getInstance().unbind(ei_ev_mouse_move, this, "",topbar_move_callback , NULL);
-    EventManager::getInstance().deleteWidget(this);
-
-    if(closable_done)delete button_close;
-    //delete toplevel basic placer
-    delete p_button_close;
-
-    //TODO update pick surface with parant's pick color
-    //remove from parent's child list
-    if(getParent()){
-        getParent()->removeChildren(this);
-        getParent()->draw(Application::getInstance()->get_root_window(),
-                          Application::getInstance()->get_offscreen(),getParent()->getContent_rect());
-        Application::getInstance()->invalidate_rect(*getParent()->getContent_rect());
+    //unbind show arrow
+    EventManager::getInstance().unbind(ei_ev_mouse_move, this, "", arrow_callback, NULL);
+    if(closable_done && button_close){
+        EventManager::getInstance().unbind(ei_ev_mouse_buttonup, this, "",button_close_callback , NULL);
+        EventManager::getInstance().unbind(ei_ev_mouse_buttondown, this, "",button_close_callback , NULL);
+        delete button_close;
+        delete p_button_close;
     }
-    EventManager::getInstance().bind(ei_ev_mouse_buttonup, this, "",topbar_move_callback , NULL);
-    EventManager::getInstance().bind(ei_ev_mouse_buttondown, this, "",topbar_move_callback , NULL);
-    EventManager::getInstance().bind(ei_ev_mouse_move, this, "",topbar_move_callback , NULL);
 
 }
 
@@ -380,17 +372,6 @@ void Toplevel::draw (surface_t surface,
                      Rect*     clipper){
     //case when button close has been trigged
     if(to_forget) return;
-
-    Rect new_clipper = *clipper;
-    Rect new_container =container;
-    if(clipper!=NULL){
-       new_clipper=Application::getInstance()->intersectedRect(screen_location,*clipper);
-        if(new_clipper.size.width()==-1)return;
-
-        new_container=Application::getInstance()->intersectedRect(container,*clipper);
-        if(new_container.size.width()==-1)return;
-     }
-
     if(!surface){
         fprintf(stderr,"Error occured for Frame::draw - surface is not valid\n");
         exit(EXIT_FAILURE);
@@ -404,7 +385,7 @@ void Toplevel::draw (surface_t surface,
     }
 
     //draw outside the basic toplevel
-    drawBasic_toplevel(surface,pick_surface,&new_clipper);
+    drawBasic_toplevel(surface,pick_surface,clipper);
 
     if(show_arrow || resize_button_pressed)
         draw_arrow(surface,
@@ -415,12 +396,13 @@ void Toplevel::draw (surface_t surface,
 
 
     //recursive draw
+    Rect new_clipper=Application::getInstance()->intersectedRect(getContainer(),*clipper);
     for(std::list<Widget*>::iterator it = children.begin();it!= children.end();it++){
         //donc apply content rect to button close because it display on the top bar which is not belong to content rect
         if((*it)->getPick_id()==button_close->getPick_id())
-            (*it)->draw(surface,pick_surface,&new_clipper);
+            (*it)->draw(surface,pick_surface,clipper);
         else
-            (*it)->draw(surface,pick_surface,&new_container);
+            (*it)->draw(surface,pick_surface,&new_clipper);
     }
     return;
 }

@@ -100,10 +100,8 @@ Button::Button(Widget *parent, const widgetclass_name_t &class_name) : Widget(cl
  */
 Button::~Button()
 {
-    EventManager::getInstance().deleteWidget(this);
     if(getParent()){
         getParent()->removeChildren(this);
-        Application::getInstance()->invalidate_rect(*getParent()->getContent_rect());
     }
     hw_text_font_free(text_font);
 }
@@ -129,22 +127,19 @@ void Button::draw(surface_t surface,
         fprintf(stderr,"Error occured for Frame::draw - pick_surface is not vaild\n");
         exit(EXIT_FAILURE);
     }
-    Rect new_clipper = *clipper;
-    if(clipper!=NULL){
-       new_clipper=Application::getInstance()->intersectedRect(*content_rect,*clipper);
-        if(new_clipper.size.width()==-1)return;
-     }
-
+    if(!Application::getInstance()->isIntersect(*content_rect,*clipper))return;
     //The Rect of the button.
     Rect button_rect = Rect(content_rect->top_left,content_rect->size);
-    //The list of points to draw the button
-    linked_point_t list_frame = rounded_frame(button_rect, corner_radius, BT_FULL);
+
     pick_color.alpha=ALPHA_MAX;
     //Draw button polygon on pick_surface with color pick_color
-    draw_polygon(pick_surface, list_frame, pick_color, &new_clipper);
-    list_frame.clear();
+    int vertex_count =0;
+    Rect new_rec = Application::getInstance()->intersectedRect(button_rect,*clipper);
+    float *vertices  = convert_linked_point_to_vertices(&vertex_count,rounded_frame(new_rec,get_corner_radius(), BT_FULL),clipper);
+    draw_polygon_pick_surface(pick_surface,vertices,vertex_count,pick_color);
+
     //Draw button on the main surface
-    draw_button(surface,&button_rect,color,corner_radius,border_width,&new_clipper,relief);
+    draw_button(surface,&button_rect,color,corner_radius,border_width,clipper,relief);
 
     if (text)
     {
@@ -179,9 +174,8 @@ void Button::draw(surface_t surface,
     }
 
     //Recursive method that draw all children of current button.
+    Rect new_clipper=Application::getInstance()->intersectedRect(*getContent_rect(),*clipper);
     for(std::list<Widget*>::iterator it = children.begin();it!= children.end();it++){
-
-
         //Children should be display inside the content_rect of his parent.
         std::cout<<(*it)->getPick_id()<<std::endl;
         (*it)->draw(surface,pick_surface,&new_clipper);
@@ -241,7 +235,13 @@ void Button::configure(Size *requested_size,
     //Assign values and run the geometry manager
     (corner_radius) ? this->corner_radius = *corner_radius : this->corner_radius = default_button_corner_radius;
     (border_width) ? this->border_width = *border_width : this->border_width = default_button_border_width;
-    (relief) ? this->relief = *relief : this->relief = ei_relief_none;
+    if(relief){
+        this->relief = *relief;
+        this->relief_for_radio=*relief;
+    }else{
+        this->relief = ei_relief_none;
+        this->relief_for_radio=ei_relief_none;
+    }
     if(text && !img) this->text = *text;
     (text_color) ? this->text_color = *text_color : this->text_color = font_default_color;
     (text_anchor) ? this->text_anchor=*text_anchor : this->text_anchor = ei_anc_center;
@@ -306,6 +306,16 @@ anchor_t Button::get_img_anchor(){
 }
 void Button::set_img_anchor(anchor_t img_anchor){
     this->img_anchor=img_anchor;
+}
+
+relief_t Button::getRelief_for_radio() const
+{
+    return relief_for_radio;
+}
+
+void Button::setRelief_for_radio(const relief_t &value)
+{
+    relief_for_radio = value;
 }
 //END GETTER & SETTER
 

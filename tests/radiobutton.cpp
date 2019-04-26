@@ -128,6 +128,10 @@ int ei_main(int argc, char** argv)
     EventManager::getInstance().unbind(ei_ev_display, NULL, "all", process_display, app);
 
     delete app;
-
+    delete p_first2;
+    delete p_second2;
+    delete p_first;
+    delete p_second;
+    delete p_third;
     return (EXIT_SUCCESS);
 }
