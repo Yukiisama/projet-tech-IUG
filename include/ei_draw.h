@@ -78,7 +78,12 @@ void draw_polyline(surface_t surface,
  */
 void draw_polygon(surface_t surface, const linked_point_t& point_list,
                   const color_t &color, const Rect* clipper);
-
+/**
+ * @brief convert_linked_point_to_vertices
+ * @param point_list A linked list of the points of the polygon.
+ * @return vertices - Interleaved array of (x, y) vertex coordinates
+ */
+float* convert_linked_point_to_vertices(int * vertex_count,linked_point_t point_list, const Rect* clipper);
 /**
  * \bref Draws button on a surface 
  *

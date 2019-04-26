@@ -106,7 +106,8 @@ public:
     Application(Application const&)     = delete; // prevents  this  method  to be used
     void operator=(Application const&)  = delete; // prevents  this  method  to be used
 
-
+    //methods
+    Rect intersectedRect(Rect r1, Rect r2);
     // *** Getters & Setter ***
     surface_t get_root_window();
     void set_root_window(surface_t root_window);
@@ -123,6 +124,8 @@ public:
     void set_who_click(uint32_t x);
     uint32_t get_who_click();
     // *** End Getter & Setter ***
+
+
 private:
     static Application *instance;
     surface_t root_window;

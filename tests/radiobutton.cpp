@@ -52,7 +52,13 @@ int ei_main(int argc, char** argv)
 {
     Size       screen_size = Size(600, 600);
     color_t root_bgcol  = {0x52, 0x7f, 0xb4, 0xff};
-
+    Size top_size = Size(300,300);
+    const char*  window_title    = "Window";
+    color_t      window_color    = {0xA0,0xA0,0xA0, 0xff};
+    int          window_border_width    = 3;
+    bool_t       closable        = EI_TRUE;
+    axis_set_t   window_resizable = ei_axis_both;
+    Point        window_position(30, 250);
     /* Create the application and change the color of the background. */
     Application* app = new Application(&screen_size);
     app->root_widget()->configure(&screen_size, &root_bgcol, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
@@ -61,17 +67,19 @@ int ei_main(int argc, char** argv)
     Size containerSize = Size(300, 600);
     Frame* first_Frame_Container = new Frame(app->root_widget());
     first_Frame_Container->configure(&containerSize, &root_bgcol, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-    Frame* second_Frame_Container = new Frame(app->root_widget());
-    second_Frame_Container->configure(&containerSize, &root_bgcol, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-
+    //Frame* second_Frame_Container = new Frame(app->root_widget());
+    //second_Frame_Container->configure(&containerSize, &root_bgcol, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+    Toplevel* toplevel = new Toplevel(app->root_widget());
+    toplevel->configure(&top_size, &window_color, &window_border_width, &window_title, &closable, &window_resizable, NULL);
     int xFirstContainer=0, yFirstContainer=0;
     int xSecondContainer=300, ySecondContainer=0;
 
     Placer* first_Frame_ContainerPlacer = new Placer();
     first_Frame_ContainerPlacer->configure(first_Frame_Container, NULL, &xFirstContainer, &yFirstContainer, NULL, NULL, NULL, NULL, NULL, NULL);
-    Placer* second_Frame_ContainerPlacer = new Placer();
-    second_Frame_ContainerPlacer->configure(second_Frame_Container, NULL, &xSecondContainer, &ySecondContainer, NULL, NULL, NULL, NULL, NULL, NULL);
-
+    //Placer* second_Frame_ContainerPlacer = new Placer();
+    //second_Frame_ContainerPlacer->configure(second_Frame_Container, NULL, &xSecondContainer, &ySecondContainer, NULL, NULL, NULL, NULL, NULL, NULL);
+    Placer* p5 = new Placer();
+    p5->configure(toplevel, NULL, &(window_position.x()), &(window_position.y()), NULL, NULL, NULL, NULL, NULL, NULL);
     /* Create and configure the first radiobutton's group */
     const char *firstText = "1st radio button (group 1)", *secondText = "2nd radio button (group 1)", *thirdText = "3rd radio button (group 1)";
     RadioButton* first = new RadioButton(first_Frame_Container);
@@ -96,8 +104,8 @@ int ei_main(int argc, char** argv)
 
     /* Create and configure the second radiobutton's group */
     const char *first2Text = "1st radio button (group 2)", *second2Text = "2nd radio button (group 2)";
-    RadioButton* first_group2 = new RadioButton(second_Frame_Container);
-    RadioButton* second_group2 = new RadioButton(second_Frame_Container);
+    RadioButton* first_group2 = new RadioButton(toplevel);
+    RadioButton* second_group2 = new RadioButton(toplevel);
     first_group2->configure(&radioButtonSize, NULL, NULL,NULL,NULL, &first2Text, NULL, NULL, NULL, NULL, NULL, NULL);
     second_group2->configure(&radioButtonSize, NULL, NULL,NULL,NULL, &second2Text, NULL, NULL, NULL, NULL, NULL, NULL);
 

@@ -92,6 +92,7 @@ bool_t button_close_callback(Widget* widget, Event* event, void* user_param){
 bool_t topbar_move_callback(Widget* widget, Event* event, void* user_param){
     Toplevel* top = static_cast<Toplevel*>(user_param);
     MouseEvent* e = static_cast<MouseEvent*>(event);
+
     if(top->getTop_bar_clicked()&& event->type==ei_ev_mouse_buttonup){
         top->setTop_bar_clicked(EI_FALSE);
         if(top->getFixScreen()) top->setFix_screen_released(EI_TRUE);
@@ -99,6 +100,12 @@ bool_t topbar_move_callback(Widget* widget, Event* event, void* user_param){
     }else if(event->type==ei_ev_mouse_buttondown &&
              Application::getInstance()->widget_pick(e->where)->getPick_id()==top->getPick_id()){
         if(top->inside_top_bar(e->where)){
+            for (list<Widget *>::iterator it = widget->getParent()->getChildren().begin();it!=widget->getParent()->getChildren().end();it++){
+                if (*it == top){
+                    widget->getParent()->getChildren().push_back(*it);
+                    it = widget->getParent()->getChildren().erase(it);
+                }
+            }
             //Tells the toplevel that its top_bar is clicked
             if(!top->getTop_bar_clicked()){
                 top->setTop_bar_clicked(EI_TRUE);

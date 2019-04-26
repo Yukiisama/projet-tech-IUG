@@ -155,6 +155,37 @@ bool_t Application::inside_root (const Point& where){
     }
     return EI_TRUE;
 }
+
+//methods
+/**
+ * @brief Application::intersectedRect
+ * @param rect1
+ * @param rect2
+ * @return The rectangle that intersect with rect1 and rect2
+ */
+Rect Application::intersectedRect(Rect rect1, Rect rect2)
+{
+    Rect newR;
+//    if(!Application::getInstance()->isIntersect(rect1,rect2)){
+//        newR.size.width()=-1;
+//        newR.size.height()=-1;
+//        return newR;
+//    }
+
+    int x,y,width,height;
+    int x1=rect1.top_left.x(),y1 = rect1.top_left.y(),w1=rect1.size.width(),h1=rect1.size.height();
+    int x2=rect2.top_left.x(),y2 = rect2.top_left.y(),w2=rect2.size.width(),h2=rect2.size.height();
+
+    x=max(x1,x2);
+    y=max(y1,y2);
+    width=min(x1+w1,x2+w2)-x;
+    height=min(y1+h1,y2+h2)-y;
+    newR.top_left.x()=x;newR.top_left.y()=y;
+    newR.size.width()=width;newR.size.height()=height;
+    return newR;
+
+}
+
 // *** Getters & Setter ***
 surface_t Application::get_root_window(){
     return this->root_window;
