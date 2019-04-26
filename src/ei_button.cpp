@@ -235,7 +235,13 @@ void Button::configure(Size *requested_size,
     //Assign values and run the geometry manager
     (corner_radius) ? this->corner_radius = *corner_radius : this->corner_radius = default_button_corner_radius;
     (border_width) ? this->border_width = *border_width : this->border_width = default_button_border_width;
-    (relief) ? this->relief = *relief : this->relief = ei_relief_none;
+    if(relief){
+        this->relief = *relief;
+        this->relief_for_radio=*relief;
+    }else{
+        this->relief = ei_relief_none;
+        this->relief_for_radio=ei_relief_none;
+    }
     if(text && !img) this->text = *text;
     (text_color) ? this->text_color = *text_color : this->text_color = font_default_color;
     (text_anchor) ? this->text_anchor=*text_anchor : this->text_anchor = ei_anc_center;
@@ -300,6 +306,16 @@ anchor_t Button::get_img_anchor(){
 }
 void Button::set_img_anchor(anchor_t img_anchor){
     this->img_anchor=img_anchor;
+}
+
+relief_t Button::getRelief_for_radio() const
+{
+    return relief_for_radio;
+}
+
+void Button::setRelief_for_radio(const relief_t &value)
+{
+    relief_for_radio = value;
 }
 //END GETTER & SETTER
 

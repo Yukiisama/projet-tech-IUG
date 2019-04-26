@@ -19,11 +19,11 @@ bool_t button_click_down2(Widget* widget, Event* event, void* user_param)
     RadioButton* button = static_cast<RadioButton*>(widget);
     if(Application::getInstance()->widget_pick(e->where)->getPick_id()==button->getPick_id()){
 
-        button->setRadio_button_relief(ei_relief_sunken);
+        button->setRelief_for_radio(ei_relief_sunken);
         for(std::list<Widget*>::iterator it =button->getParent()->getChildren().begin();it!= button->getParent()->getChildren().end();it++){
             if(button!=(*it)){
                 RadioButton* iterate_button = static_cast<RadioButton*>((*it));
-                iterate_button->setRadio_button_relief(ei_relief_raised);
+                iterate_button->setRelief_for_radio(ei_relief_raised);
 
             }
         }
@@ -71,7 +71,7 @@ void RadioButton::draw (surface_t surface,
     float *vertices  = convert_linked_point_to_vertices(&vertex_count,rounded_frame(new_rec,get_corner_radius(), BT_FULL),clipper);
     draw_polygon_pick_surface(pick_surface,vertices,vertex_count,pick_color);
     //Draw button on the main surface
-    draw_button(surface,&button_rect,color,get_corner_radius(),border_width,clipper,getRadio_button_relief());
+    draw_button(surface,&button_rect,color,get_corner_radius(),border_width,clipper,getRelief_for_radio());
     // Text
     color_t t = get_text_color();
     surface_t textSurface = hw_text_create_surface(get_text(), this->get_text_font(), &t);
@@ -107,22 +107,9 @@ void RadioButton::configure (Size*            requested_size,
                              anchor_t*        img_anchor)
 {
     Button::configure(requested_size, color, border_width, corner_radius, relief, text, text_font, text_color, text_anchor, img, img_rect, img_anchor);
-    (relief) ? this->radio_button_relief = *relief : this->radio_button_relief = ei_relief_none;
     EventManager::getInstance().bind(ei_ev_mouse_buttondown,this, "", button_click_down2, NULL);
     EventManager::getInstance().bind(ei_ev_mouse_buttondown,this, "", button_click_up2, NULL);
 }
-
-//getter and setter
-relief_t RadioButton::getRadio_button_relief()
-{
-    return radio_button_relief;
-}
-
-void RadioButton::setRadio_button_relief(relief_t relief)
-{
-    this->radio_button_relief = relief;
-}
-
 
 }
 
